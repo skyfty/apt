@@ -41,37 +41,5 @@ return [
     'sms_check' => [
         'app\\common\\behavior\\Alisms',
     ],
-    'accomplish' => [
-        'app\\common\\behavior\\Provider',
-    ],
-    'newprovider' => [
-        'app\\common\\behavior\\Provider',
-    ],
-    'leave' => [
-        'app\\common\\behavior\\Provider',
-    ],
-    'presignin' => [
-        'app\\common\\behavior\\Provider',
-    ],
-    'signin' => [
-        'app\\common\\behavior\\Provider',
-    ],
-    'evaluate' => [
-        'app\\common\\behavior\\Provider',
-    ],
-    'joinbuying' => [
-        'app\\common\\behavior\\Buying',
-    ],
-    'openbuying' => [
-        'app\\common\\behavior\\Buying',
-    ],
-    'tradedone' => [
-        'app\\common\\behavior\\Buying',
-    ],
-    'refund' => [
-        'app\\common\\behavior\\Buying',
-    ],
-    'buyingfailed' => [
-        'app\\common\\behavior\\Buying',
-    ],
+
 ];

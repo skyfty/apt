@@ -26,7 +26,6 @@ class Dashboard extends Backend
 
         $stat = [
             'customer'=>0,
-            'provider'=>0,
         ];
         $branchwhere = [];
         if ($branch_info) {
