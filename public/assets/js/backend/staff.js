@@ -4,14 +4,6 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
             index:function($scope, $compile,$timeout, data) {
                 $scope.searchFieldsParams = function(param) {
                     param.custom = {};
-
-                    var branchSelect = $('[name="branch_select"]');
-                    if (branchSelect.data("selectpicker")) {
-                        var branchIds = branchSelect.selectpicker('val');
-                        if (branchIds && branchIds.length > 0) {
-                            param.custom['branch_model_id'] = ["in", branchIds];
-                        }
-                    }
                     return param;
                 };
 
@@ -116,123 +108,6 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                 // 为表格绑定事件
                 Table.api.bindevent(table);
 
-            },
-
-            account: function($scope, $compile,$timeout, data){
-                $scope.reckonIds = [];
-
-                $scope.chequeChanged = function(data) {
-                    var reckonIds = [];
-                    angular.forEach(data.selected, function(id){
-                        if ($.isNumeric(id))
-                            reckonIds.push(id);
-                    });
-                    $scope.reckonIds = reckonIds;
-                    $scope.$broadcast("refurbish");
-                };
-
-                $scope.searchFieldsParams = function(param) {
-                    param.custom = {
-                        "reckon_type":"staff",
-                        "reckon_model_id":$scope.row.id,
-                    };
-                    if ($scope.reckonIds.length > 0) {
-                        param.custom['cheque_model_id'] = ["in",$scope.reckonIds];
-                    }
-                    return param;
-                };
-
-                Table.api.init({
-                    extend: {
-                        index_url: 'account/index',
-                        summation_url: 'account/summation/reckon_type/staff',
-                        table: 'account',
-                    },
-                    buttons : [
-                        {
-                            name: 'view',
-                            title: function(row, j){
-                                return __('%s', row.name);
-                            },
-                            classname: 'btn btn-xs btn-success btn-magic btn-dialog btn-view',
-                            icon: 'fa fa-folder-o',
-                            url: 'account/view'
-                        }
-                    ]
-                });
-
-                $scope.fields = data.fields;
-                angular.element("#tab-" +$scope.scenery.name).html($compile(data.content)($scope));
-                $scope.$broadcast("shownTable");
-                var table = $("#table-account");
-
-                var refresh = function(){
-                    $scope.refreshRow();
-                };
-                $(".btn-add-account").data("callback", refresh);$(".btn-refresh").click(refresh)
-
-                $scope.settle = function() {
-                    var ids = Table.api.selectedids(table);
-                    Layer.confirm(
-                        "确实要结算这些账目吗",
-                        {icon: 3, title: __('Warning'), offset: 0, shadeClose: true},
-                        function (index) {
-                            Fast.api.ajax({
-                                url:"/account/settle",
-                                data:{
-                                    ids:ids,
-                                    staff_model_id:$scope.row.id,
-                                    branch_model_id:$scope.row.branch_model_id
-                                }
-                            }, function(){
-                                $scope.$broadcast("refurbish");
-                            });
-                            Layer.close(index);
-                        }
-                    );
-                }
-            },
-            provider: function($scope, $compile,$timeout, data){
-                $scope.genreModelIds = [];
-                $scope.classChanged = function(data) {
-                    var typeIds = [];
-                    angular.forEach(data.selected, function(id){
-                        if ($.isNumeric(id))
-                            typeIds.push(id);
-                    });
-                    $scope.genreModelIds = typeIds;
-                    $scope.$broadcast("refurbish");
-                };
-
-                $scope.searchFieldsParams = function(param) {
-                    param.custom = {staff_model_id:$scope.row.id};
-                    if ($scope.genreModelIds.length > 0) {
-                        param.custom['genre_cascader_id'] = ["in",$scope.genreModelIds];
-                    }
-                    return param;
-                };
-
-                Table.api.init({
-                    extend: {
-                        index_url: 'provider/index',
-                        summation_url: 'provider/summation',
-                        table: 'provider',
-                    },
-                    buttons : [
-                        {
-                            name: 'view',
-                            title: function(row, j){
-                                return __('%s', row.name);
-                            },
-                            classname: 'btn btn-xs btn-success btn-magic btn-dialog btn-view',
-                            icon: 'fa fa-folder-o',
-                            url: 'provider/hinder'
-                        }
-                    ]
-                });
-                $scope.fields = data.fields;
-                angular.element("#tab-" +$scope.scenery.name).html($compile(data.content)($scope));
-                $scope.$broadcast("shownTable");
             },
 
         },

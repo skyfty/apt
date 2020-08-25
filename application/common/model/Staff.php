@@ -8,8 +8,6 @@ use think\Model;
 
 class Staff extends Cosmetic
 {
-    use \app\common\library\traits\Gatherer;
-
     use \traits\model\SoftDelete;
 
     // 表名

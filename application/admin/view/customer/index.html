@@ -39,8 +39,6 @@
                     </div>
                     <div id="toolbar-{$vo['name']}" class="toolbar">
                         {:build_toolbar(['refresh', 'add', 'del'],['add'=>[url('customer/add'), 'btn btn-default btn-dialog', 'fa fa-plus',  __(''), __('添加新学员')]])}
-                        <div style="display: inline-block;" class="hidden-xs {notempty name='config.staff'}hide{/notempty}" id="div_branch_select">{:build_branch_select('branch_select')}</div>
-
                     </div>
                     <table id="table-{$vo['name']}" ui-formidable="fields"
                            data-fields="fields"
