@@ -3,10 +3,12 @@
 namespace app\admin\model;
 
 use think\Model;
+use traits\model\SoftDelete;
 use app\admin\library\Auth;
 
-class Channel extends \app\common\model\Channel
+class Promotion extends  \app\common\model\Promotion
 {
+
 
     protected static function init()
     {
@@ -18,7 +20,7 @@ class Channel extends \app\common\model\Channel
 
         self::beforeInsert(function($row){
             $maxid = self::max("id") + 1;
-            $row['idcode'] = sprintf("CH%06d", $maxid);
+            $row['idcode'] = sprintf("PR%06d", $maxid);
         });
     }
 

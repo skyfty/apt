@@ -9,6 +9,5 @@ return [
     'Idcode'           => 'ID',
     'Creator_model_id' => '创建者',
     'Owners_model_id'  => '所有者',
-    'Group_model_id'   => '分组',
-    'Genre_model_id'   => '类型'
+    'Group_model_id'   => '分组'
 ];

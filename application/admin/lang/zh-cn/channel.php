@@ -10,5 +10,7 @@ return [
     'Creator_model_id' => '创建者',
     'Owners_model_id'  => '所有者',
     'Group_model_id'   => '分组',
-    'Genre_model_id'   => '类型'
+    'Country'          => '国家',
+    'English_name'     => '英文名称',
+    'Platform'         => '平台'
 ];
