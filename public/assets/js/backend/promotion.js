@@ -51,7 +51,10 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
         scenery: {
             compilation: function($scope, $compile,$timeout, data){
                 $scope.searchFieldsParams = function(param) {
-                                 return param;
+                    param.custom = {
+                        "promotion_model_id":$scope.row.id,
+                    };
+                    return param;
                 };
 
                 Table.api.init({
@@ -64,6 +67,31 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                             classname: 'btn btn-xs btn-success btn-magic btn-dialog btn-view',
                             icon: 'fa fa-folder-o',
                             url: 'compilation/view'
+                        }
+                    ]
+                });
+                $scope.fields = data.fields;
+                angular.element("#tab-" +$scope.scenery.name).html($compile(data.content)($scope));
+                $scope.$broadcast("shownTable");
+            },
+            trap: function($scope, $compile,$timeout, data){
+                $scope.searchFieldsParams = function(param) {
+                    param.custom = {
+                        "promotion_model_id":$scope.row.id,
+                    };
+                    return param;
+                };
+
+                Table.api.init({
+                    buttons : [
+                        {
+                            name: 'view',
+                            title: function(row, j){
+                                return __(' %s', row.id);
+                            },
+                            classname: 'btn btn-xs btn-success btn-magic btn-dialog btn-view',
+                            icon: 'fa fa-folder-o',
+                            url: 'trap/view'
                         }
                     ]
                 });
