@@ -63,7 +63,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                             },
                             classname: 'btn btn-xs btn-success btn-magic btn-dialog btn-view',
                             icon: 'fa fa-folder-o',
-                            url: 'compilation/hinder'
+                            url: 'compilation/view'
                         }
                     ]
                 });
