@@ -9,12 +9,12 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                 };
                 var options = {
                     extend: {
-                        index_url: 'promotion/index',
-                        add_url: 'promotion/add',
-                        del_url: 'promotion/del',
-                        multi_url: 'promotion/multi',
-                        summation_url: 'promotion/summation',
-                        table: 'promotion',
+                        index_url: 'compilation/index',
+                        add_url: 'compilation/add',
+                        del_url: 'compilation/del',
+                        multi_url: 'compilation/multi',
+                        summation_url: 'compilation/summation',
+                        table: 'compilation',
                     },
                     buttons : [
                         {
@@ -22,9 +22,9 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                             title: function(row, j){
                                 return __(' %s', row.name);
                             },
-                            classname: 'btn btn-xs  btn-success btn-magic btn-addtabs btn-view',
+                            classname: 'btn btn-xs  btn-success btn-magic btn-dialog btn-view',
                             icon: 'fa fa-folder-o',
-                            url: 'promotion/view'
+                            url: 'compilation/view'
                         }
                     ]
                 };
@@ -34,9 +34,9 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
         },
         viewscape:function($scope, $compile,$parse, $timeout){
             $scope.refreshRow = function(){
-                $.ajax({url: "promotion/index",dataType: 'json',
+                $.ajax({url: "compilation/index",dataType: 'json',
                     data:{
-                        custom: {"promotion.id":$scope.row.id}
+                        custom: {"compilation.id":$scope.row.id}
                     },
                     success: function (data) {
                         if (data && data.rows && data.rows.length == 1) {
@@ -49,39 +49,56 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
             };
         },
         scenery: {
-            compilation: function($scope, $compile,$timeout, data){
-                $scope.searchFieldsParams = function(param) {
-                                 return param;
-                };
 
-                Table.api.init({
-                    buttons : [
-                        {
-                            name: 'view',
-                            title: function(row, j){
-                                return __(' %s', row.id);
-                            },
-                            classname: 'btn btn-xs btn-success btn-magic btn-dialog btn-view',
-                            icon: 'fa fa-folder-o',
-                            url: 'compilation/hinder'
-                        }
-                    ]
-                });
-                $scope.fields = data.fields;
-                angular.element("#tab-" +$scope.scenery.name).html($compile(data.content)($scope));
-                $scope.$broadcast("shownTable");
-            },
         },
+
 
         bindevent:function($scope){
+            var self = this;
+
             Form.api.bindevent($("form[role=form]"), $scope.submit);
+            require(['selectpage'], function () {
+                for (var i in self.initParam) {
+                    var param = Backend.api.query(self.initParam[i]);
+                    if (param) {
+                        $('[name="row[' + self.initParam[i] + ']"]').selectPageDisabled(true);
+                    }
+                }
+            });
+            if (Config.staff) $('[data-field-name="branch"]').hide().trigger("rate");
         },
 
+
+        initParam:[
+            'promotion_model_id'],
+        add: function () {
+            var self = this;
+            AngularApp.controller("add", function($scope,$sce, $compile,$timeout){
+                $scope.fields = Config.scenery.fields;
+                $scope.pre ={}; $scope.row = {};
+                $scope.row['branch_model_id'] = Config.admin_branch_model_id!= null?Config.admin_branch_model_id:0;
+                $scope.row['creator_model_id'] = $scope.row['owners_model_id'] = Config.admin_id;
+
+                for(var i in self.initParam) {
+                    var param = Backend.api.query(self.initParam[i]);
+                    if (param) {
+                        $scope.pre[self.initParam[i]] = $scope.row[self.initParam[i]] = param;
+                    }
+                }
+                var html = Template("edit-tmpl",{state:"add",'fields':"fields"});
+                $timeout(function(){
+                    $("#data-view").html($compile(html)($scope));
+                    $timeout(function(){
+                        self.bindevent($scope, $timeout,$compile);
+                    });
+                });
+            });
+        },
         chart:function() {
             AngularApp.controller("chart", function($scope,$sce, $compile,$timeout) {
                 $scope.stat = {};
                 $scope.refresh = function(){
-                    $.ajax({url: "promotion/statistic",dataType: 'json',cache: false,
+                    $.ajax({url: "compilation/statistic",dataType: 'json',cache: false,
                         success: function (ret) {
                             $scope.$apply(function(){
                                 $scope.stat = ret.data;

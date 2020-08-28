@@ -3,22 +3,23 @@
 namespace app\admin\controller;
 
 /**
- * 运营渠道
+ * 发行渠道
  *
  * @icon fa fa-circle-o
  */
-class Channel extends Cosmetic
+class Compilation extends Cosmetic
 {
-
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\Channel;
-    }
+        $this->model = new \app\admin\model\Compilation;
 
+    }
 
 
     protected function spectacle($model) {
-          return $model;
+        return $model;
     }
+
+
 }
