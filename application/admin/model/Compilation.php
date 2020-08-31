@@ -21,5 +21,4 @@ class Compilation extends \app\common\model\Compilation
             $row['idcode'] = sprintf("CO%06d", $maxid);
         });
     }
-
 }

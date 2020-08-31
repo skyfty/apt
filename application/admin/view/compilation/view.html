@@ -32,11 +32,6 @@
                                     <div class="mailbox-controls">
                                         <div class="btn-group">
                                             <div ng-hide="viewstate.editing" >
-
-                                                <button  type="button" class="btn btn-danger  {$vo['name'] == 'face'?' btn-face-del':' btn-del'} btn-sm {:$auth->check('compilation/del')?'':'hide'}"   href="compilation/del" data-toggle="tooltip" data-container="body" title="{:__('Delete')}">
-                                                    <i class="fa fa-trash-o"></i>
-                                                </button>
-
                                                 <button type="button" class="btn btn-default btn-inline-edit btn-sm {:$auth->check('compilation/edit')?'':'hide'}" ng-click="edit()" data-toggle="tooltip" data-container="body" title="{:__('Edit')}">
                                                     <i class="fa fa-edit"></i>
                                                 </button>

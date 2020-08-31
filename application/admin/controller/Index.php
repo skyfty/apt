@@ -135,12 +135,21 @@ class Index extends Backend
 
     public function manage()
     {
-        Loader::import('phpQuery.phpQuery');
 
-        model("stem")->where("link", "<>", "")->chunk(10, function($stems){
-            foreach($stems as $v) {
-                $v->dispatch();
+    }
+    public function eee()
+    {
+        $data = [];
+
+        foreach(model("promotion")->select() as $promotion) {
+            foreach(model("channel")->select() as $channel) {
+                $data[] = [
+                    "channel_model_id"=>$channel['id'],
+                    "promotion_model_id"=>$promotion['id'],
+                ];
             }
-        });
+        }
+        model("Compilation")->saveAll($data);
+
     }
 }

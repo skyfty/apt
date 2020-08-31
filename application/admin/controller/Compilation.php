@@ -2,6 +2,10 @@
 
 namespace app\admin\controller;
 
+use app\admin\model\Fields;
+use app\admin\model\Modelx;
+use think\App;
+
 /**
  * 发行渠道
  *
@@ -15,7 +19,6 @@ class Compilation extends Cosmetic
         $this->model = new \app\admin\model\Compilation;
 
     }
-
 
     protected function spectacle($model) {
         return $model;
