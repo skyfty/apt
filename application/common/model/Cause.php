@@ -25,8 +25,8 @@ class Cause extends Cosmetic
     public function promotion() {
         return $this->hasOne('promotion','id','promotion_model_id')->joinType("LEFT")->setEagerlyType(0);
     }
-    public function compilation() {
-        return $this->hasOne('compilation','id','compilation_model_id')->joinType("LEFT")->setEagerlyType(0);
+    public function channel() {
+        return $this->hasOne('channel','id','channel_model_id')->joinType("LEFT")->setEagerlyType(0);
     }
     public function trap() {
         return $this->hasOne('trap','id','trap_model_id')->joinType("LEFT")->setEagerlyType(0);

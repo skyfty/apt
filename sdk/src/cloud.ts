@@ -9,6 +9,7 @@ interface requestParam {
 interface requestData {
   act:string, 
   gameId:string,
+  channelId:string,
   data:any
 }
 
@@ -58,8 +59,9 @@ export class BI {
 
   private static initRequestParam(act:string, data:any):requestData {
     let reqParam:requestData = {
-      "act":act, 
       "gameId":BI.envParams.gameId,
+      "channelId":BI.envParams.channelId,
+      "act":act, 
       "data":data,
     };
     return reqParam;

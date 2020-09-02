@@ -1,6 +1,7 @@
 interface initParams {
     // 游戏ID
     gameId: string,
+    channelId:string,
     // 是否打印日志
     log: boolean
 }

@@ -28,15 +28,27 @@ class Index extends Api
             $this->error("param error");
             return;
         }
+        $channelId = Request::instance()->param('channelId');
+        if ($channelId == null) {
+            $this->error("param error");
+            return;
+        }
+        $channel = model("channel")->where("english_name|name|idcode", $channelId)->find();
+        if (!$channel) {
+            $this->error("channel is not found");
+            return;
+        }
+
         $promotion = model("promotion")->where("idcode", $gameId)->find();
         if (!$promotion) {
-            $this->error("game not find");
+            $this->error("game is not found");
             return;
         }
         $data = Request::instance()->param('data', '');
 
-        model("trap")->create([
+        model("cause")->create([
             "promotion_model_id"=>$promotion['id'],
+            "channel_model_id"=>$channel['id'],
             "act"=>$act,
             "content"=>$data,
         ]);
