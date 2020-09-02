@@ -102,7 +102,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
             cause: function($scope, $compile,$timeout, data){
                 $scope.searchFieldsParams = function(param) {
                     param.custom = {
-                        "promotion_model_id":$scope.row.id,
+                        "cause.promotion_model_id":$scope.row.id,
                     };
                     return param;
                 };
