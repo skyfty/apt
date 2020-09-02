@@ -15,6 +15,7 @@ return [
     '__domain__'=>[
         '*'      => 'index',
         'apt'      => 'admin',
+        'bi'      => 'bi',
 
     ],
     '__alias__'   => [
