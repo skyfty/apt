@@ -47,7 +47,7 @@ class BI {
             "channel": BI.envParams.channel,
             "trap": trap,
             "act": act,
-            "act_time": 12,
+            "act_time": new Date().getTime(),
             "data": JSON.stringify(data),
         };
         return reqParam;
@@ -70,7 +70,9 @@ class BI {
     static postData(req, cb, errcb) {
         const requrl = "http://bi.touchmagic.cn";
         if (typeof wx == "undefined") {
-            flyio_1.default.post(requrl, req.params).then(function (response) {
+            flyio_1.default.post(requrl, req.params, { headers: {
+                    "content-type": "application/x-www-form-urlencoded"
+                } }).then(function (response) {
                 if (cb) {
                     cb(response);
                 }
@@ -84,6 +86,9 @@ class BI {
                 url: requrl,
                 data: req.params,
                 method: 'POST',
+                header: {
+                    'content-type': "application/x-www-form-urlencoded"
+                },
                 success: function (res) {
                     if (cb) {
                         cb(res);

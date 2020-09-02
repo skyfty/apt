@@ -66,7 +66,7 @@ export class BI {
       "channel":BI.envParams.channel,
       "trap":trap,
       "act":act, 
-      "act_time":12, 
+      "act_time":new Date().getTime(), 
       "data":JSON.stringify(data),
     };
     return reqParam;
@@ -92,7 +92,9 @@ export class BI {
   private static postData(req: requestParam, cb:Function, errcb:Function):void{
     const requrl = "http://bi.touchmagic.cn";
     if (typeof wx == "undefined") {
-      fly.post(requrl,req.params).then(function (response) {
+      fly.post(requrl,req.params,{headers:{
+        "content-type":"application/x-www-form-urlencoded"
+      }}).then(function (response) {
         if (cb) {
           cb(response);
         }
@@ -104,6 +106,9 @@ export class BI {
         url: requrl,
         data: req.params,
         method: 'POST',
+        header: {
+          'content-type':"application/x-www-form-urlencoded"
+        },
         success: function (res: object) {
           if (cb) {
             cb(res);

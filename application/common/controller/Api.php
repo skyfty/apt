@@ -93,7 +93,7 @@ class Api
     {
         if (Config::get('url_domain_deploy')) {
             if (isset($_SERVER['HTTP_ORIGIN'])) {
-                header("Access-Control-Allow-Origin: " . $this->request->server('HTTP_ORIGIN'));
+                header("Access-Control-Allow-Origin: *");
                 header('Access-Control-Allow-Credentials: true');
                 header('Access-Control-Max-Age: 86400');
             }
