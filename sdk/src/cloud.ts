@@ -8,9 +8,10 @@ interface requestParam {
 
 interface requestData {
   act:string, 
-  gameId:string,
-  channelId:string,
-  trapId:string,
+  act_time:number, 
+  game:string,
+  channel:string,
+  trap:string,
   data:any
 }
 
@@ -59,13 +60,14 @@ export class BI {
   }
 
   private static initRequestParam(act:string, data:any):requestData {
-    let trapId =  (data.trapId ? data.trapId:"default")
+    let trap =  (data.action ? data.action:"default")
     let reqParam:requestData = {
-      "gameId":BI.envParams.gameId,
-      "channelId":BI.envParams.channelId,
-      "trapId":trapId,
+      "game":BI.envParams.game,
+      "channel":BI.envParams.channel,
+      "trap":trap,
       "act":act, 
-      "data":data,
+      "act_time":12, 
+      "data":JSON.stringify(data),
     };
     return reqParam;
   }
@@ -90,7 +92,7 @@ export class BI {
   private static postData(req: requestParam, cb:Function, errcb:Function):void{
     const requrl = "http://bi.touchmagic.cn";
     if (typeof wx == "undefined") {
-      fly.get(requrl,req.params).then(function (response) {
+      fly.post(requrl,req.params).then(function (response) {
         if (cb) {
           cb(response);
         }
@@ -101,7 +103,7 @@ export class BI {
       wx.request({
         url: requrl,
         data: req.params,
-        method: 'GET',
+        method: 'POST',
         success: function (res: object) {
           if (cb) {
             cb(res);

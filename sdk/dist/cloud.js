@@ -41,10 +41,14 @@ class BI {
         BI.request({ retryCnt: 10, params: reqParam }, BI.defCallback);
     }
     static initRequestParam(act, data) {
+        let trap = (data.action ? data.action : "default");
         let reqParam = {
+            "game": BI.envParams.game,
+            "channel": BI.envParams.channel,
+            "trap": trap,
             "act": act,
-            "gameId": BI.envParams.gameId,
-            "data": data,
+            "act_time": 12,
+            "data": JSON.stringify(data),
         };
         return reqParam;
     }
@@ -66,7 +70,7 @@ class BI {
     static postData(req, cb, errcb) {
         const requrl = "http://bi.touchmagic.cn";
         if (typeof wx == "undefined") {
-            flyio_1.default.get(requrl, req.params).then(function (response) {
+            flyio_1.default.post(requrl, req.params).then(function (response) {
                 if (cb) {
                     cb(response);
                 }
@@ -79,7 +83,7 @@ class BI {
             wx.request({
                 url: requrl,
                 data: req.params,
-                method: 'GET',
+                method: 'POST',
                 success: function (res) {
                     if (cb) {
                         cb(res);

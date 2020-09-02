@@ -1,13 +1,13 @@
 interface initParams {
     // 游戏ID
-    gameId: string,
-    channelId:string,
+    game: string,
+    channel:string,
     // 是否打印日志
     log: boolean
 }
 
 interface appOnceParams {
-    actionNumber: number
+    action: string
 }
 
 interface adVideoParams {
