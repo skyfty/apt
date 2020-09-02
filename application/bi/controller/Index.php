@@ -68,7 +68,9 @@ class Index extends Api
             "act_time"=>$act_time,
             "report_time"=>time(),
             "content"=>$data,
+            "act"=>$act,
             "ip_address"=>$this->request->ip(),
+            "user_agent"=>$this->request->header('user-agent')
         ]);
         $this->success("OK", $row);
     }
