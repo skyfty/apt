@@ -559,7 +559,7 @@ define(['jquery', 'bootstrap', 'moment', 'moment/locale/zh-cn', 'bootstrap-table
                 },
 
                 url: function (value, row, index) {
-                    return '<div class="input-group input-group-sm" style="width:250px;margin:0 auto;"><input type="text" class="form-control input-sm" value="' + value + '"><span class="input-group-btn input-group-sm"><a href="' + value + '" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-link"></i></a></span></div>';
+                    return '<a href="' + value + '" target="_blank">'+value+'</a>';
                 },
                 search: function (value, row, index) {
                     var field = this.field;

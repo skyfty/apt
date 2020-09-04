@@ -9,7 +9,7 @@ use app\common\controller\Backend;
  *
  * @icon fa fa-circle-o
  */
-class Cause extends Cosmetic
+class Causeip extends Cosmetic
 {
     public function _initialize()
     {
@@ -17,12 +17,8 @@ class Cause extends Cosmetic
         $this->model = new \app\admin\model\Cause;
     }
 
-    public function ips() {
-        return json(array("total" => $total, "rows" => collection($list)->toArray()));
-
-    }
-
     protected function spectacle($model) {
+
         return $model;
     }
 }

@@ -107,6 +107,16 @@ class BI {
         BI.isInit = true;
         BI.envParams = params;
     }
+    static action(param) {
+        if (!BI.isInit) {
+            if (BI.envParams.log) {
+                console.error("not call init yet!!");
+            }
+            return;
+        }
+        let reqParam = BI.initRequestParam("action", param);
+        BI.request({ retryCnt: 10, params: reqParam }, BI.defCallback);
+    }
     static appOnce(param) {
         if (!BI.isInit) {
             if (BI.envParams.log) {

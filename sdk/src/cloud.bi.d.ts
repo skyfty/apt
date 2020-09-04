@@ -10,6 +10,9 @@ interface appOnceParams {
     action: string
 }
 
+interface actionParams {
+    action: string
+}
 interface adVideoParams {
     // 视频触发点 跟翻译资源中id对应
     type: number
@@ -34,15 +37,10 @@ interface battleParams {
 
 declare module cloud { 
     export class BI { 
-        appOnce(param:object) : number; 
+        static init(params: initParams): void
+        static action(params: actionParams): void
+        static appOnce(params: appOnceParams): void
+        static adVideo(params: adVideoParams): void
+        static battle(params: battleParams): void
     }
  }
-
- 
- declare class BI {
-    init(params: initParams): void
-    appOnce(params: appOnceParams): void
-    adVideo(params: adVideoParams): void
-    battle(params: battleParams): void
-    clear(): void
-}

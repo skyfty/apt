@@ -1,17 +1,38 @@
 {__NOLAYOUT__}
 <div class="panel panel-default panel-intro">
     <div class="panel-heading">
+        <form id="form_toolbar"  class="form-inline">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon">项目</div>
+                    <input type="text" class="selectpage form-control" id="trap_model_id" data-source="trap/index" style="width:200px"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon">渠道</div>
+                    <input type="text" class="selectpage form-control" id="channel_model_id" data-source="channel/index" style="width:200px"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon">IP</div>
+                    <input type="text" class="form-control" id="ip_address" style="width:200px"/>
+                </div>
+            </div>
+        </form>
     </div>
     <div class="panel-body">
         <div class="widget-body no-padding  table-cosmetic">
-            <div id="toolbar-trap" class="toolbar">
+            <div id="toolbar-cause" class="toolbar">
                 {:build_toolbar('refresh')}
+
             </div>
-            <table id="table-trap"  ui-formidable="fields"
+            <table id="table-cause"  ui-formidable="fields"
                    data-fields='fields'
                    data-url="cause/index"
                    data-search-fields="fields"
-                   data-toolbar="toolbar-trap"
+                   data-toolbar="toolbar-cause"
                    data-query-params="searchFieldsParams"
                    data-buttons="tableExtendButtons"
                    data-search-button-hide-group="true"

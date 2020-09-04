@@ -79,6 +79,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                     param.custom = {
                         "promotion_model_id":$scope.row.id,
                     };
+
                     return param;
                 };
 
@@ -104,6 +105,19 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                     param.custom = {
                         "cause.promotion_model_id":$scope.row.id,
                     };
+
+                    var trap_model_id = $('#trap_model_id').val();
+                    if (trap_model_id) {
+                        param.custom["cause.trap_model_id"] = trap_model_id;
+                    }
+                    var channel_model_id = $('#channel_model_id').val();
+                    if (channel_model_id) {
+                        param.custom["cause.channel_model_id"] = channel_model_id;
+                    }
+                    var ip_address = $('#ip_address').val();
+                    if (ip_address) {
+                        param.custom["cause.ip_address"] = ip_address;
+                    }
                     return param;
                 };
 
@@ -123,6 +137,38 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                 $scope.fields = data.fields;
                 angular.element("#tab-" +$scope.scenery.name).html($compile(data.content)($scope));
                 $scope.$broadcast("shownTable");
+
+                require(['selectpage'], function () {
+                    var options = {
+                        eAjaxSuccess: function (data) {
+                            data.list = data.list || [];
+                            data.totalRow = data.total || 0;
+                            return data;
+                        },
+                        eSelect:function(data) {
+                            $("#table-cause").bootstrapTable('refresh', {});
+                        },
+                        params:function(){
+                            var param = {
+                                'promotion_model_id':$scope.row.id
+                            };
+                            return param;
+                        },
+                        eClear:function(){
+                            $("#table-cause").bootstrapTable('refresh', {});
+                        }
+                    };
+                    $('#trap_model_id').selectPage(options);
+
+                    $.extend(options, { params:false});
+                    $('#channel_model_id').selectPage(options);
+
+                    $("#ip_address").on("blur", function(){
+                        $("#table-cause").bootstrapTable('refresh', {});
+                    });
+
+                });
+
             },
         },
 

@@ -24,6 +24,17 @@ export class BI {
     BI.envParams = params;
   }
 
+  public static action(param: actionParams): void {
+    if (!BI.isInit) {
+      if (BI.envParams.log) {
+        console.error("not call init yet!!");
+      }
+      return;
+    }
+
+    let reqParam:requestData = BI.initRequestParam("action", param);
+    BI.request({retryCnt:10,params:reqParam }, BI.defCallback);
+  }
   public static appOnce(param: appOnceParams): void {
     if (!BI.isInit) {
       if (BI.envParams.log) {
