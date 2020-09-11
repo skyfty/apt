@@ -9,12 +9,12 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                 };
                 var options = {
                     extend: {
-                        index_url: 'trap/index',
-                        add_url: 'trap/add',
-                        del_url: 'trap/del',
-                        multi_url: 'trap/multi',
-                        summation_url: 'trap/summation',
-                        table: 'trap',
+                        index_url: 'wealth/index',
+                        add_url: 'wealth/add',
+                        del_url: 'wealth/del',
+                        multi_url: 'wealth/multi',
+                        summation_url: 'wealth/summation',
+                        table: 'wealth',
                     },
                     buttons : [
                         {
@@ -24,7 +24,22 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                             },
                             classname: 'btn btn-xs  btn-success btn-magic btn-dialog btn-view',
                             icon: 'fa fa-folder-o',
-                            url: 'trap/view'
+                            url: 'wealth/view'
+                        },
+                        {
+                            name: 'convert',
+                            confirm: function(row, j){
+                                return row.form == "normal"?'确定要转换为标准资源吗':'确定要转换为普通资源吗';
+                            },
+                            classname: 'btn btn-xs  btn-success btn-magic btn-ajax',
+                            icon:  function(row, j){
+                                return row.form == "normal"?'fa fa-american-sign-language-interpreting':'fa fa fa-certificate';
+                            },
+                            refresh:true,
+                            url: function(row, j){
+                                var url = 'wealth/convert/form/' + (row.form == "normal"?'standard':'normal');
+                                return Fast.api.fixurl(Table.api.replaceurl(url, row, this))
+                            }
                         }
                     ]
                 };
@@ -34,9 +49,9 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
         },
         viewscape:function($scope, $compile,$parse, $timeout){
             $scope.refreshRow = function(){
-                $.ajax({url: "trap/index",dataType: 'json',
+                $.ajax({url: "wealth/index",dataType: 'json',
                     data:{
-                        custom: {"trap.id":$scope.row.id}
+                        custom: {"wealth.id":$scope.row.id}
                     },
                     success: function (data) {
                         if (data && data.rows && data.rows.length == 1) {

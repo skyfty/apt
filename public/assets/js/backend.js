@@ -200,7 +200,8 @@ define(['fast', 'template', 'moment'], function (Fast, Template, Moment) {
                     }
                 }
                 if (typeof options.confirm !== 'undefined') {
-                    Layer.confirm(options.confirm, function (index) {
+
+                    Layer.confirm( options.confirm, function (index) {
                         Backend.api.ajax(options, success, error);
                         Layer.close(index);
                     });

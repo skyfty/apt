@@ -9,12 +9,12 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                 };
                 var options = {
                     extend: {
-                        index_url: 'trap/index',
-                        add_url: 'trap/add',
-                        del_url: 'trap/del',
-                        multi_url: 'trap/multi',
-                        summation_url: 'trap/summation',
-                        table: 'trap',
+                        index_url: 'storehouse/index',
+                        add_url: 'storehouse/add',
+                        del_url: 'storehouse/del',
+                        multi_url: 'storehouse/multi',
+                        summation_url: 'storehouse/summation',
+                        table: 'storehouse',
                     },
                     buttons : [
                         {
@@ -24,7 +24,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                             },
                             classname: 'btn btn-xs  btn-success btn-magic btn-dialog btn-view',
                             icon: 'fa fa-folder-o',
-                            url: 'trap/view'
+                            url: 'storehouse/view'
                         }
                     ]
                 };
@@ -34,9 +34,9 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
         },
         viewscape:function($scope, $compile,$parse, $timeout){
             $scope.refreshRow = function(){
-                $.ajax({url: "trap/index",dataType: 'json',
+                $.ajax({url: "storehouse/index",dataType: 'json',
                     data:{
-                        custom: {"trap.id":$scope.row.id}
+                        custom: {"storehouse.id":$scope.row.id}
                     },
                     success: function (data) {
                         if (data && data.rows && data.rows.length == 1) {
