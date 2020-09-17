@@ -55,7 +55,6 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
 
         bindevent:function($scope){
             var self = this;
-
             Form.api.bindevent($("form[role=form]"), $scope.submit);
             require(['selectpage'], function () {
                 for (var i in self.initParam) {
@@ -90,6 +89,8 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                     $("#data-view").html($compile(html)($scope));
                     $timeout(function(){
                         self.bindevent($scope, $timeout,$compile);
+
+
                     });
                 });
             });

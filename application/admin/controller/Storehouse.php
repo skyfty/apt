@@ -153,7 +153,7 @@ class Storehouse extends Cosmetic
             return array("content"=>$content, "fields"=>$fields);
         } else {
             $sceneryList = [];
-            $sceneryWhere = array_merge(['model_id' => $cosmeticModel->id, 'pos' => array("in", $this->viewScenerys)]);
+            $sceneryWhere = ['model_id' => $cosmeticModel->id, 'pos' => array("in", $this->viewScenerys)];
 
             foreach (Scenery::where($sceneryWhere)->cache(!App::$debug)->order("weigh", "ASC")->select() as $k=>$v) {
                 if ($v['name'] == "estate"){

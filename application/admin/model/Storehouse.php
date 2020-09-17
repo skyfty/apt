@@ -10,6 +10,10 @@ use app\admin\library\Auth;
 
 class Storehouse extends \app\common\model\Storehouse
 {
+    protected $append = [
+        "estate_info"
+    ];
+
 
     protected static function init()
     {
@@ -46,4 +50,27 @@ class Storehouse extends \app\common\model\Storehouse
         });
     }
 
+    public function getEstateInfoAttr($value, $data)
+    {
+        $estate_info = [];
+        $estate = $this->estate;
+        if ($estate) {
+            $type_scenery = Scenery::where(["model_table"=>$data['estate_type'],"pos"=>'view'])->cache(!App::$debug)->order("weigh", "ASC")->find();
+            $where =array(
+                'scenery_id'=>$type_scenery['id']
+            );
+            $fields = Sight::with('fields')->cache(!App::$debug)->where($where)->order("weigh", "asc")->select();
+            foreach($fields as $ff) {
+                if (isset($estate[$ff['name']])) {
+                    $val = $estate[$ff['name']];
+                    if ($ff['type'] == "select") {
+                        $val = $ff['content_list'][$val];
+                    }
+                    $estate_info[] = ['title'=>$ff['title'], 'value'=>$val];
+                }
+            }
+
+        }
+        return $estate_info;
+    }
 }

@@ -179,6 +179,24 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                     return param;
                 };
 
+
+                $scope.formaterColumn = function(j, data) {
+                    if (data.field == "estate_id") {
+                        data.formatter = function (value, row, index) {
+                            var html = "";
+                            if (typeof row['estate_info'] != "undefined") {
+                                for(var i = 0; i < row['estate_info'].length; ++i) {
+                                    var estate_info = row['estate_info'][i];
+                                    html += estate_info['title'] + ": " + estate_info['value'] + ", ";
+                                }
+                            }
+                            return html;
+                        }
+                    }
+                    return data;
+                };
+
+
                 Table.api.init({
                     buttons : [
                         {
