@@ -214,6 +214,33 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                 angular.element("#tab-" +$scope.scenery.name).html($compile(data.content)($scope));
                 $scope.$broadcast("shownTable");
             },
+            stuff: function($scope, $compile,$timeout, data){
+                $scope.searchFieldsParams = function(param) {
+                    param.custom = {
+                        "promotion_model_id":$scope.row.id,
+                    };
+
+                    return param;
+                };
+
+
+                Table.api.init({
+                    buttons : [
+                        {
+                            name: 'view',
+                            title: function(row, j){
+                                return __(' %s', row.id);
+                            },
+                            classname: 'btn btn-xs btn-success btn-magic btn-dialog btn-view',
+                            icon: 'fa fa-folder-o',
+                            url: 'stuff/view'
+                        }
+                    ]
+                });
+                $scope.fields = data.fields;
+                angular.element("#tab-" +$scope.scenery.name).html($compile(data.content)($scope));
+                $scope.$broadcast("shownTable");
+            },
         },
 
         bindevent:function($scope){
