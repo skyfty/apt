@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using cloud;
+using Cloud;
 
 public class demo : MonoBehaviour
 {
@@ -12,8 +12,8 @@ public class demo : MonoBehaviour
         env.channel = "google play";
         env.game = "2";
         env.log = true;
-        cloud.BI.Instance().init(env);
-        cloud.BI.Instance().appOnce("SignIn");
+        Cloud.BI.Instance().init(env);
+        Cloud.BI.Instance().appOnce("SignIn");
     }
 
     // Update is called once per frame

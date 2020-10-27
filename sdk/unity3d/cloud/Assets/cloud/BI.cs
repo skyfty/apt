@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace cloud
+namespace Cloud
 {
     public class InitParams
     {
