@@ -50,4 +50,18 @@ class Storehouse extends Cosmetic
     public function music() {
         return $this->hasOne('music','id','estate_id')->joinType("LEFT")->setEagerlyType(0);
     }
+
+    public function miniatureblock() {
+        return $this->hasOne('miniatureblock','id','estate_id')->joinType("LEFT")->setEagerlyType(0);
+    }
+
+    public function miniaturemodel() {
+        return $this->hasOne('miniaturemodel','id','estate_id')->joinType("LEFT")->setEagerlyType(0);
+    }
+    public function normalmap() {
+        return $this->hasOne('normalmap','id','estate_id')->joinType("LEFT")->setEagerlyType(0);
+    }
+    public function normalmodel() {
+        return $this->hasOne('normalmodel','id','estate_id')->joinType("LEFT")->setEagerlyType(0);
+    }
 }
