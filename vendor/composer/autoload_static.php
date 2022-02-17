@@ -22,6 +22,7 @@ class ComposerStaticInitd15e2bd93c7f83bfccc320b8bde0c0e9
     public static $prefixLengthsPsr4 = array (
         't' => 
         array (
+            'think\\mongo\\' => 12,
             'think\\helper\\' => 13,
             'think\\composer\\' => 15,
             'think\\captcha\\' => 14,
@@ -87,6 +88,10 @@ class ComposerStaticInitd15e2bd93c7f83bfccc320b8bde0c0e9
     );
 
     public static $prefixDirsPsr4 = array (
+        'think\\mongo\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/topthink/think-mongo/src',
+        ),
         'think\\helper\\' => 
         array (
             0 => __DIR__ . '/..' . '/topthink/think-helper/src',
@@ -258,6 +263,7 @@ class ComposerStaticInitd15e2bd93c7f83bfccc320b8bde0c0e9
         'MYANMAR' => __DIR__ . '/..' . '/mpdf/mpdf/classes/myanmar.php',
         'OTLdump' => __DIR__ . '/..' . '/mpdf/mpdf/classes/otl_dump.php',
         'PDFBarcode' => __DIR__ . '/..' . '/mpdf/mpdf/classes/barcode.php',
+        'PHPAngular\\Angular' => __DIR__ . '/..' . '/php-angular/php-angular/src/Angular.php',
         'PHPMailer' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.phpmailer.php',
         'PHPMailerOAuth' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.phpmaileroauth.php',
         'PHPMailerOAuthGoogle' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.phpmaileroauthgoogle.php',
@@ -284,6 +290,7 @@ class ComposerStaticInitd15e2bd93c7f83bfccc320b8bde0c0e9
         'otl' => __DIR__ . '/..' . '/mpdf/mpdf/classes/otl.php',
         'pdf_context' => __DIR__ . '/..' . '/setasign/fpdi/pdf_context.php',
         'phpmailerException' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.phpmailer.php',
+        'think\\view\\driver\\Angular' => __DIR__ . '/..' . '/topthink/think-angular/src/Driver.php',
         'tocontents' => __DIR__ . '/..' . '/mpdf/mpdf/classes/tocontents.php',
         'wmf' => __DIR__ . '/..' . '/mpdf/mpdf/classes/wmf.php',
     );

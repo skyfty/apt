@@ -38,20 +38,6 @@ class Customer extends Cosmetic
         return array("content"=>$content, "fields"=>$fields);
     }
 
-
-    public function syncavatar($ids) {
-        $row = $this->model->find($ids);
-        if (!$row)
-            $this->error(__('No Results were found'));
-        $result = $row->save(['avatar'=>$row['faceimage']]);
-        if ($result !== false) {
-            $this->success();
-        } else {
-            $this->error($row->getError());
-        }
-    }
-
-
     protected function spectacle($model) {
         $branch_model_id = $this->request->param("branch_model_id");
         if ($branch_model_id == null) {

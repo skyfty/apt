@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "70cc7ec5ecf833bd55b6ad51640960e3",
+    "content-hash": "5d10d64ec158fe9a619ba87b93c328af",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -708,12 +708,12 @@
             "version": "3.3.26",
             "source": {
                 "type": "git",
-                "url": "https://github.com/overtrue/wechat.git",
+                "url": "https://github.com/w7corp/easywechat.git",
                 "reference": "62548ca53af47179e43d449d9addfd8574e92162"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/overtrue/wechat/zipball/62548ca53af47179e43d449d9addfd8574e92162",
+                "url": "https://api.github.com/repos/w7corp/easywechat/zipball/62548ca53af47179e43d449d9addfd8574e92162",
                 "reference": "62548ca53af47179e43d449d9addfd8574e92162",
                 "shasum": ""
             },
@@ -968,6 +968,43 @@
             "description": "A library to read, parse and export to PDF SVG files.",
             "homepage": "https://github.com/PhenX/php-svg-lib",
             "time": "2019-09-11T20:02:13+00:00"
+        },
+        {
+            "name": "php-angular/php-angular",
+            "version": "2.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-angular/php-angular.git",
+                "reference": "eb25d001cfb6bf291d009024637c32fc5bba5b26"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-angular/php-angular/zipball/eb25d001cfb6bf291d009024637c32fc5bba5b26",
+                "reference": "eb25d001cfb6bf291d009024637c32fc5bba5b26",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": {
+                    "PHPAngular\\Angular": "src/Angular.php"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "玩具机器人",
+                    "email": "zhaishuaigan@qq.com"
+                }
+            ],
+            "description": "php angular view engine",
+            "homepage": "http://kancloud.cn/shuai/php-angular",
+            "time": "2018-08-31T10:17:25+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
@@ -1896,6 +1933,44 @@
             "time": "2018-05-11T08:02:47+00:00"
         },
         {
+            "name": "topthink/think-angular",
+            "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/top-think/think-angular.git",
+                "reference": "6a9c00a6943c8d660d173ac04f2b79e7cf1cb76a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/top-think/think-angular/zipball/6a9c00a6943c8d660d173ac04f2b79e7cf1cb76a",
+                "reference": "6a9c00a6943c8d660d173ac04f2b79e7cf1cb76a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "php-angular/php-angular": "2.0.*"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": {
+                    "think\\view\\driver\\Angular": "src/Driver.php"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "玩具机器人",
+                    "email": "zhaishuaigan@qq.com"
+                }
+            ],
+            "description": "think angular view engine",
+            "homepage": "http://kancloud.cn/shuai/php-angular",
+            "time": "2019-03-06T07:53:52+00:00"
+        },
+        {
             "name": "topthink/think-captcha",
             "version": "v1.0.7",
             "source": {
@@ -2047,6 +2122,40 @@
                 }
             ],
             "time": "2017-05-27T06:58:09+00:00"
+        },
+        {
+            "name": "topthink/think-mongo",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/top-think/think-mongo.git",
+                "reference": "b02a65b7864387bd43d8a266a8c1f886ff0638b9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/top-think/think-mongo/zipball/b02a65b7864387bd43d8a266a8c1f886ff0638b9",
+                "reference": "b02a65b7864387bd43d8a266a8c1f886ff0638b9",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "think\\mongo\\": "src"
+                },
+                "files": []
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "liu21st",
+                    "email": "liu21st@gmail.com"
+                }
+            ],
+            "description": "mongodb driver for thinkphp5",
+            "time": "2016-09-22T11:18:49+00:00"
         },
         {
             "name": "zendframework/zend-escaper",

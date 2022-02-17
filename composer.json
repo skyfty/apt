@@ -29,7 +29,9 @@
         "topthink/think-image": "^1.0",
         "dompdf/dompdf": "^0.8.3",
         "owner888/phpspider": "v2.1.6",
-        "mpdf/mpdf": "^6.1"
+        "mpdf/mpdf": "^6.1",
+        "topthink/think-mongo": "1.0.2",
+        "topthink/think-angular": "2.0.2"
 
     },
     "config": {

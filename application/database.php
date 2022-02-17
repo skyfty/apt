@@ -13,6 +13,7 @@
 use think\Env;
 
 return [
+
     // 数据库类型
     'type'            => Env::get('database.type', 'mysql'),
     // 服务器地址
@@ -53,4 +54,5 @@ return [
     'datetime_format' => false,
     // 是否需要进行SQL性能分析
     'sql_explain'     => false,
+
 ];

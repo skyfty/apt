@@ -32,6 +32,7 @@ return array(
     'MYANMAR' => $vendorDir . '/mpdf/mpdf/classes/myanmar.php',
     'OTLdump' => $vendorDir . '/mpdf/mpdf/classes/otl_dump.php',
     'PDFBarcode' => $vendorDir . '/mpdf/mpdf/classes/barcode.php',
+    'PHPAngular\\Angular' => $vendorDir . '/php-angular/php-angular/src/Angular.php',
     'PHPMailer' => $vendorDir . '/phpmailer/phpmailer/class.phpmailer.php',
     'PHPMailerOAuth' => $vendorDir . '/phpmailer/phpmailer/class.phpmaileroauth.php',
     'PHPMailerOAuthGoogle' => $vendorDir . '/phpmailer/phpmailer/class.phpmaileroauthgoogle.php',
@@ -58,6 +59,7 @@ return array(
     'otl' => $vendorDir . '/mpdf/mpdf/classes/otl.php',
     'pdf_context' => $vendorDir . '/setasign/fpdi/pdf_context.php',
     'phpmailerException' => $vendorDir . '/phpmailer/phpmailer/class.phpmailer.php',
+    'think\\view\\driver\\Angular' => $vendorDir . '/topthink/think-angular/src/Driver.php',
     'tocontents' => $vendorDir . '/mpdf/mpdf/classes/tocontents.php',
     'wmf' => $vendorDir . '/mpdf/mpdf/classes/wmf.php',
 );
