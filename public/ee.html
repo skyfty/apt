@@ -4,11 +4,21 @@
 
     <script>
         $(document).ready(function(){
+            $("#login").click(function(){
+                $.post("http://oss.touchmagic.cn/index/login",
+                    {
+                        username:"18910600417",
+                        password:"123456",
+                    },
+                    function(data,status){
+                    });
+            });
+
             $("#set").click(function(){
-                $.post("http://oss.touchmagic.cn/index/set?token=6bac9b6d-35fb-4d23-ae4e-71bbf6c3e82a",
+                $.post("http://oss.touchmagic.cn/index/set?token=bfd0d5c0-eef0-4c5f-8129-17b61ecd5007",
                     {
                         name:"Donald Duck",
-                        city:"22222222",
+                        city:"gggggggggggggggggggggggggggggggggggg",
                         kkkk:{gggg:23}
                     },
                     function(data,status){
@@ -17,12 +27,8 @@
             });
 
             $("#get").click(function(){
-                $.post("http://oss.touchmagic.cn/index/get?token=6bac9b6d-35fb-4d23-ae4e-71bbf6c3e82a",
+                $.post("http://oss.touchmagic.cn/index/get?token=bfd0d5c0-eef0-4c5f-8129-17b61ecd5007",
                     {
-                        name:"Donald Duck",
-                        city:"33333333333",
-                        cityff:"",
-                        kkkk:{gggg:23}
                     },
                     function(data,status){
                     console.log(data);
@@ -34,6 +40,7 @@
 </head>
 
 <body>
+<button id="login">login</button>
 
 <button id="set">set</button>
 <button id="get">get</button>
