@@ -37,7 +37,7 @@ class Index extends Api
             $oss = new Oss;
         }
         $data = $this->request->post();
-        $data['userid'] = $user['id'];
+        $data['user_id'] = $user['id'];
         $result = $oss->save($data);
         if ($result !== false) {
             $this->success(__('success'));
@@ -54,7 +54,7 @@ class Index extends Api
         $oss = Oss::get($user['id']);
         if ($oss) {
             $data = $oss->getData();
-            unset($data["userid"], $data["_id"]);
+            unset($data["user_id"], $data["_id"]);
         } else {
             $data = [];
         }

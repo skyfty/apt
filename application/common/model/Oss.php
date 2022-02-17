@@ -6,7 +6,7 @@ use think\Model;
 
 class Oss extends Model
 {
-    protected $pk = 'userid';
+    protected $pk = 'user_id';
 
     protected $connection = [
         // 数据库类型
