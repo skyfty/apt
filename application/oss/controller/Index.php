@@ -40,9 +40,8 @@ class Index extends Api
         $data['userid'] = $user['id'];
         $result = $oss->save($data);
         if ($result !== false) {
-            $this->success();
-        }
-        else {
+            $this->success(__('success'));
+        } else {
             $this->error($oss->getError());
         }
     }
