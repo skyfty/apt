@@ -13,7 +13,7 @@ use think\Validate;
 class Index extends Api
 {
     protected $noNeedLogin = ['login'];
-    protected $noNeedRight = ['login', 'set', 'get'];
+    protected $noNeedRight = ['login', 'set', 'get', 'logout'];
 
     /**
      * 首页
@@ -87,4 +87,10 @@ class Index extends Api
             $this->error($msg);
         }
     }
+
+    public function logout() {
+        $this->auth->logout();
+        $this->success(__('success'));
+    }
+
 }
