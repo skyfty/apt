@@ -15,19 +15,24 @@
             });
 
             $("#set").click(function(){
-                $.post("http://oss.touchmagic.cn/index/set?token=bfd0d5c0-eef0-4c5f-8129-17b61ecd5007",
-                    {
+                $.ajax({
+                    url:"http://oss.touchmagic.cn/index/set?token=a99221ff-a26d-43de-953d-6097ff21ec29",
+                    dataType: 'json',
+                    type:"post",
+                    contentType: 'application/json',
+                    data: JSON.stringify( {
                         name:"Donald Duck",
                         city:"gggggggggggggggggggggggggggggggggggg",
-                        kkkk:{gggg:23}
-                    },
-                    function(data,status){
-                    console.log(data);
-                    });
+                        kkkk:{gggg:23,ee:[12,23,23]}
+                    }),
+                    success: function(){
+                        console.log("lskdfj");
+                    }
+                })
             });
 
             $("#get").click(function(){
-                $.post("http://oss.touchmagic.cn/index/get?token=bfd0d5c0-eef0-4c5f-8129-17b61ecd5007",
+                $.post("http://oss.touchmagic.cn/index/get?token=a99221ff-a26d-43de-953d-6097ff21ec29",
                     {
                     },
                     function(data,status){

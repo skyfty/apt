@@ -4,6 +4,7 @@ namespace app\oss\controller;
 
 use app\common\controller\Api;
 use app\common\model\Oss;
+use think\Log;
 use think\Request;
 use think\Validate;
 
@@ -36,11 +37,12 @@ class Index extends Api
         if (!$oss) {
             $oss = new Oss;
         }
+
         $data = $this->request->post();
         $data['user_id'] = $user['id'];
         $result = $oss->save($data);
         if ($result !== false) {
-            $this->success(__('success'));
+            $this->success(__('success'),$data);
         } else {
             $this->error($oss->getError());
         }
