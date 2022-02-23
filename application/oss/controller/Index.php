@@ -64,8 +64,8 @@ class Index extends Api
     }
 
     public function login() {
-        $username = $this->request->post('username');
-        $password = $this->request->post('password');
+        $username = $this->request->param('username');
+        $password = $this->request->param('password');
         $rule = [
             'username'  => 'require|length:3,30',
             'password'  => 'require|length:3,30',
