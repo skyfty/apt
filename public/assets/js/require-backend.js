@@ -159,7 +159,7 @@ require.config({
                 'css!../libs/jquery-jsoneditor/jsoneditor.css',
             ]
         },
-	'datetimepicker-lang': [
+	    'datetimepicker-lang': [
             'datetimepicker',
         ],
         'bootstrap-treegrid': {

@@ -1,33 +1,168 @@
 <!DOCTYPE html>
 <html>
 
-    <head>
-        <meta charset="utf-8">
-        <title>{$title|default=''}</title>
-        <meta name="renderer" content="webkit">
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<head>
+    <meta charset="utf-8">
+    <title>{$title|default=''}</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-        <link rel="shortcut icon" href="__CDN__/assets/img/favicon.ico" />
-        <!-- Loading Bootstrap -->
-        <link href="__CDN__/assets/css/poke/index.css?v={$site.version}" rel="stylesheet">
+    <link rel="shortcut icon" href="__CDN__/assets/img/favicon.ico" />
+    <!-- Loading Bootstrap -->
+    <link href="__CDN__/assets/css/poke.css?v={$site.version}" rel="stylesheet">
 
-        <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
-        <!--[if lt IE 9]>
-        <script src="__CDN__/assets/js/html5shiv.js"></script>
-        <script src="__CDN__/assets/js/respond.min.js"></script>
-        <![endif]-->
-        <script type="text/javascript">
-            var require = {
-                config:  {$config|json_encode}
-            };
-        </script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+    <!--[if lt IE 9]>
+    <script src="__CDN__/assets/js/html5shiv.js"></script>
+    <script src="__CDN__/assets/js/respond.min.js"></script>
+    <![endif]-->
+    <script type="text/javascript">
+        var require = {
+            config:  {$config|json_encode}
+        };
+    </script>
+</head>
 
-    </head>
+<body id="page-top">
+<div class="row">
+    <div  class="col-xs-1">
+        <ul id="treeDemo" class="ztree"></ul>
+    </div>
+    <div  class="col-xs-9" >
+        <div id="containment-wrapper">
+            <div id="card-wrapper">
+{/*                <div class="card suitdiamonds front ui-widget-content" data-number="A" data-color="suitdiamonds" style="z-index: 10;left:60px;top:100px">*/}
+{/*                    <div>*/}
+{/*                        <p>A</p>*/}
+{/*                    </div>*/}
+{/*                </div>*/}
 
-    <body id="page-top">
+{/*                <div class="card suithearts back ui-widget-content" data-number="A" data-color="suithearts" style="z-index: 10;left:230px;top:100px">*/}
+{/*                    <div>*/}
+{/*                        <p>A</p>*/}
+{/*                    </div>*/}
+{/*                </div>*/}
 
-        网站建设中....
-    </body>
+{/*                <div class="card suitclubs ui-widget-content" data-number="A" data-color="suitclubs" style="z-index: 10;left:400px;top:120px">*/}
+{/*                    <div>*/}
+{/*                        <p>A</p>*/}
+{/*                    </div>*/}
+{/*                </div>*/}
+
+{/*                <div class="card suitspades ui-widget-content" data-number="A" data-color="suitspades" style="z-index: 10;left:720px;top:120px">*/}
+{/*                    <div>*/}
+{/*                        <p>A</p>*/}
+{/*                    </div>*/}
+{/*                </div>*/}
+
+            </div>
+
+            <div id="underpan-wrapper">
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <div  class="col-xs-2">
+
+        <div id="panel-card-inspection" class="panel-inspection">
+            <div>
+                <fieldset>
+                    <label for="name">数字</label>
+                    <select class="form-control" id="card-number">
+                        <option value="A">A</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="J">J</option>
+                        <option value="Q">Q</option>
+                        <option value="K">K</option>
+                    </select>
+                    <label for="email">花色</label>
+                    <select class="form-control" id="card-color">
+                        <option value="suitdiamonds">♦</option>
+                        <option value="suithearts">♥</option>
+                        <option value="suitclubs">♣</option>
+                        <option value="suitspades">♠</option>
+                    </select>
+                    <label for="email">方向</label>
+                    <select class="form-control" id="card-direction">
+                        <option value="front">正面</option>
+                        <option value="back">反面</option>
+                    </select>
+                    <label for="email">位置</label>
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label for="card-left">X</label><input type="number" class="form-control" id="card-left"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="card-top">Y</label><input type="number" class="form-control" id="card-top"/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="card-zindex">Z</label><input type="number" class="form-control" id="card-zindex"/>
+                        </div>
+
+                    </form>
+
+                </fieldset>
+            </div>
+        </div>
+        <div id="panel-level-inspection" class="panel-inspection">
+            <form>
+                <fieldset>
+                    <label for="name">数字</label>
+                    <select class="form-control">
+                        <option value="A">A</option>
+                        <option value="2">2</option>
+
+                    </select>
+                    <label for="email">花色</label>
+                    <select class="form-control">
+                        <option value="suitdiamonds">♦</option>
+                    </select>
+                </fieldset>
+            </form>
+        </div>
+
+        <div id="panel-underpan-inspection" class="panel-inspection">
+            <form>
+                <fieldset>
+                    <label for="name">数字</label>
+                    <select class="form-control">
+                        <option value="A">A</option>
+                        <option value="2">2</option>
+
+                    </select>
+                    <label for="email">花色</label>
+                    <select class="form-control">
+                        <option value="suitdiamonds">♦</option>
+                    </select>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+
+
+</div>
+
+</body>
 
 </html>
+
+<script id="tmpl-card" type="text/html">
+    <div class="card <%=color%> <%=direction%> ui-widget-content" data-number="<%=number%>" data-color="<%=color%>">
+        <div>
+            <p><%=number%></p>
+        </div>
+    </div>
+</script>
 <script src="__CDN__/assets/js/require{$Think.config.app_debug?'':'.min'}.js" data-main="__CDN__/assets/js/require-poke{$Think.config.app_debug?'':'.min'}.js?v={$site.version}"></script>

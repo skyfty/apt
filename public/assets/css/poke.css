@@ -1,0 +1,98 @@
+@import url("../libs/bootstrap/dist/css/bootstrap.min.css");
+@import url("../libs/font-awesome/css/font-awesome.min.css");
+@import url("../libs/toastr/toastr.min.css");
+@import url("../libs/fastadmin-layer/dist/theme/default/layer.css");
+@import url("../libs/nice-validator/dist/jquery.validator.css");
+@import url("../libs/jquery-ui/themes/ui-lightness/jquery-ui.min.css");
+@import url("../libs/jquery-ui/themes/ui-lightness/jquery-ui.min.css");
+@import url("animate.css");
+
+
+#containment-wrapper{}
+#card-wrapper {height:560px;border:2px solid #ccc; padding: 10px; }
+#underpan-wrapper {
+    height:130px;
+    border:2px solid #ccc;
+    padding: 2px;
+    overflow-x:auto;
+    white-space: nowrap
+}
+
+.panel-inspection {
+    display: none;
+}
+
+.card {
+
+    width: 70px;
+    height: 100px;
+    border-radius: 10px;
+    background: #fff;
+    cursor: move;
+}
+
+.card.card-shadow {
+    -webkit-box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
+    box-shadow: 3px 3px 7px rgba(0,0,0,0.3);
+}
+
+.card.back {
+    background: #a7a4a4;
+}
+
+
+.card p {
+    text-align: center;
+    font: 40px/100px Georgia, Times New Roman, serif;
+}
+
+#card-wrapper .card {
+    position: absolute;
+
+}
+#underpan-wrapper .card {
+    position:relative;
+    float: left;
+    z-index: 8;
+    margin: 2px;
+    display: inline-block
+}
+
+#underpan-wrapper .card.card-selected {
+    z-index: 10;
+}
+
+
+.suitdiamonds:before, .suitdiamonds:after {
+    content: "♦";
+    color: #ff0000;
+}
+
+.suithearts:before, .suithearts:after {
+    content: "♥";
+    color: #ff0000;
+}
+
+.suitclubs:before, .suitclubs:after {
+    content: "♣";
+    color: #000;
+}
+
+.suitspades:before, .suitspades:after {
+    content: "♠";
+    color: #000;
+}
+
+div[class*='suit']:before {
+    position: absolute;
+    font-size: 29px;
+    left: 5px;
+    top: 0px;
+}
+
+div[class*='suit']:after {
+    position: absolute;
+    font-size: 29px;
+    right: 5px;
+    bottom: 0px;
+}

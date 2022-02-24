@@ -9,6 +9,7 @@ require.config({
         'layer',
         'toastr',
         'fast',
+        'addtabs',
         'form'
     ],
     paths: {
@@ -18,6 +19,7 @@ require.config({
         'validator': 'require-validator',
         'poke': 'poke',
         'jquery': '../libs/jquery/dist/jquery.min',
+        'jquery-ui': '../libs/jquery-ui/jquery-ui.min',
         'bootstrap': '../libs/bootstrap/dist/js/bootstrap.min',
         'bootstrap-select': '../libs/bootstrap-select/dist/js/bootstrap-select',
         'slimscroll': '../libs/jquery-slimscroll/jquery.slimscroll',
@@ -35,12 +37,22 @@ require.config({
         'flexible': 'customer/flexible',
         'iscroll': '../libs/iscroll/build/iscroll',
         'navbarscroll': 'navbarscroll',
+        'addtabs': '../libs/fastadmin-addtabs/jquery.addtabs',
+        'ztree': '../libs/zTree/js/jquery.ztree.all',
+        'jsoneditor': '../libs/jquery-jsoneditor/jquery.jsoneditor.min',
+        'x-editable': '../libs/x-editable/dist/bootstrap3-editable/js/bootstrap-editable',
+        'dragsort': '../libs/fastadmin-dragsort/jquery.dragsort',
+
     },
     // shim依赖配置
     shim: {
         'addons': ['poke'],
         'bootstrap': ['jquery'],
         'slimscroll': {
+            deps: ['jquery'],
+            exports: '$.fn.extend'
+        },
+        'jquery-sortable': {
             deps: ['jquery'],
             exports: '$.fn.extend'
         },
@@ -51,6 +63,20 @@ require.config({
         'validator-lang': ['validator-core'],
         'qtip2': ['css!../libs/qtip2/jquery.qtip.css',],
         'swiper': ['css!../libs/swiper/dist/css/swiper.min.css',],
+        'x-editable':{
+            deps: ['css!../libs/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css','bootstrap'],
+        },
+        'ztree': {
+            deps: [
+                'css!../libs/zTree/css/zTreeStyle/zTreeStyle.css',
+            ]
+        },
+        'jsoneditor': {
+            deps: [
+                '../libs/jquery-jsoneditor/json2',
+                'css!../libs/jquery-jsoneditor/jsoneditor.css',
+            ]
+        },
         'raty': ['css!../libs/raty/lib/jquery.raty.css',]
     },
     baseUrl: requirejs.s.contexts._.config.config.site.cdnurl + '/assets/js/', //资源基础路径
@@ -63,7 +89,7 @@ require.config({
     charset: 'utf-8' // 文件编码
 });
 
-require(['jquery', 'bootstrap'], function ($, undefined) {
+require(['jquery','jquery-ui', 'x-editable', 'bootstrap'], function ($, undefined) {
     //初始配置
     var Config = requirejs.s.contexts._.config.config;
     //将Config渲染到全局
@@ -77,7 +103,7 @@ require(['jquery', 'bootstrap'], function ($, undefined) {
 
     // 初始化
     $(function () {
-        require(['fast','poke'], function (Fast, Poke) {
+        require(['fast','poke', 'addons'], function (Fast, Poke) {
             if (Config.jsname) {
                 require([Config.jsname], function (Controller) {
                     if (Controller[Config.actionname]) {

@@ -36,6 +36,8 @@ define(['template', 'moment', 'fast'], function (Template, Moment, Fast) {
     window.Moment = Moment;
     //将Staff渲染至全局,以便于在子框架中调用
     window.Poke = Poke;
+
     Poke.init();
+
     return Poke;
 });
