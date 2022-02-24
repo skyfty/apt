@@ -7,7 +7,9 @@
 @import url("../libs/jquery-ui/themes/ui-lightness/jquery-ui.min.css");
 @import url("animate.css");
 
-
+.panel-stage-wrapper {
+    height: 690px;
+}
 #containment-wrapper{}
 #card-wrapper {height:560px;border:2px solid #ccc; padding: 10px; }
 #underpan-wrapper {
@@ -95,4 +97,15 @@ div[class*='suit']:after {
     font-size: 29px;
     right: 5px;
     bottom: 0px;
+}
+
+.panel-tree-level-wrapper {
+    height: 690px;
+    border: solid 1px grey;
+}
+
+
+.panel-inspection-wrapper {
+    height: 690px;
+    border: solid 1px grey;
 }

@@ -28,21 +28,38 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                 }
             });
 
-            $( "#underpan-wrapper .card" ).on("click", function(){
-                $("#underpan-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
-                $(this).addClass("card-shadow card-selected").updateUnderpanInspection();
-            });
             $("#card-number,#card-color,#card-direction,#card-zindex,#card-left,#card-top").on("change", function(){
                 Controller.api.updateCardAttribute();
             });
 
             var zTreeObj;
             var setting = {
+                edit: {
+                    enable: true,
+                    editNameSelectAll: true,
+                    showRemoveBtn: function (treeId, treeNode) {
+                        return treeNode.getParentNode() == null;
+                    },
+                    showRenameBtn: function(treeId, treeNode) {
+                        return treeNode.getParentNode() == null;
+                    }
+                },
+                data: {
+                    simpleData: {
+                        enable: true
+                    }
+                },
                 callback:{
                     onClick:function(event, treeId, treeNode) {
                         $(".panel-inspection").hide();
                         $("#panel-level-inspection").show();
                         $("#card-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
+                    },
+                    beforeDrag: function (treeId, treeNodes, targetNode, moveType) {
+                        return treeNodes[0].drag;
+                    },
+                    beforeDrop: function (treeId, treeNodes, targetNode, moveType) {
+                        return targetNode.getParentNode() == null;
                     }
                 }
             };
@@ -55,11 +72,16 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                         {
                             name:"台桌",
                             open:true,
+                            drag:false,
                             children:[
                                 {
+                                    drag:false,
+                                    dropInner:false,
                                     name:"A"
                                 },
                                 {
+                                    drag:false,
+                                    dropInner:false,
                                     name:"2"
                                 }
                             ]
@@ -67,11 +89,14 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                         {
                             name:"底牌",
                             open:true,
+                            drag:false,
                             children:[
                                 {
+                                    drag:false,
                                     name:"A"
                                 },
                                 {
+                                    drag:false,
                                     name:"2"
                                 }
                             ]
@@ -84,22 +109,28 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                     children:[
                         {
                             name:"台桌",
+                            drag:false,
                             children:[
                                 {
+                                    drag:false,
                                     name:"A"
                                 },
                                 {
+                                    drag:false,
                                     name:"2"
                                 }
                             ]
                         },
                         {
                             name:"底牌",
+                            drag:false,
                             children:[
                                 {
+                                    drag:false,
                                     name:"A"
                                 },
                                 {
+                                    drag:false,
                                     name:"2"
                                 }
                             ]
@@ -107,7 +138,12 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                     ]
                 },
             ];
-            zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+            var zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+
+            $("#add-level").on("click", function(){
+                var newNode = {name:"newNode1"};
+                newNode = zTreeObj.addNodes(null, newNode);
+            });
 
             var n1 = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
             var n2 = ["suitdiamonds","suithearts","suitclubs","suitspades"]
@@ -115,10 +151,14 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
             n1.forEach(function(v1){
                 n2.forEach(function(v2){
                     var content = Template("tmpl-card", {number: v1, color: v2});
-                    $("#underpan-wrapper").append(content);
+                    var ele = $("#underpan-wrapper").append(content);
                 });
             });
 
+            $( "#underpan-wrapper .card" ).on("click", function(){
+                $("#underpan-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
+                $(this).addClass("card-shadow card-selected").updateUnderpanInspection();
+            });
         },
 
         api: {
