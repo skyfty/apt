@@ -32,4 +32,5 @@ class Ajax extends Poke
         return action('api/common/upload');
     }
 
+
 }

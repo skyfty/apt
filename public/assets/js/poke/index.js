@@ -28,11 +28,10 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                 }
             });
 
-            $("#card-number,#card-color,#card-direction,#card-zindex,#card-left,#card-top").on("change", function(){
+            $("#card-name,#card-color,#card-direction,#card-zindex,#card-left,#card-top").on("change", function(){
                 Controller.api.updateCardAttribute();
             });
 
-            var zTreeObj;
             var setting = {
                 edit: {
                     enable: true,
@@ -52,11 +51,49 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                 callback:{
                     onClick:function(event, treeId, treeNode) {
                         $(".panel-inspection").hide();
-                        $("#panel-level-inspection").show();
+                        if (typeof treeNode.rowid != "undefined") {
+                            $("#panel-level-inspection").show();
+                            $("#underpan-wrapper").html("");
+                            $("#card-wrapper").html("");
+
+                            var data = JSON.parse(treeNode.content);
+                            for(var i in data){
+                                var content = Template("tmpl-card",data[i]);
+                                var ele = $("#underpan-wrapper").append(content);
+                            }
+                        }
                         $("#card-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
                     },
+                    beforeRemove: function (treeId, treeNode) {
+                        return confirm("确认删除 节点 -- " + treeNode.name + " 吗？");
+                    },
+                    onRemove: function (event, treeId, treeNode) {
+                        Fast.api.ajax({
+                            url: "index/del",
+                            data: {id: treeNode.rowid}
+                        });
+                    },
+                    beforeRename: function(treeId, treeNode, newName, isCancel) {
+                        if (newName.length == 0) {
+                            setTimeout(function() {
+                                var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                                zTree.cancelEditName();
+                                alert("节点名称不能为空.");
+                            }, 0);
+                            return false;
+                        }
+                        return true;
+                    },
+                    onRename: function (e, treeId, treeNode, isCancel) {
+                        if (isCancel) return;
+                        Fast.api.ajax({
+                            url: "index/rename",
+                            data: {id: treeNode.rowid, name:treeNode.name}
+                        });
+                    },
+
                     beforeDrag: function (treeId, treeNodes, targetNode, moveType) {
-                        return treeNodes[0].drag;
+                        return targetNode.getParentNode() == null;
                     },
                     beforeDrop: function (treeId, treeNodes, targetNode, moveType) {
                         return targetNode.getParentNode() == null;
@@ -65,95 +102,76 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
             };
             // zTree data attributes, refer to the API documentation (treeNode data details)
             var zNodes = [
-                {
-                    name:"第一关",
-                    open:true,
-                    children:[
-                        {
-                            name:"台桌",
-                            open:true,
-                            drag:false,
-                            children:[
-                                {
-                                    drag:false,
-                                    dropInner:false,
-                                    name:"A"
-                                },
-                                {
-                                    drag:false,
-                                    dropInner:false,
-                                    name:"2"
-                                }
-                            ]
-                        },
-                        {
-                            name:"底牌",
-                            open:true,
-                            drag:false,
-                            children:[
-                                {
-                                    drag:false,
-                                    name:"A"
-                                },
-                                {
-                                    drag:false,
-                                    name:"2"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    name:"第二关",
-                    open:false,
-                    children:[
-                        {
-                            name:"台桌",
-                            drag:false,
-                            children:[
-                                {
-                                    drag:false,
-                                    name:"A"
-                                },
-                                {
-                                    drag:false,
-                                    name:"2"
-                                }
-                            ]
-                        },
-                        {
-                            name:"底牌",
-                            drag:false,
-                            children:[
-                                {
-                                    drag:false,
-                                    name:"A"
-                                },
-                                {
-                                    drag:false,
-                                    name:"2"
-                                }
-                            ]
-                        }
-                    ]
-                },
             ];
+            for(var i in levels) {
+                var newNode = {
+                    name:levels[i].name,
+                    rowid:levels[i].id,
+                    children:[
+                        {
+                            name:"台桌",
+                            children:[
+                            ]
+                        },
+                        {
+                            name:"底牌",
+                            children : []
+                        }
+                    ],
+                    content:levels[i].content
+                };
+                zNodes.push(newNode);
+            }
             var zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
-
-            $("#add-level").on("click", function(){
-                var newNode = {name:"newNode1"};
-                newNode = zTreeObj.addNodes(null, newNode);
-            });
 
             var n1 = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
             var n2 = ["suitdiamonds","suithearts","suitclubs","suitspades"]
 
-            n1.forEach(function(v1){
-                n2.forEach(function(v2){
-                    var content = Template("tmpl-card", {number: v1, color: v2});
-                    var ele = $("#underpan-wrapper").append(content);
+            $("#add-level").on("click", function(){
+                var underpan_content = [];
+                n1.forEach(function(v1){
+                    n2.forEach(function(v2){
+                        var content = {
+                            name:v1,
+                            color:v2
+                        };
+                        underpan_content.push(content);
+                    });
+                });
+
+                var level_content = JSON.stringify(underpan_content);
+                Fast.api.ajax({
+                    url: "index/add",
+                    data: {name: "新关卡", content:level_content}
+                }, function (data, ret) {
+                    var newNode = {
+                        name:data.name,
+                        rowid:data.id,
+                        children:[
+                            {
+                                name:"台桌",
+                                children:[
+                                ]
+                            },
+                            {
+                                name:"底牌",
+                                children : []
+                            }
+                        ],
+                        content:data.content
+                    };
+                    newNode = zTreeObj.addNodes(null, newNode);
+                    return false;
                 });
             });
+
+            //
+            // n1.forEach(function(v1){
+            //     n2.forEach(function(v2){
+            //         var content = Template("tmpl-card", {name: v1, color: v2});
+            //         var ele = $("#underpan-wrapper").append(content);
+            //     });
+            // });
 
             $( "#underpan-wrapper .card" ).on("click", function(){
                 $("#underpan-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
@@ -186,7 +204,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                 var cardSelected = $("#card-wrapper .card-selected");
                 var direction = cardSelected.hasClass("back")?"back":"front";
                 $("#card-direction option[value='"+direction+"']").prop("selected", "selected");
-                $("#card-number option[value='"+cardSelected.data("number")+"']").prop("selected", "selected");
+                $("#card-name option[value='"+cardSelected.data("name")+"']").prop("selected", "selected");
                 $("#card-color option[value='"+cardSelected.data("color")+"']").prop("selected", "selected");
                 $("#card-zindex").val(cardSelected.css("z-index"));
 
@@ -199,7 +217,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                 // var cardSelected = $("#card-wrapper .card-selected");
                 // var direction = cardSelected.hasClass("back")?"back":"front";
                 // $("#card-direction option[value='"+direction+"']").prop("selected", "selected");
-                // $("#card-number option[value='"+cardSelected.data("number")+"']").prop("selected", "selected");
+                // $("#card-name option[value='"+cardSelected.data("name")+"']").prop("selected", "selected");
                 // $("#card-color option[value='"+cardSelected.data("color")+"']").prop("selected", "selected");
                 // $("#card-zindex").val(cardSelected.css("z-index"));
                 //
@@ -212,9 +230,9 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                 var cardSelected = $("#card-wrapper .card-selected");
                 cardSelected.removeClass("back front").addClass($("#card-direction").val());
 
-                var number = $("#card-number").val();
-                cardSelected.data("number", number);
-                $("p", cardSelected).html(number);
+                var name = $("#card-name").val();
+                cardSelected.data("name", name);
+                $("p", cardSelected).html(name);
 
                 cardSelected.removeClass(cardSelected.data("color"));
                 var color = $("#card-color").val();

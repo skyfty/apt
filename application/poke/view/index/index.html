@@ -18,8 +18,13 @@
     <![endif]-->
     <script type="text/javascript">
         var require = {
-            config:  {$config|json_encode}
+            config:  {$config|json_encode},
         };
+    </script>
+    <script type="text/javascript">
+
+            var levels = {$levels|json_encode};
+
     </script>
 </head>
 
@@ -34,25 +39,25 @@
     <div  class="col-xs-9 panel-stage-wrapper" >
         <div id="containment-wrapper">
             <div id="card-wrapper">
-{/*                <div class="card suitdiamonds front ui-widget-content" data-number="A" data-color="suitdiamonds" style="z-index: 10;left:60px;top:100px">*/}
+{/*                <div class="card suitdiamonds front ui-widget-content" data-name="A" data-color="suitdiamonds" style="z-index: 10;left:60px;top:100px">*/}
 {/*                    <div>*/}
 {/*                        <p>A</p>*/}
 {/*                    </div>*/}
 {/*                </div>*/}
 
-{/*                <div class="card suithearts back ui-widget-content" data-number="A" data-color="suithearts" style="z-index: 10;left:230px;top:100px">*/}
+{/*                <div class="card suithearts back ui-widget-content" data-name="A" data-color="suithearts" style="z-index: 10;left:230px;top:100px">*/}
 {/*                    <div>*/}
 {/*                        <p>A</p>*/}
 {/*                    </div>*/}
 {/*                </div>*/}
 
-{/*                <div class="card suitclubs ui-widget-content" data-number="A" data-color="suitclubs" style="z-index: 10;left:400px;top:120px">*/}
+{/*                <div class="card suitclubs ui-widget-content" data-name="A" data-color="suitclubs" style="z-index: 10;left:400px;top:120px">*/}
 {/*                    <div>*/}
 {/*                        <p>A</p>*/}
 {/*                    </div>*/}
 {/*                </div>*/}
 
-{/*                <div class="card suitspades ui-widget-content" data-number="A" data-color="suitspades" style="z-index: 10;left:720px;top:120px">*/}
+{/*                <div class="card suitspades ui-widget-content" data-name="A" data-color="suitspades" style="z-index: 10;left:720px;top:120px">*/}
 {/*                    <div>*/}
 {/*                        <p>A</p>*/}
 {/*                    </div>*/}
@@ -74,7 +79,7 @@
             <div>
                 <fieldset>
                     <label for="name">数字</label>
-                    <select class="form-control" id="card-number">
+                    <select class="form-control" id="card-name">
                         <option value="A">A</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
@@ -162,10 +167,11 @@
 </html>
 
 <script id="tmpl-card" type="text/html">
-    <div class="card <%=color%> <%=direction%> ui-widget-content" data-number="<%=number%>" data-color="<%=color%>">
+    <div class="card <%=color%> <%=direction%> ui-widget-content" data-name="<%=name%>" data-color="<%=color%>">
         <div>
-            <p><%=number%></p>
+            <p><%=name%></p>
         </div>
     </div>
 </script>
+
 <script src="__CDN__/assets/js/require{$Think.config.app_debug?'':'.min'}.js" data-main="__CDN__/assets/js/require-poke{$Think.config.app_debug?'':'.min'}.js?v={$site.version}"></script>
