@@ -1,27 +1,7 @@
 define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, undefined) {
     var Controller = {
         index: function () {
-            // // Let the trash be droppable, accepting the gallery items
-            // $( "#card-contenter" ).droppable({
-            //     accept: "#underpan-wrapper > .card",
-            //     classes: {
-            //     },
-            //     drop: function( event, ui ) {
-            //         Controller.api.moveToCard( ui.draggable ).updateCardInspection();
-            //         Controller.api.sync();
-            //     }
-            // })
-
-            $( "#underpan-wrapper" ).droppable({
-                accept: "#card-wrapper > .card",
-                classes: {
-                },
-                drop: function( event, ui ) {
-                    $("#underpan-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
-                    Controller.api.moveToUnderpan( ui.draggable ).updateUnderpanInspection();
-                    Controller.api.sync();
-                }
-            }).sortable({
+            $( "#underpan-wrapper" ).sortable({
                 stop: function( event, ui ) {//结束时触发
                     Controller.api.sync();
                 }
@@ -242,26 +222,6 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 return newNode;
             },
 
-            moveToCard:function ( $item ) {
-                var new_item = $item.clone();
-                $item.remove();
-                new_item.css({"z-index": 10})
-                new_item.appendTo("#card-wrapper" ).bindCard();
-                return new_item;
-            },
-            moveToUnderpan:function($item) {
-                var new_item = $item.clone();
-                $item.remove();
-                new_item.css({'left':"", 'top':"", 'position':"relative","z-index": 8})
-                new_item.removeClass("back front card-shadow card-selected");
-                new_item.appendTo("#underpan-wrapper" );
-
-                new_item.on("click", function(){
-                    $("#underpan-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
-                    $(this).addClass("card-shadow card-selected").updateUnderpanInspection();
-                });
-                return new_item;
-            },
             updateCardInspection:function() {
                 var cardSelected = $("#card-wrapper .card-selected");
                 var direction = cardSelected.hasClass("back")?"back":"front";

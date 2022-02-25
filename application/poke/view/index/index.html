@@ -33,7 +33,7 @@
 <div class="container-fluid " onselectstart="return false">
 
     <div class="row">
-        <div class="col-xs-2 col-md-2 col-lg-2 panel-tree-level-wrapper">
+        <div class="col-xs-2 col-md-2 col-lg-2 panel-tree-level-wrapper panel-stage-wrapper">
             <div class=" panel panel-default">
                 <div class="panel-heading">关卡树</div>
                 <div class="panel-body">
@@ -46,7 +46,7 @@
 
             </div>
         </div>
-        <div  class="col-xs-8  col-md-8 col-lg-8  panel-stage-wrapper" >
+        <div  class="col-xs-8  col-md-8 col-lg-8  panel-stage-wrapper " >
             <div id="containment-wrapper">
 
                 <div id="card-contenter">
@@ -61,7 +61,7 @@
 
         </div>
 
-        <div  class="col-xs-2 panel-inspection-wrapper">
+        <div  class="col-xs-2 panel-inspection-wrapper  panel-stage-wrapper">
             <div class=" panel panel-default">
                 <div class="panel-heading">检查器</div>
                 <div class="panel-body">
@@ -146,6 +146,11 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <fieldset>
+                                    <label for="name">类型</label>
+                                    <select class="form-control  input-sm attr-input-underpan" id="underpan-type">
+                                        <option value="underpan">底牌</option>
+                                        <option value="rand">随机牌</option>
+                                    </select>
                                     <label for="name">数字</label>
                                     <select class="form-control  input-sm attr-input-underpan" id="underpan-name">
                                         <option value="A">A</option>

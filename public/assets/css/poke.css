@@ -8,11 +8,18 @@
 @import url("animate.css");
 
 .panel-stage-wrapper {
-    height: 690px;
+    height: 790px;
 }
+
+.panel-tree-level-wrapper {
+}
+
+.panel-inspection-wrapper {
+}
+
 #card-contenter {
     position: relative;
-    height:560px;
+    height:660px;
     overflow:scroll;
     padding: 10px;
 }
@@ -22,9 +29,9 @@
     height: 1080px;
 }
 #underpan-wrapper {
-    height:130px;
+    min-height:130px;
     border:1px solid #ddd;
-    padding: 2px;
+    padding: 12px;
     overflow-x:auto;
     white-space: nowrap;
     border-right: none;
@@ -123,15 +130,6 @@ div[class*='suit']:after {
     font-size: 29px;
     right: 5px;
     bottom: 0px;
-}
-
-.panel-tree-level-wrapper {
-    height: 690px;
-}
-
-
-.panel-inspection-wrapper {
-    height: 690px;
 }
 
 .form-inline-30 {
