@@ -1,16 +1,16 @@
 define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, undefined) {
     var Controller = {
         index: function () {
-            // Let the trash be droppable, accepting the gallery items
-            $( "#card-contenter" ).droppable({
-                accept: "#underpan-wrapper > .card",
-                classes: {
-                },
-                drop: function( event, ui ) {
-                    Controller.api.moveToCard( ui.draggable ).updateCardInspection();
-                    Controller.api.sync();
-                }
-            });
+            // // Let the trash be droppable, accepting the gallery items
+            // $( "#card-contenter" ).droppable({
+            //     accept: "#underpan-wrapper > .card",
+            //     classes: {
+            //     },
+            //     drop: function( event, ui ) {
+            //         Controller.api.moveToCard( ui.draggable ).updateCardInspection();
+            //         Controller.api.sync();
+            //     }
+            // })
 
             $( "#underpan-wrapper" ).droppable({
                 accept: "#card-wrapper > .card",
@@ -25,12 +25,33 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 stop: function( event, ui ) {//结束时触发
                     Controller.api.sync();
                 }
+            }).on("dblclick", function(){
+                var ele = $(Template("tmpl-card",Controller.api.defaultCard("underpan"))).appendTo(this);
+                ele.bindUnderpan();
+                ele.click();
             });
 
-            $("#card-name,#card-color,#card-direction,#card-zindex,#card-left,#card-top").on("change", function(){
+            $( "#card-wrapper" ).on("dblclick", function(evt){
+                var def = {
+                    left:Math.max(0, evt.offsetX),
+                    top:Math.max(0, evt.offsetY)
+                };
+                var ele = $(Template("tmpl-card",Controller.api.defaultCard("card", def))).appendTo(this);
+                ele.bindCard();
+                ele.click();
+            });
+
+            $(".attr-input-card").on("change", function(){
                 Controller.api.updateCardAttribute();
                 Controller.api.sync();
             });
+
+
+            $(".attr-input-underpan").on("change", function(){
+                Controller.api.updateUnderpanAttribute();
+                Controller.api.sync();
+            });
+
 
             var setting = {
                 edit: {
@@ -133,14 +154,14 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
             Controller.zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
 
             $("#add-level").on("click", function(){
-                var underpan_content = Controller.api.getNewUnderpan();
-                var level_content = JSON.stringify({"cards":[], "underpans":underpan_content});
+                var level_content = JSON.stringify({"cards":[], "underpans":[]});
                 Fast.api.ajax({
                     url: "index/add",
                     data: {name: "新关卡", content:level_content}
                 }, function (data, ret) {
                     var newNode = Controller.api.getNewLevelTree(data.id, data.name, JSON.parse(data.content));
-                    Controller.zTreeObj.addNodes(null, newNode);
+                    var treeNode = Controller.zTreeObj.addNodes(null, newNode);
+                    document.getElementById(treeNode[0].tId+"_a").click();
                     return false;
                 });
             });
@@ -174,9 +195,13 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 $.ajax(options);
             });
 
-            $("#btn-card-back-underpan").on("click", function(){
-                var ele = $("#card-wrapper .card-selected");
-                Controller.api.moveToUnderpan(ele);
+            $("#btn-card-delete").on("click", function(){
+                $("#card-wrapper .card-selected").remove();
+                $(".panel-inspection").hide();
+            });
+            $("#btn-underpan-delete").on("click", function(){
+                $("#underpan-wrapper .card-selected").remove();
+                $(".panel-inspection").hide();
             });
 
             window.onresize = function(){
@@ -193,25 +218,6 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 underpan_wrapper.html("");
                 var card_wrapper = $("#card-wrapper");
                 card_wrapper.html("");
-            },
-            getNewUnderpan:function() {
-                var n1 = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-                var n2 = ["suitdiamonds","suithearts","suitclubs","suitspades"]
-
-                var underpan_content = [];
-                n1.forEach(function(v1){
-                    n2.forEach(function(v2){
-                        var content = {
-                            name:v1,
-                            color:v2,
-                            zindex:8,
-                            top:"",
-                            left:""
-                        };
-                        underpan_content.push(content);
-                    });
-                });
-                return underpan_content;
             },
 
             getNewLevelTree:function(id, name, cards) {
@@ -270,16 +276,9 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
             },
 
             updateUnderpanInspection:function() {
-                // var cardSelected = $("#card-wrapper .card-selected");
-                // var direction = cardSelected.hasClass("back")?"back":"front";
-                // $("#card-direction option[value='"+direction+"']").prop("selected", "selected");
-                // $("#card-name option[value='"+cardSelected.data("name")+"']").prop("selected", "selected");
-                // $("#card-color option[value='"+cardSelected.data("color")+"']").prop("selected", "selected");
-                // $("#card-zindex").val(cardSelected.css("z-index"));
-                //
-                // var position = cardSelected.position();
-                // $("#card-left").val(position.left);
-                // $("#card-top").val(position.top);
+                var cardSelected = $("#underpan-wrapper .card-selected");
+                $("#underpan-name option[value='"+cardSelected.data("name")+"']").prop("selected", "selected");
+                $("#underpan-color option[value='"+cardSelected.data("color")+"']").prop("selected", "selected");
             },
 
             updateCardAttribute:function() {
@@ -299,6 +298,15 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 cardSelected.css("top",$("#card-top").val() + "px");
             },
 
+            updateUnderpanAttribute:function() {
+                var cardSelected = $("#underpan-wrapper .card-selected");
+                var name = $("#underpan-name").val();
+                cardSelected.data("name", name);
+                $("p", cardSelected).html(name);
+                cardSelected.removeClass(cardSelected.data("color"));
+                var color = $("#underpan-color").val();
+                cardSelected.data("color", color).addClass(color)
+            },
             push:function() {
                 var nodes = Controller.zTreeObj.getSelectedNodes();
                 var cards = [];
@@ -356,6 +364,25 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 $.ajax(options);
             },
 
+            defaultCard:function(type, def) {
+                switch (type) {
+                    case "card": {
+                        return $.extend({
+                            name:"A",
+                            color:"suitdiamonds",
+                            type:type
+                        }, def);
+                    }
+                    case "underpan": {
+                        return  $.extend({
+                            name:"A",
+                            color:"suitdiamonds",
+                            type:type
+                        }, def);
+                    }
+                }
+            },
+
             syncTimeoutId:0,
             sync:function() {
                 clearTimeout(this.syncTimeoutId);
@@ -384,7 +411,6 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                         $(this).updateUnderpanInspection();
                     });
                 },
-
 
                 "bindCard": function () {
                     $(this).draggable({
