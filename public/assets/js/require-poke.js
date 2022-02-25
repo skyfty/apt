@@ -42,7 +42,6 @@ require.config({
         'jsoneditor': '../libs/jquery-jsoneditor/jquery.jsoneditor.min',
         'x-editable': '../libs/x-editable/dist/bootstrap3-editable/js/bootstrap-editable',
         'dragsort': '../libs/fastadmin-dragsort/jquery.dragsort',
-
     },
     // shim依赖配置
     shim: {
@@ -62,6 +61,7 @@ require.config({
         },
         'validator-lang': ['validator-core'],
         'qtip2': ['css!../libs/qtip2/jquery.qtip.css',],
+
         'swiper': ['css!../libs/swiper/dist/css/swiper.min.css',],
         'x-editable':{
             deps: ['css!../libs/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css','bootstrap'],
@@ -69,12 +69,6 @@ require.config({
         'ztree': {
             deps: [
                 'css!../libs/zTree/css/zTreeStyle/zTreeStyle.css',
-            ]
-        },
-        'jsoneditor': {
-            deps: [
-                '../libs/jquery-jsoneditor/json2',
-                'css!../libs/jquery-jsoneditor/jsoneditor.css',
             ]
         },
         'raty': ['css!../libs/raty/lib/jquery.raty.css',]
@@ -89,7 +83,7 @@ require.config({
     charset: 'utf-8' // 文件编码
 });
 
-require(['jquery','jquery-ui', 'x-editable', 'bootstrap'], function ($, undefined) {
+require(['jquery','jquery-ui', 'bootstrap'], function ($, undefined) {
     //初始配置
     var Config = requirejs.s.contexts._.config.config;
     //将Config渲染到全局

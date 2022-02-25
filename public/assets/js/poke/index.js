@@ -1,7 +1,7 @@
-define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, undefined, Poke, undefined, jsoneditor) {
+define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, undefined) {
     var Controller = {
         index: function () {
-            $( "#card-wrapper .card" ).bindCard();
+
             // Let the trash be droppable, accepting the gallery items
             $( "#card-wrapper" ).droppable({
                 accept: "#underpan-wrapper > .card",
@@ -81,6 +81,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                             for(var i in cards){
                                 $(Template("tmpl-card",cards[i])).appendTo("#card-wrapper").bindCard();
                             }
+
                         }
                         $("#card-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
                     },
@@ -120,7 +121,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                     }
                 }
             };
-            // zTree data attributes, refer to the API documentation (treeNode data details)
+
             var zNodes = [
             ];
             for(var i in levels) {
@@ -176,6 +177,11 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                 $("#underpan-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
                 $(this).addClass("card-shadow card-selected").updateUnderpanInspection();
             });
+
+            window.onresize = function(){
+                $("#card-contenter").css({width:$("#underpan-wrapper").css("width")});
+            };
+            window.onresize();
         },
 
         api: {
@@ -364,11 +370,11 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                     $(this).addClass("card-shadow card-selected");
                     Controller.api.updateUnderpanInspection();
                 },
+
                 "bindCard": function () {
                     $(this).draggable({
+                        opacity:true,
                         containment: "#containment-wrapper",
-                        scroll: false,
-                        snap: "#underpan-wrapper",
                         start:function( event, ui ) {
                             $(this).updateCardInspection();
                         },

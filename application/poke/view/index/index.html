@@ -15,7 +15,10 @@
     <!--[if lt IE 9]>
     <script src="__CDN__/assets/js/html5shiv.js"></script>
     <script src="__CDN__/assets/js/respond.min.js"></script>
+
     <![endif]-->
+    <script src="__CDN__/assets/js/draggable.bundle.min.js"></script>
+
     <script type="text/javascript">
         var require = {
             config:  {$config|json_encode},
@@ -29,17 +32,20 @@
 
 <body id="page-top">
 <div class="row">
-    <div class="col-xs-1 panel-tree-level-wrapper">
+    <div class="col-xs-2 panel-tree-level-wrapper">
         <div class="btn-group btn-group-xs" role="group" aria-label="...">
             <button type="button" id="add-level" class="btn btn-default">新建</button>
             <button type="button" id="downlaod-level" class="btn btn-default">下载</button>
         </div>
         <ul id="treeDemo" class="ztree"></ul>
     </div>
-    <div  class="col-xs-9 panel-stage-wrapper" >
+    <div  class="col-xs-8 panel-stage-wrapper" >
         <div id="containment-wrapper">
-            <div id="card-wrapper">
+            <div id="card-contenter">
+                <div id="card-wrapper">
+                </div>
             </div>
+
             <div id="underpan-wrapper">
             </div>
         </div>

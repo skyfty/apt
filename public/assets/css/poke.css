@@ -4,14 +4,21 @@
 @import url("../libs/fastadmin-layer/dist/theme/default/layer.css");
 @import url("../libs/nice-validator/dist/jquery.validator.css");
 @import url("../libs/jquery-ui/themes/ui-lightness/jquery-ui.min.css");
-@import url("../libs/jquery-ui/themes/ui-lightness/jquery-ui.min.css");
+@import url("../libs/jquery.dragscroll/src/jquery.dragscroll.css");
 @import url("animate.css");
 
 .panel-stage-wrapper {
     height: 690px;
 }
-#containment-wrapper{}
-#card-wrapper {height:560px;border:2px solid #ccc; padding: 10px; }
+#card-contenter {
+    height:560px;
+    overflow:hidden;
+    border:2px solid #ccc;
+    padding: 10px;
+}
+#card-wrapper {
+    cursor:grab;
+}
 #underpan-wrapper {
     height:130px;
     border:2px solid #ccc;
@@ -25,7 +32,6 @@
 }
 
 .card {
-
     width: 70px;
     height: 100px;
     border-radius: 10px;
