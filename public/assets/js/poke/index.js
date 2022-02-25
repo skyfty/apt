@@ -49,6 +49,12 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                         return treeNode.getParentNode() == null;
                     }
                 },
+
+                check: {
+                    enable: true,
+                    nocheckInherit: true
+
+                },
                 view: {
                     showLine: false,
                     selectedMulti: false
@@ -136,6 +142,36 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                 });
             });
 
+            $("#downlaod-level").on("click", function(){
+                var nodes = Controller.zTreeObj.getCheckedNodes(true);
+                var ids = $.map(nodes, function(n, i){
+                    return n.rowid;
+                });
+                var options = {
+                    url: "index/download",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        ids: ids
+                    },
+                    success: function (ret) {
+                        ret = Fast.events.onAjaxResponse(ret);
+                        if (ret.code === 1) {
+                            var ele = $("<a href='"+ret.url+"' target='_blank'>click</a>");
+                            ele[0].click();
+                        } else {
+                            Fast.events.onAjaxError(ret);
+                        }
+                    },
+                    error: function (xhr) {
+                        var ret = {code: xhr.status, msg: xhr.statusText, data: null};
+                        Fast.events.onAjaxError(ret);
+                    }
+                };
+                $.ajax(options);
+            });
+
+
             $( "#underpan-wrapper .card" ).on("click", function(){
                 $("#underpan-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
                 $(this).addClass("card-shadow card-selected").updateUnderpanInspection();
@@ -168,13 +204,16 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                 var newNode = {
                     name:name,
                     rowid:id,
+                    checked:false,
                     children:[
                         {
                             name:"台桌",
+                            nocheck:true,
                             children:[]
                         },
                         {
                             name:"底牌",
+                            nocheck:true,
                             children : []
                         }
                     ],
