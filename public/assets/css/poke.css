@@ -11,24 +11,38 @@
     height: 690px;
 }
 #card-contenter {
+    position: relative;
     height:560px;
-    overflow:hidden;
-    border:2px solid #ccc;
+    overflow:scroll;
     padding: 10px;
 }
 #card-wrapper {
     cursor:grab;
+    width: 2000px;
 }
 #underpan-wrapper {
     height:130px;
-    border:2px solid #ccc;
+    border:1px solid #ddd;
     padding: 2px;
     overflow-x:auto;
-    white-space: nowrap
+    white-space: nowrap;
+    border-right: none;
+    border-left: none;
+}
+
+#containment-wrapper {
+    border-top: solid #ddd 1px;
+    border-left: solid #ddd 1px;
+    border-right: solid #ddd 1px;
+    border-radius: 4px;
 }
 
 .panel-inspection {
     display: none;
+}
+
+.panel {
+    height: 100%;
 }
 
 .card {
@@ -107,11 +121,13 @@ div[class*='suit']:after {
 
 .panel-tree-level-wrapper {
     height: 690px;
-    border: solid 1px grey;
 }
 
 
 .panel-inspection-wrapper {
     height: 690px;
-    border: solid 1px grey;
+}
+
+.form-inline-30 {
+    width: 33%
 }

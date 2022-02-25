@@ -1,9 +1,8 @@
 define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, undefined) {
     var Controller = {
         index: function () {
-
             // Let the trash be droppable, accepting the gallery items
-            $( "#card-wrapper" ).droppable({
+            $( "#card-contenter" ).droppable({
                 accept: "#underpan-wrapper > .card",
                 classes: {
                 },
@@ -21,13 +20,8 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                     $("#underpan-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
                     Controller.api.moveToUnderpan( ui.draggable ).updateUnderpanInspection();
                     Controller.api.sync();
-                },
-                stop: function( event, ui ) {
-                    Controller.api.sync();
                 }
             }).sortable({
-                start: function( event, ui ) {
-                },
                 stop: function( event, ui ) {//结束时触发
                     Controller.api.sync();
                 }
@@ -69,19 +63,20 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                         $(".panel-inspection").hide();
                         if (typeof treeNode.rowid != "undefined") {
                             $("#panel-level-inspection").show();
-                            $("#underpan-wrapper").html("");
-                            $("#card-wrapper").html("");
+                            Controller.api.resetCardUnderpan();
 
+                            var underpan_wrapper = $("#underpan-wrapper");
                             var underpans = treeNode.content.underpans;
                             for(var i in underpans){
-                                $("#underpan-wrapper").append(Template("tmpl-card",underpans[i]));
+                                underpan_wrapper.append(Template("tmpl-card",underpans[i]));
                             }
-
                             var cards = treeNode.content.cards;
                             for(var i in cards){
                                 $(Template("tmpl-card",cards[i])).appendTo("#card-wrapper").bindCard();
                             }
-
+                            var card_wrapper = $("#card-wrapper");
+                            card_wrapper.scrollTop();
+                            card_wrapper.scrollLeft();
                         }
                         $("#card-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
                     },
@@ -92,6 +87,9 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                         Fast.api.ajax({
                             url: "index/del",
                             data: {id: treeNode.rowid}
+                        }, function (data, ret) {
+                            Controller.api.resetCardUnderpan();
+                            return false;
                         });
                     },
                     beforeRename: function(treeId, treeNode, newName, isCancel) {
@@ -172,6 +170,10 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 $.ajax(options);
             });
 
+            $("#btn-card-back-underpan").on("click", function(){
+                var ele = $("#card-wrapper .card-selected");
+                Controller.api.moveToUnderpan(ele);
+            });
 
             $( "#underpan-wrapper .card" ).on("click", function(){
                 $("#underpan-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
@@ -185,7 +187,12 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
         },
 
         api: {
-
+            resetCardUnderpan:function() {
+                var underpan_wrapper = $("#underpan-wrapper");
+                underpan_wrapper.html("");
+                var card_wrapper = $("#card-wrapper");
+                card_wrapper.html("");
+            },
             getNewUnderpan:function() {
                 var n1 = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
                 var n2 = ["suitdiamonds","suithearts","suitclubs","suitspades"]
@@ -374,6 +381,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 "bindCard": function () {
                     $(this).draggable({
                         opacity:true,
+                        scroll: false,
                         containment: "#containment-wrapper",
                         start:function( event, ui ) {
                             $(this).updateCardInspection();
