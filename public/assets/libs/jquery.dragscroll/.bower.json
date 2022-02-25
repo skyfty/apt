@@ -1,0 +1,36 @@
+{
+  "name": "jquery.dragscroll",
+  "version": "0.2.3",
+  "homepage": "https://github.com/stenin-nikita/jquery.dragscroll",
+  "authors": [
+    "Thomas Appel <mail@thomas-appel.com>"
+  ],
+  "description": "A scrolling plugin for the jQuery JavaScript Library",
+  "main": [
+    "src/jquery.dragscroll.js",
+    "src/jquery.dragscroll.css"
+  ],
+  "keywords": [
+    "drag",
+    "scroll",
+    "jquery"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "0.2.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.2.3",
+    "commit": "e05f0cf266909f8c2ad79a0ccdd698ed40f9f613"
+  },
+  "_source": "https://github.com/stenin-nikita/jquery.dragscroll.git",
+  "_target": "^0.2.3",
+  "_originalSource": "jquery.dragscroll",
+  "_direct": true
+}
