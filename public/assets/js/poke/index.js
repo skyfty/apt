@@ -9,10 +9,10 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                 },
                 drop: function( event, ui ) {
                     Controller.api.moveToCard( ui.draggable ).updateCardInspection();
+                    Controller.api.sync();
                 }
             });
 
-            // $( "#underpan-wrapper .card" ).bindUnderpan();
             $( "#underpan-wrapper" ).droppable({
                 accept: "#card-wrapper > .card",
                 classes: {
@@ -20,16 +20,22 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                 drop: function( event, ui ) {
                     $("#underpan-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
                     Controller.api.moveToUnderpan( ui.draggable ).updateUnderpanInspection();
+                    Controller.api.sync();
+                },
+                stop: function( event, ui ) {
+                    Controller.api.sync();
                 }
             }).sortable({
                 start: function( event, ui ) {
                 },
                 stop: function( event, ui ) {//结束时触发
+                    Controller.api.sync();
                 }
             });
 
             $("#card-name,#card-color,#card-direction,#card-zindex,#card-left,#card-top").on("change", function(){
                 Controller.api.updateCardAttribute();
+                Controller.api.sync();
             });
 
             var setting = {
@@ -42,6 +48,10 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                     showRenameBtn: function(treeId, treeNode) {
                         return treeNode.getParentNode() == null;
                     }
+                },
+                view: {
+                    showLine: false,
+                    selectedMulti: false
                 },
                 data: {
                     simpleData: {
@@ -56,10 +66,14 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                             $("#underpan-wrapper").html("");
                             $("#card-wrapper").html("");
 
-                            var data = JSON.parse(treeNode.content);
-                            for(var i in data){
-                                var content = Template("tmpl-card",data[i]);
-                                var ele = $("#underpan-wrapper").append(content);
+                            var underpans = treeNode.content.underpans;
+                            for(var i in underpans){
+                                $("#underpan-wrapper").append(Template("tmpl-card",underpans[i]));
+                            }
+
+                            var cards = treeNode.content.cards;
+                            for(var i in cards){
+                                $(Template("tmpl-card",cards[i])).appendTo("#card-wrapper").bindCard();
                             }
                         }
                         $("#card-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
@@ -104,74 +118,23 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
             var zNodes = [
             ];
             for(var i in levels) {
-                var newNode = {
-                    name:levels[i].name,
-                    rowid:levels[i].id,
-                    children:[
-                        {
-                            name:"台桌",
-                            children:[
-                            ]
-                        },
-                        {
-                            name:"底牌",
-                            children : []
-                        }
-                    ],
-                    content:levels[i].content
-                };
+                var newNode = Controller.api.getNewLevelTree(levels[i].id, levels[i].name, JSON.parse(levels[i].content));
                 zNodes.push(newNode);
             }
-            var zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
-
-            var n1 = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-            var n2 = ["suitdiamonds","suithearts","suitclubs","suitspades"]
+            Controller.zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
 
             $("#add-level").on("click", function(){
-                var underpan_content = [];
-                n1.forEach(function(v1){
-                    n2.forEach(function(v2){
-                        var content = {
-                            name:v1,
-                            color:v2
-                        };
-                        underpan_content.push(content);
-                    });
-                });
-
-                var level_content = JSON.stringify(underpan_content);
+                var underpan_content = Controller.api.getNewUnderpan();
+                var level_content = JSON.stringify({"cards":[], "underpans":underpan_content});
                 Fast.api.ajax({
                     url: "index/add",
                     data: {name: "新关卡", content:level_content}
                 }, function (data, ret) {
-                    var newNode = {
-                        name:data.name,
-                        rowid:data.id,
-                        children:[
-                            {
-                                name:"台桌",
-                                children:[
-                                ]
-                            },
-                            {
-                                name:"底牌",
-                                children : []
-                            }
-                        ],
-                        content:data.content
-                    };
-                    newNode = zTreeObj.addNodes(null, newNode);
+                    var newNode = Controller.api.getNewLevelTree(data.id, data.name, JSON.parse(data.content));
+                    Controller.zTreeObj.addNodes(null, newNode);
                     return false;
                 });
             });
-
-            //
-            // n1.forEach(function(v1){
-            //     n2.forEach(function(v2){
-            //         var content = Template("tmpl-card", {name: v1, color: v2});
-            //         var ele = $("#underpan-wrapper").append(content);
-            //     });
-            // });
 
             $( "#underpan-wrapper .card" ).on("click", function(){
                 $("#underpan-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
@@ -180,6 +143,46 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
         },
 
         api: {
+
+            getNewUnderpan:function() {
+                var n1 = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+                var n2 = ["suitdiamonds","suithearts","suitclubs","suitspades"]
+
+                var underpan_content = [];
+                n1.forEach(function(v1){
+                    n2.forEach(function(v2){
+                        var content = {
+                            name:v1,
+                            color:v2,
+                            zindex:8,
+                            top:"",
+                            left:""
+                        };
+                        underpan_content.push(content);
+                    });
+                });
+                return underpan_content;
+            },
+
+            getNewLevelTree:function(id, name, cards) {
+                var newNode = {
+                    name:name,
+                    rowid:id,
+                    children:[
+                        {
+                            name:"台桌",
+                            children:[]
+                        },
+                        {
+                            name:"底牌",
+                            children : []
+                        }
+                    ],
+                    content : cards
+                };
+                return newNode;
+            },
+
             moveToCard:function ( $item ) {
                 var new_item = $item.clone();
                 $item.remove();
@@ -242,6 +245,69 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                 cardSelected.css("left",$("#card-left").val() + "px");
                 cardSelected.css("top",$("#card-top").val() + "px");
             },
+
+            push:function() {
+                var nodes = Controller.zTreeObj.getSelectedNodes();
+                var cards = [];
+                $("#card-wrapper .card").each(function(i, e){
+                    var ele = $(e);
+                    var data = {};
+                    data['direction'] = ele.hasClass("back")?"back":"front";
+                    var position = ele.position();
+                    data['left'] = position.left;
+                    data['top'] = position.top;
+                    data['zindex'] = ele.css("z-index");
+                    data['name'] = ele.data("name");
+                    data['color'] = ele.data("color");
+                    cards.push(data);
+                });
+
+                var underpans = [];
+                $("#underpan-wrapper .card").each(function(i, e){
+                    var ele = $(e);
+                    var data = {};
+                    data['left'] = "";
+                    data['top'] = "";
+                    data['direction'] = "front";
+                    data['zindex'] = ele.css("z-index");
+                    data['name'] = ele.data("name");
+                    data['color'] = ele.data("color");
+                    underpans.push(data);
+                });
+
+                var options = {
+                    url: "index/update",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        id: nodes[0].rowid,
+                        content:JSON.stringify({
+                            cards:cards,
+                            underpans:underpans
+                        })
+                    },
+                    success: function (ret) {
+                        ret = Fast.events.onAjaxResponse(ret);
+                        if (ret.code === 1) {
+                            nodes[0].content = JSON.parse(ret.data);
+                            Controller.zTreeObj.updateNode(nodes[0]);
+                        } else {
+                            Fast.events.onAjaxError(ret);
+                        }
+                    },
+                    error: function (xhr) {
+                        var ret = {code: xhr.status, msg: xhr.statusText, data: null};
+                        Fast.events.onAjaxError(ret);
+                    }
+                };
+                $.ajax(options);
+            },
+
+            syncTimeoutId:0,
+            sync:function() {
+                clearTimeout(this.syncTimeoutId);
+                this.syncTimeoutId = setTimeout(this.push, 1000);
+            }
         },
         init: function () {
             $.fn.extend({
@@ -269,15 +335,14 @@ define(['jquery', 'bootstrap', 'poke', 'ztree', 'jsoneditor'], function ($, unde
                         },
                         drag: function( event, ui ) {
                             Controller.api.updateCardInspection();
+                        },
+                        stop: function( event, ui ) {
+                            Controller.api.sync();
                         }
                     });
 
                     $(this).on("click", function(){
                         $(this).updateCardInspection();
-                    });
-
-                    $(".card-remove", this).on("click", function(){
-                        console.log("lskdf");
                     });
                 }
             })

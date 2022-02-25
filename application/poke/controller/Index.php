@@ -12,26 +12,35 @@ class Index extends Poke
     }
 
     public function add() {
-        $params = $this->request->post();
         $poke = model("Poke")->create($_POST);
-        $this->success(__('Login successful'), "", $poke);
+        $this->result($poke, 1);
     }
 
     public function del() {
         $poke = model("Poke")->get($this->request->param("id"));
         if ($poke == null) {
-            $this->error(__('Login successful'));
+            $this->error(__('Can not find the record'));
         }
         $poke->delete();
-        $this->success(__('Login successful'));
+        $this->success();
     }
     public function rename() {
         $poke = model("Poke")->get($this->request->param("id"));
         if ($poke == null) {
-            $this->error(__('Login successful'));
+            $this->error(__('Can not find the record'));
         }
         $poke->name     = $this->request->param("name");
         $poke->save();
-        $this->success(__('Login successful'));
+        $this->result($poke, 1);
+    }
+
+    public function update() {
+        $poke = model("Poke")->get($this->request->param("id"));
+        if ($poke == null) {
+            $this->error(__('Can not find the record'));
+        }
+        $poke->content     = $_POST['content'];
+        $poke->save();
+        $this->result($poke->content, 1);
     }
 }
