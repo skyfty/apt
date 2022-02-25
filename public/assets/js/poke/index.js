@@ -50,6 +50,9 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
 
                 },
                 view: {
+                    showIcon: function(treeId, treeNode) {
+                        return treeNode.isParent;
+                    },
                     showLine: false,
                     selectedMulti: false
                 },
@@ -68,8 +71,9 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             var underpan_wrapper = $("#underpan-wrapper");
                             var underpans = treeNode.content.underpans;
                             for(var i in underpans){
-                                underpan_wrapper.append(Template("tmpl-card",underpans[i]));
+                                $(Template("tmpl-card",underpans[i])).appendTo(underpan_wrapper).bindUnderpan();
                             }
+
                             var cards = treeNode.content.cards;
                             for(var i in cards){
                                 $(Template("tmpl-card",cards[i])).appendTo("#card-wrapper").bindCard();
@@ -175,15 +179,12 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 Controller.api.moveToUnderpan(ele);
             });
 
-            $( "#underpan-wrapper .card" ).on("click", function(){
-                $("#underpan-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
-                $(this).addClass("card-shadow card-selected").updateUnderpanInspection();
-            });
-
             window.onresize = function(){
                 $("#card-contenter").css({width:$("#underpan-wrapper").css("width")});
             };
             window.onresize();
+
+
         },
 
         api: {
@@ -366,17 +367,24 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                  "updateCardInspection":function() {
                     $(".panel-inspection").hide();
                     $("#panel-card-inspection").show();
-                    $("#card-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
+                    $(".card.card-shadow").removeClass("card-shadow card-selected");
                     $(this).addClass("card-shadow card-selected");
                     Controller.api.updateCardInspection();
                 },
                 "updateUnderpanInspection":function() {
                     $(".panel-inspection").hide();
                     $("#panel-underpan-inspection").show();
-                    $("#card-underpan .card.card-shadow").removeClass("card-shadow card-selected");
+                    $(".card.card-shadow").removeClass("card-shadow card-selected");
                     $(this).addClass("card-shadow card-selected");
                     Controller.api.updateUnderpanInspection();
                 },
+
+                "bindUnderpan": function () {
+                    $(this).on("click", function(){
+                        $(this).updateUnderpanInspection();
+                    });
+                },
+
 
                 "bindCard": function () {
                     $(this).draggable({

@@ -19,6 +19,7 @@
 #card-wrapper {
     cursor:grab;
     width: 2000px;
+    height: 2000px;
 }
 #underpan-wrapper {
     height:130px;
@@ -39,6 +40,11 @@
 
 .panel-inspection {
     display: none;
+}
+
+.panel-tree-level-wrapper .panel-body {
+    overflow:hidden;
+
 }
 
 .panel {
