@@ -1,37 +1,40 @@
 define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, undefined) {
     var Controller = {
         index: function () {
-            var underpan_wrapper = $( "#underpan-wrapper" );
-            var card_wrapper = $( "#card-wrapper" );
+            var panel_underpan = $( "#panel-underpan" );
+            var panel_card = $( "#panel-card" );
             var panel_inspection = $( "#panel-inspection" );
 
-            underpan_wrapper.sortable({
+            panel_underpan.sortable({
+                start:function( event, ui) {
+                    $(ui.item).click();
+                },
                 stop: function( event, ui ) {//结束时触发
-                    Controller.api.sync();
+                    Controller.api.sync(true);
                 }
             }).on("dblclick", function(){
-                var ele = $(Template("tmpl-card", {})).appendTo(underpan_wrapper);
+                var ele = $(Template("tmpl-card", {})).appendTo(panel_underpan);
                 ele.bindUnderpan();
                 ele.addComponent("face", Controller.api.components.face.create(ele));
                 ele.updateComponent();
                 ele.click();
-                Controller.api.sync();
+                Controller.api.sync(true);
             });
 
-            card_wrapper.on("dblclick", function(evt){
+            panel_card.on("dblclick", function(evt){
                 var def = {
                     "zindex":10,
                     "left":Math.max(0, evt.offsetX),
                     "top":Math.max(0, evt.offsetY)
                 };
-                var ele = $(Template("tmpl-card", {})).appendTo(card_wrapper);
+                var ele = $(Template("tmpl-card", {})).appendTo(panel_card);
                 ele.bindCard();
-                ele.addComponent("face",Controller.api.components.face.create(ele, def));
-                ele.addComponent("position",Controller.api.components.position.create(ele));
+                ele.addComponent("position",Controller.api.components.position.create(ele, def));
+                ele.addComponent("face",Controller.api.components.face.create(ele));
                 ele.addComponent("direction",Controller.api.components.direction.create(ele));
                 ele.updateComponent();
                 ele.click();
-                Controller.api.sync();
+                Controller.api.sync(true);
             });
 
             var setting = {
@@ -66,14 +69,14 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 callback:{
                     onClick:function(event, treeId, treeNode) {
                         if (typeof treeNode.rowid != "undefined") {
-                            underpan_wrapper.html("");
-                            card_wrapper.html("");
+                            panel_underpan.html("");
+                            panel_card.html("");
                             panel_inspection.html("");
 
-                            var underpans = treeNode.content.underpans;
+                            const underpans = treeNode.content.underpans;
                             for(const  i in underpans){
                                 const components = underpans[i];
-                                var ele = $(Template("tmpl-card", {})).appendTo(underpan_wrapper);
+                                var ele = $(Template("tmpl-card", {})).appendTo(panel_underpan);
                                 ele.bindUnderpan();
                                 for(const c in components) {
                                     ele.addComponent(c,Controller.api.components[c].create(ele, components[c]));
@@ -81,20 +84,20 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                                 ele.updateComponent();
                             }
 
-                            var cards = treeNode.content.cards;
+                            const cards = treeNode.content.cards;
                             for(const  i in cards){
-                                const components = underpans[i];
-                                var ele = $(Template("tmpl-card", {})).appendTo(card_wrapper);
+                                const components = cards[i];
+                                var ele = $(Template("tmpl-card", {})).appendTo(panel_card);
                                 ele.bindCard();
                                 for(const c in components) {
                                     ele.addComponent(c,Controller.api.components[c].create(ele, components[c]));
                                 }
                                 ele.updateComponent();
                             }
-                            card_wrapper.scrollTop();
-                            card_wrapper.scrollLeft();
+                            panel_card.scrollTop();
+                            panel_card.scrollLeft();
                         }
-                        $(".card.card-shadow", card_wrapper).removeClass("card-shadow card-selected");
+                        $(".card.card-shadow", panel_card).removeClass("card-shadow card-selected");
                     },
                     beforeRemove: function (treeId, treeNode) {
                         return confirm("确认删除 节点 -- " + treeNode.name + " 吗？");
@@ -144,7 +147,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
             Controller.zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
 
             $("#add-level").on("click", function(){
-                var level_content = JSON.stringify({"cards":[], "underpans":[]});
+                const level_content = JSON.stringify({"cards":[], "underpans":[]});
                 Fast.api.ajax({
                     url: "index/add",
                     data: {name: "新关卡", content:level_content}
@@ -157,8 +160,8 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
             });
 
             $("#downlaod-level").on("click", function(){
-                var nodes = Controller.zTreeObj.getCheckedNodes(true);
-                var ids = $.map(nodes, function(n, i){
+                const nodes = Controller.zTreeObj.getCheckedNodes(true);
+                const ids = $.map(nodes, function(n, i){
                     return n.rowid;
                 });
                 var options = {
@@ -186,16 +189,12 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
             });
 
             $("#btn-card-delete").on("click", function(){
-                $(".card-selected", card_wrapper).remove();
-                Controller.api.sync();
+                $(".card-selected").remove();
+                Controller.api.sync(true);
+                panel_inspection.html("");
             });
-            $("#btn-underpan-delete").on("click", function(){
-                $(".card-selected", underpan_wrapper).remove();
-                Controller.api.sync();
-            });
-
             window.onresize = function(){
-                $("#card-contenter").css({width:underpan_wrapper.css("width")});
+                $("#contenter-card").css({width:panel_underpan.css("width")});
             };
             window.onresize();
         },
@@ -225,7 +224,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
 
             collectComponentData:function() {
                 var data = {};
-                var componentMap = $(this).getComponentMap();
+                const componentMap = $(this).getComponentMap();
                 for(const i in componentMap) {
                     data[i] = componentMap[i].getData();
                 }
@@ -234,11 +233,11 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
 
             push:function() {
                 var cards = [];
-                $("#card-wrapper .card").each(function(){
+                $("#panel-card .card").each(function(){
                     cards.push(Controller.api.collectComponentData.apply(this));
                 });
                 var underpans=[];
-                $("#underpan-wrapper .card").each(function(){
+                $("#panel-underpan .card").each(function(){
                     underpans.push(Controller.api.collectComponentData.apply(this));
                 });
 
@@ -272,9 +271,9 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
             },
 
             syncTimeoutId:0,
-            sync:function() {
+            sync:function(now) {
                 clearTimeout(this.syncTimeoutId);
-                this.syncTimeoutId = setTimeout(this.push, 3000);
+                this.syncTimeoutId = setTimeout(this.push, now===true?0:3000);
             },
 
             components: {
@@ -322,6 +321,11 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
 
                             getData:function() {
                                 return this.data;
+                            },
+
+                            onRemove:function() {
+                                this.inspection.shake();
+                                return false;
                             }
                         };
                     }
@@ -361,8 +365,12 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
 
                             getData:function() {
                                 return this.direction;
-                            }
+                            },
 
+                            onRemove:function() {
+                                target.removeClass("back front");
+                                this.inspection.remove();
+                            }
                         };
                     }
                 },
@@ -409,9 +417,12 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             },
 
                             onUpdate:function() {
-                                this.target.css("left", this.left);
-                                this.target.css("top", this.top);
-                                this.target.css("z-index", this.zindex);
+                                var style = {
+                                    "left":this.left + "px",
+                                    "top":this.top + "px",
+                                    "z-index":this.zindex,
+                                };
+                                this.target.css(style);
                             },
 
                             getData:function() {
@@ -421,6 +432,11 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                                     top:position.top,
                                     zindex:this.target.css("z-index"),
                                 };
+                            },
+
+                            onRemove:function() {
+                                this.inspection.shake();
+                                return false;
                             }
                         };
                     }
@@ -437,10 +453,21 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                     }
                     return componentMap;
                 },
-                addComponent:function(name, comp) {
-                    $(this).getComponentMap()[name] = comp;
+                addComponent:function(name, component) {
+                    $(this).getComponentMap()[name] = component;
                  },
-
+                removeComponent:function(component) {
+                    var componentMap = $(this).getComponentMap();
+                    for(const idx in componentMap) {
+                        if (componentMap[idx] === component) {
+                            if (component.onRemove() !== false) {
+                                delete componentMap[idx];
+                            } else {
+                            }
+                            break;
+                        }
+                    }
+                },
                 updateComponent:function() {
                     var componentMap = $(this).getComponentMap();
                     for(const idx in componentMap) {
@@ -466,6 +493,11 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                         callback.call(component, this);
                         Controller.api.sync();
                     });
+
+                    $(".btn-component-remove", this).on("click", function(env){
+                        component.target.removeComponent(component);
+                        Controller.api.sync();
+                    });
                 },
 
                 bindUnderpan: function () {
@@ -483,13 +515,14 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                         scroll: false,
                         containment: "#containment-wrapper",
                         start:function( event, ui ) {
+                            $(this).click();
                             $(this).getComponentMap()["position"].onUpdateInspection();
                         },
                         drag: function( event, ui ) {
                             $(this).getComponentMap()["position"].onUpdateInspection();
                         },
                         stop: function( event, ui ) {
-                            Controller.api.sync();
+                            Controller.api.sync(true);
                         }
                     });
                     $(this).on("click", function(ent){
@@ -498,6 +531,12 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                         $(this).updateInspection();
                     });
                     return $(this);
+                },
+
+                shake:function() {
+                    this.addClass('animated shake').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                        $(this).removeClass('shake');
+                    });
                 }
             })
         }

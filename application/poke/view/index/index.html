@@ -49,12 +49,12 @@
         <div  class="col-xs-8  col-md-8 col-lg-8  panel-stage-wrapper " >
             <div id="containment-wrapper">
 
-                <div id="card-contenter">
-                    <div id="card-wrapper">
+                <div id="contenter-card">
+                    <div id="panel-card">
                     </div>
                 </div>
 
-                <div id="underpan-wrapper">
+                <div id="panel-underpan">
 
                 </div>
             </div>
@@ -73,8 +73,23 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xs-12">
-                                <button type="button" id="btn-card-delete" class="btn btn-danger btn-block">删除</button>
+                            <div class="col-xs-6">
+                                <!-- Single button -->
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default dropdown-toggle  btn-sm  btn-block  " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        增加组件 <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#">Action</a></li>
+                                        <li><a href="#">Another action</a></li>
+                                        <li><a href="#">Something else here</a></li>
+                                        <li role="separator" class="divider"></li>
+                                        <li><a href="#">Separated link</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <button type="button" id="btn-card-delete" class="btn btn-danger btn-block  btn-sm">删除</button>
                             </div>
                         </div>
                     </div>
@@ -86,8 +101,6 @@
                         </div>
 
                     </div>
-
-
                 </div>
             </div>
         </div>
@@ -110,11 +123,10 @@
 <script id="tmpl-component-card-direction" type="text/html">
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">正反面</h3>
+            <h3 class="panel-title pull-left">正反面</h3><a href="#" class="panel-title pull-right btn-component-remove"><i class="fa fa-remove"></i></a>
         </div>
         <div class="panel-body">
             <fieldset>
-                <label for="email">方向</label>
                 <select class="form-control  input-sm attr-input-card" id="card-direction">
                     <option value="front">正面</option>
                     <option value="back">反面</option>
@@ -127,11 +139,10 @@
 <script id="tmpl-component-card-position" type="text/html">
     <div class="panel panel-default panel-component">
         <div class="panel-heading">
-            <h3 class="panel-title">正反面</h3>
+            <h3 class="panel-title pull-left">位置</h3><a href="#" class="panel-title pull-right btn-component-remove"><i class="fa fa-remove"></i></a>
         </div>
         <div class="panel-body">
             <fieldset>
-                <label for="email">位置</label>
                 <form class="row">
                     <div class="form-group col-xs-4">
                         <label for="card-left">X</label><input type="number" class="form-control  input-sm attr-input-card" id="card-left"/>
@@ -155,7 +166,7 @@
 <script id="tmpl-component-card-face" type="text/html">
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">牌面</h3>
+            <h3 class="panel-title pull-left">牌面</h3><a href="#" class="panel-title pull-right btn-component-remove"><i class="fa fa-remove"></i></a>
         </div>
         <div class="panel-body">
             <fieldset>

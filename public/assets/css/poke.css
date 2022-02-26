@@ -17,18 +17,18 @@
 .panel-inspection-wrapper {
 }
 
-#card-contenter {
+#contenter-card {
     position: relative;
     height:660px;
     overflow:scroll;
     padding: 10px;
 }
-#card-wrapper {
+#panel-card {
     cursor:grab;
     width: 2340px;
     height: 1080px;
 }
-#underpan-wrapper {
+#panel-underpan {
     min-height:130px;
     border:1px solid #ddd;
     padding: 12px;
@@ -77,11 +77,11 @@
     font: 40px/100px Georgia, Times New Roman, serif;
 }
 
-#card-wrapper .card {
+#panel-card .card {
     position: absolute;
 
 }
-#underpan-wrapper .card {
+#panel-underpan .card {
     position:relative;
     float: left;
     z-index: 8;
@@ -89,7 +89,7 @@
     display: inline-block
 }
 
-#underpan-wrapper .card.card-selected {
+#panel-underpan .card.card-selected {
     z-index: 10;
 }
 
@@ -130,4 +130,25 @@ div[class*='suit']:after {
 
 .form-inline-30 {
     width: 33%
+}
+#panel-inspection {
+
+    padding-right: 7px;
+    padding-left: 7px;
+}
+
+#panel-inspection .panel {
+    margin-bottom: 5px;
+}
+
+#panel-inspection .panel-heading {
+    padding: 2px 15px;
+    height: 19px;
+}
+#panel-inspection .panel-body {
+    padding: 9px;
+}
+
+#panel-inspection .panel-heading .panel-title {
+    font-size: 11px;
 }
