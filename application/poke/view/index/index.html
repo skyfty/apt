@@ -61,59 +61,15 @@
 
         </div>
 
-        <div  class="col-xs-2 panel-inspection-wrapper  panel-stage-wrapper">
+        <div  class="col-xs-2  panel-stage-wrapper">
             <div class=" panel panel-default">
                 <div class="panel-heading">检查器</div>
                 <div class="panel-body">
 
-                    <div id="panel-card-inspection" class="panel-inspection">
+                    <div class="panel-inspection">
                         <div class="row">
-                            <div class="col-xs-12">
-                                <fieldset>
-                                    <label for="name">数字</label>
-                                    <select class="form-control  input-sm attr-input-card" id="card-name">
-                                        <option value="A">A</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
-                                        <option value="J">J</option>
-                                        <option value="Q">Q</option>
-                                        <option value="K">K</option>
-                                    </select>
-                                    <label for="email">花色</label>
-                                    <select class="form-control  input-sm attr-input-card" id="card-color">
-                                        <option value="suitdiamonds">♦</option>
-                                        <option value="suithearts">♥</option>
-                                        <option value="suitclubs">♣</option>
-                                        <option value="suitspades">♠</option>
-                                    </select>
-                                    <label for="email">方向</label>
-                                    <select class="form-control  input-sm attr-input-card" id="card-direction">
-                                        <option value="front">正面</option>
-                                        <option value="back">反面</option>
-                                    </select>
-                                    <label for="email">位置</label>
-                                    <form class="row">
-                                        <div class="form-group col-xs-4">
-                                            <label for="card-left">X</label><input type="number" class="form-control  input-sm attr-input-card" id="card-left"/>
-                                        </div>
-                                        <div class="form-group  col-xs-4">
-                                            <label for="card-top">Y</label><input type="number" class="form-control  input-sm attr-input-card" id="card-top"/>
-                                        </div>
+                            <div class="col-xs-12" id="panel-inspection">
 
-                                        <div class="form-group  col-xs-4">
-                                            <label for="card-zindex">Z</label><input type="number" class="form-control  input-sm attr-input-card" id="card-zindex"/>
-                                        </div>
-
-                                    </form>
-
-                                </fieldset>
                             </div>
                         </div>
                         <div class="row">
@@ -125,69 +81,18 @@
                     <div id="panel-level-inspection" class="panel-inspection">
                         <div class="row">
                             <div class="col-xs-12">
-                                <fieldset>
-                                    <label for="email">舞台大小</label>
-                                    <form class="row">
-                                        <div class="form-group col-xs-6">
-                                            <label for="level-width">宽度</label><input type="number" class="form-control  input-sm" id="level-width"/>
-                                        </div>
-                                        <div class="form-group  col-xs-6">
-                                            <label for="level-height">高度</label><input type="number" class="form-control  input-sm" id="level-height"/>
-                                        </div>
 
-                                    </form>
-                                </fieldset>
                             </div>
                         </div>
 
                     </div>
 
-                    <div id="panel-underpan-inspection" class="panel-inspection">
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <fieldset>
-                                    <label for="name">类型</label>
-                                    <select class="form-control  input-sm attr-input-underpan" id="underpan-type">
-                                        <option value="underpan">底牌</option>
-                                        <option value="rand">随机牌</option>
-                                    </select>
-                                    <label for="name">数字</label>
-                                    <select class="form-control  input-sm attr-input-underpan" id="underpan-name">
-                                        <option value="A">A</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
-                                        <option value="J">J</option>
-                                        <option value="Q">Q</option>
-                                        <option value="K">K</option>
-                                    </select>
-                                    <label for="email">花色</label>
-                                    <select class="form-control  input-sm attr-input-underpan" id="underpan-color">
-                                        <option value="suitdiamonds">♦</option>
-                                        <option value="suithearts">♥</option>
-                                        <option value="suitclubs">♣</option>
-                                        <option value="suitspades">♠</option>
-                                    </select>
-                                </fieldset>
-                            </div>
-                        </div>
 
-                        <div class="row" style="margin-top: 10px">
-                            <div class="col-xs-12">
-                                <button type="button" id="btn-underpan-delete" class="btn btn-danger btn-block">删除</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 </body>
@@ -195,16 +100,89 @@
 </html>
 
 <script id="tmpl-card" type="text/html">
-    <div class="card <%=color%> <%=direction%> ui-widget-content" data-name="<%=name%>" data-color="<%=color%>" data-type="<%=type%>"  style="z-index: <%=zindex%>;left:<%=left%>px;top:<%=top%>px">
+    <div class="card ui-widget-content" style="z-index: <%=zindex%>;left:<%=left%>px;top:<%=top%>px">
         <div>
             <p><%=name%></p>
         </div>
     </div>
 </script>
-<script id="tmpl-card-add" type="text/html">
-    <div class="card ui-widget-content" id="underpan-card-add"  >
-        <div>
-            <p>+</p>
+
+<script id="tmpl-component-card-direction" type="text/html">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">正反面</h3>
+        </div>
+        <div class="panel-body">
+            <fieldset>
+                <label for="email">方向</label>
+                <select class="form-control  input-sm attr-input-card" id="card-direction">
+                    <option value="front">正面</option>
+                    <option value="back">反面</option>
+                </select>
+            </fieldset>
+        </div>
+    </div>
+</script>
+
+<script id="tmpl-component-card-position" type="text/html">
+    <div class="panel panel-default panel-component">
+        <div class="panel-heading">
+            <h3 class="panel-title">正反面</h3>
+        </div>
+        <div class="panel-body">
+            <fieldset>
+                <label for="email">位置</label>
+                <form class="row">
+                    <div class="form-group col-xs-4">
+                        <label for="card-left">X</label><input type="number" class="form-control  input-sm attr-input-card" id="card-left"/>
+                    </div>
+                    <div class="form-group  col-xs-4">
+                        <label for="card-top">Y</label><input type="number" class="form-control  input-sm attr-input-card" id="card-top"/>
+                    </div>
+
+                    <div class="form-group  col-xs-4">
+                        <label for="card-zindex">Z</label><input type="number" class="form-control  input-sm attr-input-card" id="card-zindex"/>
+                    </div>
+
+                </form>
+
+            </fieldset>
+        </div>
+    </div>
+</script>
+
+
+<script id="tmpl-component-card-face" type="text/html">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">牌面</h3>
+        </div>
+        <div class="panel-body">
+            <fieldset>
+                <label for="name">数字</label>
+                <select class="form-control  input-sm attr-input-card" id="card-name" value="<%=name%>">
+                    <option value="A">A</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="J">J</option>
+                    <option value="Q">Q</option>
+                    <option value="K">K</option>
+                </select>
+                <label for="email">花色</label>
+                <select class="form-control  input-sm attr-input-card" id="card-color" value="<%=color%>">
+                    <option value="suitdiamonds">♦</option>
+                    <option value="suithearts">♥</option>
+                    <option value="suitclubs">♣</option>
+                    <option value="suitspades">♠</option>
+                </select>
+            </fieldset>
         </div>
     </div>
 </script>

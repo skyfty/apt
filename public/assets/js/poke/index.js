@@ -1,37 +1,38 @@
 define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, undefined) {
     var Controller = {
         index: function () {
-            $( "#underpan-wrapper" ).sortable({
+            var underpan_wrapper = $( "#underpan-wrapper" );
+            var card_wrapper = $( "#card-wrapper" );
+            var panel_inspection = $( "#panel-inspection" );
+
+            underpan_wrapper.sortable({
                 stop: function( event, ui ) {//结束时触发
                     Controller.api.sync();
                 }
             }).on("dblclick", function(){
-                var ele = $(Template("tmpl-card",Controller.api.defaultCard("underpan"))).appendTo(this);
+                var ele = $(Template("tmpl-card", {})).appendTo(underpan_wrapper);
                 ele.bindUnderpan();
+                ele.addComponent("face", Controller.api.components.face.create(ele));
+                ele.updateComponent();
                 ele.click();
+                Controller.api.sync();
             });
 
-            $( "#card-wrapper" ).on("dblclick", function(evt){
+            card_wrapper.on("dblclick", function(evt){
                 var def = {
-                    left:Math.max(0, evt.offsetX),
-                    top:Math.max(0, evt.offsetY)
+                    "zindex":10,
+                    "left":Math.max(0, evt.offsetX),
+                    "top":Math.max(0, evt.offsetY)
                 };
-                var ele = $(Template("tmpl-card",Controller.api.defaultCard("card", def))).appendTo(this);
+                var ele = $(Template("tmpl-card", {})).appendTo(card_wrapper);
                 ele.bindCard();
+                ele.addComponent("face",Controller.api.components.face.create(ele, def));
+                ele.addComponent("position",Controller.api.components.position.create(ele));
+                ele.addComponent("direction",Controller.api.components.direction.create(ele));
+                ele.updateComponent();
                 ele.click();
-            });
-
-            $(".attr-input-card").on("change", function(){
-                Controller.api.updateCardAttribute();
                 Controller.api.sync();
             });
-
-
-            $(".attr-input-underpan").on("change", function(){
-                Controller.api.updateUnderpanAttribute();
-                Controller.api.sync();
-            });
-
 
             var setting = {
                 edit: {
@@ -64,26 +65,36 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 },
                 callback:{
                     onClick:function(event, treeId, treeNode) {
-                        $(".panel-inspection").hide();
                         if (typeof treeNode.rowid != "undefined") {
-                            $("#panel-level-inspection").show();
-                            Controller.api.resetCardUnderpan();
+                            underpan_wrapper.html("");
+                            card_wrapper.html("");
+                            panel_inspection.html("");
 
-                            var underpan_wrapper = $("#underpan-wrapper");
                             var underpans = treeNode.content.underpans;
-                            for(var i in underpans){
-                                $(Template("tmpl-card",underpans[i])).appendTo(underpan_wrapper).bindUnderpan();
+                            for(const  i in underpans){
+                                const components = underpans[i];
+                                var ele = $(Template("tmpl-card", {})).appendTo(underpan_wrapper);
+                                ele.bindUnderpan();
+                                for(const c in components) {
+                                    ele.addComponent(c,Controller.api.components[c].create(ele, components[c]));
+                                }
+                                ele.updateComponent();
                             }
 
                             var cards = treeNode.content.cards;
-                            for(var i in cards){
-                                $(Template("tmpl-card",cards[i])).appendTo("#card-wrapper").bindCard();
+                            for(const  i in cards){
+                                const components = underpans[i];
+                                var ele = $(Template("tmpl-card", {})).appendTo(card_wrapper);
+                                ele.bindCard();
+                                for(const c in components) {
+                                    ele.addComponent(c,Controller.api.components[c].create(ele, components[c]));
+                                }
+                                ele.updateComponent();
                             }
-                            var card_wrapper = $("#card-wrapper");
                             card_wrapper.scrollTop();
                             card_wrapper.scrollLeft();
                         }
-                        $("#card-wrapper .card.card-shadow").removeClass("card-shadow card-selected");
+                        $(".card.card-shadow", card_wrapper).removeClass("card-shadow card-selected");
                     },
                     beforeRemove: function (treeId, treeNode) {
                         return confirm("确认删除 节点 -- " + treeNode.name + " 吗？");
@@ -93,7 +104,6 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             url: "index/del",
                             data: {id: treeNode.rowid}
                         }, function (data, ret) {
-                            Controller.api.resetCardUnderpan();
                             return false;
                         });
                     },
@@ -176,30 +186,21 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
             });
 
             $("#btn-card-delete").on("click", function(){
-                $("#card-wrapper .card-selected").remove();
-                $(".panel-inspection").hide();
+                $(".card-selected", card_wrapper).remove();
+                Controller.api.sync();
             });
             $("#btn-underpan-delete").on("click", function(){
-                $("#underpan-wrapper .card-selected").remove();
-                $(".panel-inspection").hide();
+                $(".card-selected", underpan_wrapper).remove();
+                Controller.api.sync();
             });
 
             window.onresize = function(){
-                $("#card-contenter").css({width:$("#underpan-wrapper").css("width")});
+                $("#card-contenter").css({width:underpan_wrapper.css("width")});
             };
             window.onresize();
-
-
         },
 
         api: {
-            resetCardUnderpan:function() {
-                var underpan_wrapper = $("#underpan-wrapper");
-                underpan_wrapper.html("");
-                var card_wrapper = $("#card-wrapper");
-                card_wrapper.html("");
-            },
-
             getNewLevelTree:function(id, name, cards) {
                 var newNode = {
                     name:name,
@@ -222,80 +223,26 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 return newNode;
             },
 
-            updateCardInspection:function() {
-                var cardSelected = $("#card-wrapper .card-selected");
-                var direction = cardSelected.hasClass("back")?"back":"front";
-                $("#card-direction option[value='"+direction+"']").prop("selected", "selected");
-                $("#card-name option[value='"+cardSelected.data("name")+"']").prop("selected", "selected");
-                $("#card-color option[value='"+cardSelected.data("color")+"']").prop("selected", "selected");
-                $("#card-zindex").val(cardSelected.css("z-index"));
-
-                var position = cardSelected.position();
-                $("#card-left").val(position.left);
-                $("#card-top").val(position.top);
+            collectComponentData:function() {
+                var data = {};
+                var componentMap = $(this).getComponentMap();
+                for(const i in componentMap) {
+                    data[i] = componentMap[i].getData();
+                }
+                return data;
             },
 
-            updateUnderpanInspection:function() {
-                var cardSelected = $("#underpan-wrapper .card-selected");
-                $("#underpan-name option[value='"+cardSelected.data("name")+"']").prop("selected", "selected");
-                $("#underpan-color option[value='"+cardSelected.data("color")+"']").prop("selected", "selected");
-            },
-
-            updateCardAttribute:function() {
-                var cardSelected = $("#card-wrapper .card-selected");
-                cardSelected.removeClass("back front").addClass($("#card-direction").val());
-
-                var name = $("#card-name").val();
-                cardSelected.data("name", name);
-                $("p", cardSelected).html(name);
-
-                cardSelected.removeClass(cardSelected.data("color"));
-                var color = $("#card-color").val();
-                cardSelected.data("color", color).addClass(color)
-                cardSelected.css("z-index", $("#card-zindex").val());
-
-                cardSelected.css("left",$("#card-left").val() + "px");
-                cardSelected.css("top",$("#card-top").val() + "px");
-            },
-
-            updateUnderpanAttribute:function() {
-                var cardSelected = $("#underpan-wrapper .card-selected");
-                var name = $("#underpan-name").val();
-                cardSelected.data("name", name);
-                $("p", cardSelected).html(name);
-                cardSelected.removeClass(cardSelected.data("color"));
-                var color = $("#underpan-color").val();
-                cardSelected.data("color", color).addClass(color)
-            },
             push:function() {
-                var nodes = Controller.zTreeObj.getSelectedNodes();
                 var cards = [];
-                $("#card-wrapper .card").each(function(i, e){
-                    var ele = $(e);
-                    var data = {};
-                    data['direction'] = ele.hasClass("back")?"back":"front";
-                    var position = ele.position();
-                    data['left'] = position.left;
-                    data['top'] = position.top;
-                    data['zindex'] = ele.css("z-index");
-                    data['name'] = ele.data("name");
-                    data['color'] = ele.data("color");
-                    cards.push(data);
+                $("#card-wrapper .card").each(function(){
+                    cards.push(Controller.api.collectComponentData.apply(this));
+                });
+                var underpans=[];
+                $("#underpan-wrapper .card").each(function(){
+                    underpans.push(Controller.api.collectComponentData.apply(this));
                 });
 
-                var underpans = [];
-                $("#underpan-wrapper .card").each(function(i, e){
-                    var ele = $(e);
-                    var data = {};
-                    data['left'] = "";
-                    data['top'] = "";
-                    data['direction'] = "front";
-                    data['zindex'] = ele.css("z-index");
-                    data['name'] = ele.data("name");
-                    data['color'] = ele.data("color");
-                    underpans.push(data);
-                });
-
+                var nodes = Controller.zTreeObj.getSelectedNodes();
                 var options = {
                     url: "index/update",
                     type: "POST",
@@ -324,73 +271,233 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 $.ajax(options);
             },
 
-            defaultCard:function(type, def) {
-                switch (type) {
-                    case "card": {
-                        return $.extend({
-                            name:"A",
-                            color:"suitdiamonds",
-                            type:type
-                        }, def);
-                    }
-                    case "underpan": {
-                        return  $.extend({
-                            name:"A",
-                            color:"suitdiamonds",
-                            type:type
-                        }, def);
-                    }
-                }
-            },
-
             syncTimeoutId:0,
             sync:function() {
                 clearTimeout(this.syncTimeoutId);
-                this.syncTimeoutId = setTimeout(this.push, 1000);
+                this.syncTimeoutId = setTimeout(this.push, 3000);
+            },
+
+            components: {
+                face:{
+                    create:function(target, def) {
+                        return {
+                            data: $.extend({
+                                name:"A",
+                                color:"suitdiamonds",
+                            }, def),
+                            inspection:null,
+                            target:target,
+
+                            getInspection:function() {
+                                this.inspection = $(Template("tmpl-component-card-face", this));
+                                this.inspection.bindAttrInput(this.onInspectionChanged, this);
+                                return this.inspection;
+                            },
+
+                            onUpdateInspection:function() {
+                                $("#card-name option[value='" + this.data.name+"']", this.inspection).prop("selected", "selected");
+                                $("#card-color option[value='" + this.data.color+"']", this.inspection).prop("selected", "selected");
+                            },
+
+                            onInspectionChanged: function (input) {
+                                var input_id = $(input).attr("id");
+                                switch (input_id) {
+                                    case "card-name": {
+                                        this.data.name = $(input).val();
+                                        break;
+                                    }
+                                    case "card-color": {
+                                        this.data.color = $(input).val();
+                                        break;
+                                    }
+                                }
+                                this.onUpdate();
+                            },
+
+                            onUpdate:function() {
+                                $("p", target).html(this.data.name);
+                                target.removeClass("*suit");
+                                target.addClass(this.data.color)
+                            },
+
+                            getData:function() {
+                                return this.data;
+                            }
+                        };
+                    }
+                },
+                direction:{
+                    create:function(target, def) {
+                        return {
+                            direction:def || "front",
+                            inspection:null,
+                            target:target,
+
+                            getInspection:function() {
+                                this.inspection = $(Template("tmpl-component-card-direction", this));
+                                this.inspection.bindAttrInput(this.onInspectionChanged, this);
+                                return this.inspection;
+                            },
+
+                            onUpdateInspection:function() {
+                                $("#card-direction option[value='"+this.direction+"']", this.inspection).prop("selected", "selected");
+                            },
+
+                            onInspectionChanged: function (input) {
+                                var input_id = $(input).attr("id");
+                                switch (input_id) {
+                                    case "card-direction": {
+                                        this.direction = $(input).val();
+                                        break;
+                                    }
+                                }
+                                this.onUpdate();
+                            },
+
+                            onUpdate:function() {
+                                target.removeClass("back front");
+                                target.addClass(this.direction)
+                            },
+
+                            getData:function() {
+                                return this.direction;
+                            }
+
+                        };
+                    }
+                },
+
+                position: {
+                    create:function(target, def) {
+                        return {
+                            left:def.left,
+                            top:def.top,
+                            zindex:def.zindex,
+                            inspection:null,
+                            target:target,
+
+                            getInspection:function() {
+                                this.inspection = $(Template("tmpl-component-card-position", this));
+                                this.inspection.bindAttrInput(this.onInspectionChanged, this);
+                                return this.inspection;
+                            },
+
+                            onUpdateInspection:function() {
+                                $("#card-zindex", this.inspection).val(this.target.css("z-index"));
+                                var position =  this.target.position();
+                                $("#card-left", this.inspection).val(position.left);
+                                $("#card-top", this.inspection).val(position.top);
+                            },
+
+                            onInspectionChanged: function (input) {
+                                var input_id = $(input).attr("id");
+                                switch (input_id) {
+                                    case "card-left": {
+                                        this.left =  $(input).val();
+                                        break;
+                                    }
+                                    case "card-top": {
+                                        this.top =  $(input).val();
+                                        break;
+                                    }
+                                    case "card-zindex": {
+                                        this.zindex =  $(input).val();
+                                        break;
+                                    }
+                                }
+                                this.onUpdate();
+                            },
+
+                            onUpdate:function() {
+                                this.target.css("left", this.left);
+                                this.target.css("top", this.top);
+                                this.target.css("z-index", this.zindex);
+                            },
+
+                            getData:function() {
+                                var position =  this.target.position();
+                                return {
+                                    left:position.left,
+                                    top:position.top,
+                                    zindex:this.target.css("z-index"),
+                                };
+                            }
+                        };
+                    }
+                },
             }
         },
         init: function () {
             $.fn.extend({
-                 "updateCardInspection":function() {
-                    $(".panel-inspection").hide();
-                    $("#panel-card-inspection").show();
-                    $(".card.card-shadow").removeClass("card-shadow card-selected");
-                    $(this).addClass("card-shadow card-selected");
-                    Controller.api.updateCardInspection();
+                getComponentMap:function() {
+                    var componentMap = $(this).data("ComponentMap");
+                    if (typeof componentMap === "undefined") {
+                        componentMap = [];
+                        $(this).data("ComponentMap", componentMap);
+                    }
+                    return componentMap;
                 },
-                "updateUnderpanInspection":function() {
-                    $(".panel-inspection").hide();
-                    $("#panel-underpan-inspection").show();
-                    $(".card.card-shadow").removeClass("card-shadow card-selected");
-                    $(this).addClass("card-shadow card-selected");
-                    Controller.api.updateUnderpanInspection();
+                addComponent:function(name, comp) {
+                    $(this).getComponentMap()[name] = comp;
+                 },
+
+                updateComponent:function() {
+                    var componentMap = $(this).getComponentMap();
+                    for(const idx in componentMap) {
+                        componentMap[idx].onUpdate()
+                    }
                 },
 
-                "bindUnderpan": function () {
-                    $(this).on("click", function(){
-                        $(this).updateUnderpanInspection();
+                updateInspection:function() {
+                    var panel_inspection = $("#panel-inspection");
+                    panel_inspection.html("");
+
+                    var componentMap = $(this).getComponentMap();
+                    for(const idx in componentMap) {
+                        panel_inspection.append(componentMap[idx].getInspection());
+                    }
+                    for(const idx in componentMap) {
+                        componentMap[idx].onUpdateInspection();
+                    }
+                },
+
+                bindAttrInput:function(callback, component) {
+                    $(".attr-input-card", this).on("change", function(env){
+                        callback.call(component, this);
+                        Controller.api.sync();
                     });
                 },
 
-                "bindCard": function () {
+                bindUnderpan: function () {
+                    $(this).on("click", function(){
+                        $(".card.card-shadow").removeClass("card-shadow card-selected");
+                        $(this).addClass("card-shadow card-selected");
+                        $(this).updateInspection();
+                    });
+                    return $(this);
+                },
+
+                bindCard: function () {
                     $(this).draggable({
                         opacity:true,
                         scroll: false,
                         containment: "#containment-wrapper",
                         start:function( event, ui ) {
-                            $(this).updateCardInspection();
+                            $(this).getComponentMap()["position"].onUpdateInspection();
                         },
                         drag: function( event, ui ) {
-                            Controller.api.updateCardInspection();
+                            $(this).getComponentMap()["position"].onUpdateInspection();
                         },
                         stop: function( event, ui ) {
                             Controller.api.sync();
                         }
                     });
-
-                    $(this).on("click", function(){
-                        $(this).updateCardInspection();
+                    $(this).on("click", function(ent){
+                        $(".card.card-shadow").removeClass("card-shadow card-selected");
+                        $(this).addClass("card-shadow card-selected");
+                        $(this).updateInspection();
                     });
+                    return $(this);
                 }
             })
         }
