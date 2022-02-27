@@ -3,7 +3,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
         index: function () {
             var panel_underpan = $( "#panel-underpan" );
             var panel_card = $( "#panel-card" );
-            var panel_inspection = $( "#panel-inspection" );
+            var panel_inspection_component = $( "#panel-inspection-component" );
 
             panel_underpan.sortable({
                 start:function( event, ui) {
@@ -69,9 +69,12 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 callback:{
                     onClick:function(event, treeId, treeNode) {
                         if (typeof treeNode.rowid != "undefined") {
+                            $(".panel-inspection").hide();
+                            $("#panel-inspection-stage").show();
+
                             panel_underpan.html("");
                             panel_card.html("");
-                            panel_inspection.html("");
+                            panel_inspection_component.html("");
 
                             const underpans = treeNode.content.underpans;
                             for(const  i in underpans){
@@ -107,7 +110,9 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             url: "index/del",
                             data: {id: treeNode.rowid}
                         }, function (data, ret) {
-
+                            panel_underpan.html("");
+                            panel_card.html("");
+                            panel_inspection.html("");
                             return false;
                         });
                     },
@@ -192,7 +197,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
             $("#btn-card-delete").on("click", function(){
                 $(".card-selected").remove();
                 Controller.api.sync(true);
-                panel_inspection.html("");
+                panel_inspection_component.html("");
             });
 
 
@@ -747,18 +752,18 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 onAddComponent:function (name) {
                     const ele = $(this);
                     var component = ele.addComponent(name, Controller.api.components[name].create(ele));
-                    $("#panel-inspection").append(component.getInspection());
+                    $("#panel-inspection-component").append(component.getInspection());
                     component.onAttach();
                     ele.updateComponent();
                 },
 
                 updateInspection:function() {
-                    var panel_inspection = $("#panel-inspection");
-                    panel_inspection.html("");
+                    var panel_inspection_component = $("#panel-inspection-component");
+                    panel_inspection_component.html("");
 
                     var componentMap = $(this).getComponentMap();
                     for(const idx in componentMap) {
-                        panel_inspection.append(componentMap[idx].getInspection());
+                        panel_inspection_component.append(componentMap[idx].getInspection());
                     }
                     for(const idx in componentMap) {
                         componentMap[idx].onUpdateInspection();
@@ -779,6 +784,8 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
 
                 bindUnderpan: function () {
                     $(this).on("click", function(){
+                        $(".panel-inspection").hide();
+                        $("#panel-inspection-card").show();
                         $(".card.card-shadow").removeClass("card-shadow card-selected");
                         $(this).addClass("card-shadow card-selected");
                         $(this).updateInspection();
@@ -803,6 +810,9 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                         }
                     });
                     $(this).on("click", function(ent){
+                        $(".panel-inspection").hide();
+                        $("#panel-inspection-card").show();
+
                         $(".card.card-shadow").removeClass("card-shadow card-selected");
                         $(this).addClass("card-shadow card-selected");
                         $(this).updateInspection();

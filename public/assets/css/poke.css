@@ -139,24 +139,24 @@ div[class*='suit']:after {
 .form-inline-30 {
     width: 33%
 }
-#panel-inspection {
+#panel-inspection-component {
 
     padding-right: 7px;
     padding-left: 7px;
 }
 
-#panel-inspection .panel {
+#panel-inspection-component .panel {
     margin-bottom: 5px;
 }
 
-#panel-inspection .panel-heading {
+#panel-inspection-component .panel-heading {
     padding: 2px 15px;
     height: 19px;
 }
-#panel-inspection .panel-body {
+#panel-inspection-component .panel-body {
     padding: 9px;
 }
 
-#panel-inspection .panel-heading .panel-title {
+#panel-inspection-component .panel-heading .panel-title {
     font-size: 11px;
 }
