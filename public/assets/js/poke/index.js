@@ -107,6 +107,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             url: "index/del",
                             data: {id: treeNode.rowid}
                         }, function (data, ret) {
+
                             return false;
                         });
                     },
@@ -193,6 +194,18 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 Controller.api.sync(true);
                 panel_inspection.html("");
             });
+
+
+            $('#btn-component-add').on('show.bs.dropdown', function () {
+                $(".card-selected").onShowComponentMenu();
+            });
+
+
+            $('#btn-component-add .dropdown-menu li').on('click', function () {
+                $(".card-selected").onAddComponent($(this).data("name"));
+                Controller.api.sync(true);
+            })
+
             window.onresize = function(){
                 $("#contenter-card").css({width:panel_underpan.css("width")});
             };
@@ -278,19 +291,34 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
 
             components: {
                 face:{
+                    suits:{
+                        'diamonds':'suitdiamonds',
+                        'hearts':'suithearts',
+                        'clubs':'suitclubs',
+                        'spades':'suitspades',
+                        'rand':'suitrand',
+                        'wan':'suitwan'
+                    },
+                    containment: ["underpan", "card"],
                     create:function(target, def) {
                         return {
                             data: $.extend({
                                 name:"A",
-                                color:"suitdiamonds",
+                                color:Controller.api.components.face.suits['spades'],
                             }, def),
+                            onlyone:true,
                             inspection:null,
                             target:target,
+                            primary:true,
+                            repels:[],
 
                             getInspection:function() {
                                 this.inspection = $(Template("tmpl-component-card-face", this));
                                 this.inspection.bindAttrInput(this.onInspectionChanged, this);
                                 return this.inspection;
+                            },
+                            enable:function(v) {
+                                $(".attr-input-card", this.inspection).prop('disabled', !v)
                             },
 
                             onUpdateInspection:function() {
@@ -315,7 +343,13 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
 
                             onUpdate:function() {
                                 $("p", target).html(this.data.name);
-                                target.removeClass("*suit");
+
+                                var suitClass = [];
+                                var suits = Controller.api.components.face.suits;
+                                for(var i in suits) {
+                                    suitClass.push(suits[i]);
+                                }
+                                target.removeClass(suitClass.join(" "));
                                 target.addClass(this.data.color)
                             },
 
@@ -323,24 +357,42 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                                 return this.data;
                             },
 
+                            setData:function(v) {
+                                this.data = $.extend(this.data, v);
+                            },
+
                             onRemove:function() {
-                                this.inspection.shake();
-                                return false;
+                                this.inspection.remove();
+                            },
+
+                            onAttach:function() {
+
+                            },
+                            update:function() {
+                                this.onUpdate();
+                                this.onUpdateInspection();
                             }
                         };
                     }
                 },
                 direction:{
+                    containment: ["underpan", "card"],
+
                     create:function(target, def) {
                         return {
-                            direction:def || "front",
+                            direction: def || "front",
                             inspection:null,
                             target:target,
+                            onlyone:true,
+                            repels:[],
 
                             getInspection:function() {
                                 this.inspection = $(Template("tmpl-component-card-direction", this));
                                 this.inspection.bindAttrInput(this.onInspectionChanged, this);
                                 return this.inspection;
+                            },
+                            enable:function(v) {
+                                $(".attr-input-card", this.inspection).prop('disabled', !v)
                             },
 
                             onUpdateInspection:function() {
@@ -367,15 +419,181 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                                 return this.direction;
                             },
 
+                            setData:function(v) {
+                                this.direction = v;
+                            },
                             onRemove:function() {
                                 target.removeClass("back front");
                                 this.inspection.remove();
+                            },
+
+                            onAttach:function() {
+
+                            },
+                            update:function() {
+                                this.onUpdate();
+                                this.onUpdateInspection();
                             }
                         };
                     }
                 },
+                rand:{
+                    containment: ["underpan", "card"],
 
+                    create:function(target, def) {
+                        return {
+                            inspection:null,
+                            target:target,
+                            onlyone:true,
+                            scope: def || "",
+                            repels:['wan'],
+
+                            getInspection:function() {
+                                this.inspection = $(Template("tmpl-component-card-rand", this));
+                                this.inspection.bindAttrInput(this.onInspectionChanged, this);
+                                return this.inspection;
+                            },
+
+                            enable:function(v) {
+                                $(".attr-input-card", this.inspection).prop('disabled', !v)
+                            },
+
+                            onUpdateInspection:function() {
+                                this.setFaceComponent(false);
+                                $("#card-scope", this.inspection).val(this.scope);
+                            },
+
+                            setFaceComponent:function(v) {
+                                var face_component = $(this.target).getComponent("face");
+                                face_component.enable(v);
+                                if (v) {
+                                    face_component.setData({
+                                        name:"A",
+                                        color:Controller.api.components.face.suits['spades']
+                                    });
+                                } else {
+                                    face_component.setData({
+                                        name:"R",
+                                        color:Controller.api.components.face.suits['rand']
+                                    });
+                                }
+                                face_component.update();
+                            },
+
+                            onInspectionChanged: function (input) {
+                                var input_id = $(input).attr("id");
+                                switch (input_id) {
+                                    case "card-scope": {
+                                        this.scope = $(input).val();
+                                        break;
+                                    }
+                                }
+                                this.onUpdate();
+                            },
+
+                            onUpdate:function() {
+                            },
+
+                            getData:function() {
+                                return this.scope;
+                            },
+
+                            setData:function(v) {
+                                this.scope = v;
+                            },
+                            onRemove:function() {
+                                this.inspection.remove();
+                                this.setFaceComponent(true);
+                            },
+
+                            onAttach:function() {
+                                this.setFaceComponent(false);
+                                for(const i in this.repels) {
+                                    $(this.target).removeComponent(this.repels[i]);
+                                }
+                            },
+                            update:function() {
+                                this.onUpdate();
+                                this.onUpdateInspection();
+                            }
+                        };
+                    }
+                },
+                wan:{
+                    containment: ["underpan", "card"],
+
+                    create:function(target, def) {
+                        return {
+                            inspection:null,
+                            target:target,
+                            onlyone:true,
+                            repels:['rand'],
+
+                            getInspection:function() {
+                                this.inspection = $(Template("tmpl-component-card-wan", this));
+                                this.inspection.bindAttrInput(this.onInspectionChanged, this);
+                                return this.inspection;
+                            },
+                            enable:function(v) {
+
+                            },
+
+                            onUpdateInspection:function() {
+                                this.setFaceComponent(false);
+                            },
+
+                            onInspectionChanged: function (input) {
+                                this.onUpdate();
+                            },
+                            setFaceComponent:function(v) {
+                                var face_component = $(this.target).getComponent("face");
+                                face_component.enable(v);
+                                if (v) {
+                                    face_component.setData({
+                                        name:"A",
+                                        color:Controller.api.components.face.suits['spades']
+                                    });
+                                } else {
+                                    face_component.setData({
+                                        name:"W",
+                                        color:Controller.api.components.face.suits['wan']
+                                    });
+                                }
+                                face_component.update();
+                            },
+
+                            onUpdate:function() {
+                            },
+
+                            getData:function() {
+                                return true;
+                            },
+
+                            setData:function(v) {
+
+                            },
+                            onRemove:function() {
+                                this.inspection.remove();
+                                this.setFaceComponent(true);
+                            },
+
+                            onAttach:function() {
+                                this.setFaceComponent(false);
+                                for(const i in this.repels) {
+                                    $(this.target).removeComponent(this.repels[i]);
+                                }
+                            },
+
+                            update:function() {
+                                this.onUpdate();
+                                this.onUpdateInspection();
+                            }
+                        };
+                    }
+                },
                 position: {
+                    containment: ["card"],
+
                     create:function(target, def) {
                         return {
                             left:def.left,
@@ -383,18 +601,24 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             zindex:def.zindex,
                             inspection:null,
                             target:target,
+                            onlyone:true,
+                            primary:true,
+                            repels:[],
 
                             getInspection:function() {
                                 this.inspection = $(Template("tmpl-component-card-position", this));
                                 this.inspection.bindAttrInput(this.onInspectionChanged, this);
                                 return this.inspection;
                             },
+                            enable:function(v) {
+                                $(".attr-input-card", this.inspection).prop('disabled', !v)
+                            },
 
                             onUpdateInspection:function() {
-                                $("#card-zindex", this.inspection).val(this.target.css("z-index"));
+                                $("#card-zindex", this.inspection).val(this.zindex = this.target.css("z-index"));
                                 var position =  this.target.position();
-                                $("#card-left", this.inspection).val(position.left);
-                                $("#card-top", this.inspection).val(position.top);
+                                $("#card-left", this.inspection).val(this.left =  position.left);
+                                $("#card-top", this.inspection).val(this.top =  position.top);
                             },
 
                             onInspectionChanged: function (input) {
@@ -434,9 +658,21 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                                 };
                             },
 
+                            setData:function(v) {
+
+                            },
+
                             onRemove:function() {
-                                this.inspection.shake();
-                                return false;
+                                this.inspection.remove();
+
+                            },
+
+                            onAttach:function() {
+
+                            },
+                            update:function() {
+                                this.onUpdate();
+                                this.onUpdateInspection();
                             }
                         };
                     }
@@ -455,11 +691,20 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 },
                 addComponent:function(name, component) {
                     $(this).getComponentMap()[name] = component;
+                    return component;
                  },
                 removeComponent:function(component) {
                     var componentMap = $(this).getComponentMap();
                     for(const idx in componentMap) {
-                        if (componentMap[idx] === component) {
+                        if (typeof component === "string") {
+                            var iss = idx === component;
+                            if (iss) {
+                                component = componentMap[idx];
+                            }
+                        } else {
+                            var iss = componentMap[idx] === component;
+                        }
+                        if (iss) {
                             if (component.onRemove() !== false) {
                                 delete componentMap[idx];
                             } else {
@@ -471,8 +716,40 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 updateComponent:function() {
                     var componentMap = $(this).getComponentMap();
                     for(const idx in componentMap) {
-                        componentMap[idx].onUpdate()
+                        componentMap[idx].update()
                     }
+                },
+
+                getComponent:function(name) {
+                    var componentMap = $(this).getComponentMap();
+                    return componentMap[name] || null;
+                },
+
+                onShowComponentMenu:function() {
+                    $("#btn-component-add .dropdown-menu li").show();
+
+                    var panel_id = $(this).parent().data("panel");
+                    for(const i in Controller.api.components) {
+                        const component = Controller.api.components[i];
+                        if ($.inArray(panel_id, component.containment) === -1) {
+                            $("#btn-component-add [data-name='"+i+"']").hide();
+                        }
+                    }
+
+                    var componentMap = $(this).getComponentMap();
+                    for(const i in componentMap) {
+                        if (componentMap[i].onlyone) {
+                            $("#btn-component-add [data-name='"+i+"']").hide();
+                        }
+                    }
+                },
+
+                onAddComponent:function (name) {
+                    const ele = $(this);
+                    var component = ele.addComponent(name, Controller.api.components[name].create(ele));
+                    $("#panel-inspection").append(component.getInspection());
+                    component.onAttach();
+                    ele.updateComponent();
                 },
 
                 updateInspection:function() {

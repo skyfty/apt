@@ -50,11 +50,11 @@
             <div id="containment-wrapper">
 
                 <div id="contenter-card">
-                    <div id="panel-card">
+                    <div id="panel-card" data-panel="card">
                     </div>
                 </div>
 
-                <div id="panel-underpan">
+                <div id="panel-underpan" data-panel="underpan">
 
                 </div>
             </div>
@@ -73,22 +73,25 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xs-6">
-                                <!-- Single button -->
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-default dropdown-toggle  btn-sm  btn-block  " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        增加组件 <span class="caret"></span>
+                            <div class="col-xs-12">
+                                <div class="dropdown"  id="btn-component-add">
+                                    <button id="dLabel"  class="btn btn-default btn-block  btn-sm" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        增加组件
+                                        <span class="caret"></span>
                                     </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="#">Action</a></li>
-                                        <li><a href="#">Another action</a></li>
-                                        <li><a href="#">Something else here</a></li>
-                                        <li role="separator" class="divider"></li>
-                                        <li><a href="#">Separated link</a></li>
+                                    <ul class="dropdown-menu" aria-labelledby="dLabel">
+                                        <li  data-name="position"><a href="#">位置</a></li>
+                                        <li  data-name="direction"><a href="#">方向</a></li>
+                                        <li data-name="face"><a href="#">牌面</a></li>
+                                        <li data-name="rand"><a href="#">随机</a></li>
+                                        <li data-name="wan"><a href="#">万能</a></li>
+                                        <li data-name="custom"><a href="#">自定义</a></li>
                                     </ul>
                                 </div>
                             </div>
-                            <div class="col-xs-6">
+                        </div>
+                        <div class="row" style="padding-top: 10px">
+                            <div class="col-xs-12">
                                 <button type="button" id="btn-card-delete" class="btn btn-danger btn-block  btn-sm">删除</button>
                             </div>
                         </div>
@@ -123,7 +126,7 @@
 <script id="tmpl-component-card-direction" type="text/html">
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title pull-left">正反面</h3><a href="#" class="panel-title pull-right btn-component-remove"><i class="fa fa-remove"></i></a>
+            <h3 class="panel-title pull-left">正反面</h3><a href="#" class="panel-title pull-right btn-component-remove <%=primary?'hide':'show' %>"><i class="fa fa-remove"></i></a>
         </div>
         <div class="panel-body">
             <fieldset>
@@ -136,10 +139,36 @@
     </div>
 </script>
 
+<script id="tmpl-component-card-rand" type="text/html">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title pull-left">随机</h3><a href="#" class="panel-title pull-right btn-component-remove <%=primary?'hide':'show' %>"><i class="fa fa-remove"></i></a>
+        </div>
+        <div class="panel-body">
+            <fieldset>
+                <textarea class="form-control  attr-input-card" id="card-scope" rows="3"></textarea>
+
+            </fieldset>
+        </div>
+    </div>
+</script>
+
+
+<script id="tmpl-component-card-wan" type="text/html">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title pull-left">万能</h3><a href="#" class="panel-title pull-right btn-component-remove <%=primary?'hide':'show' %>"><i class="fa fa-remove"></i></a>
+        </div>
+        <div class="panel-body">
+            没有可编辑属性
+        </div>
+    </div>
+</script>
+
 <script id="tmpl-component-card-position" type="text/html">
     <div class="panel panel-default panel-component">
         <div class="panel-heading">
-            <h3 class="panel-title pull-left">位置</h3><a href="#" class="panel-title pull-right btn-component-remove"><i class="fa fa-remove"></i></a>
+            <h3 class="panel-title pull-left">位置</h3><a href="#" class="panel-title pull-right btn-component-remove <%=primary?'hide':'show' %>"><i class="fa fa-remove"></i></a>
         </div>
         <div class="panel-body">
             <fieldset>
@@ -166,7 +195,7 @@
 <script id="tmpl-component-card-face" type="text/html">
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title pull-left">牌面</h3><a href="#" class="panel-title pull-right btn-component-remove"><i class="fa fa-remove"></i></a>
+            <h3 class="panel-title pull-left">牌面</h3><a href="#" class="panel-title pull-right btn-component-remove <%=primary?'hide':'show' %>"><i class="fa fa-remove"></i></a>
         </div>
         <div class="panel-body">
             <fieldset>
