@@ -1,6 +1,8 @@
-define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, undefined) {
+define(['jquery', 'bootstrap', 'poke', 'ztree', 'jquery-layout'], function ($, undefined, Poke, undefined, undefined) {
     var Controller = {
         index: function () {
+            // $("body").layout({ applyDemoStyles: true });
+
             var panel_underpan = $( "#panel-underpan" );
             var panel_card = $( "#panel-card" );
             var panel_inspection_component = $( "#panel-inspection-component" );
@@ -212,7 +214,12 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
             })
 
             window.onresize = function(){
-                $("#contenter-card").css({width:panel_underpan.css("width")});
+                const bodyHeight = window.height;
+                // $(".panel-stage-wrapper").css({height:bodyHeight});
+                // $("#contenter-card").css({
+                //     width:panel_underpan.css("width"),
+                //
+                // });
             };
             window.onresize();
         },
@@ -601,9 +608,11 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
 
                     create:function(target, def) {
                         return {
-                            left:def.left,
-                            top:def.top,
-                            zindex:def.zindex,
+                            data:{
+                                left:def.left,
+                                top:def.top,
+                                zindex:def.zindex
+                            },
                             inspection:null,
                             target:target,
                             onlyone:true,
@@ -620,25 +629,25 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             },
 
                             onUpdateInspection:function() {
-                                $("#card-zindex", this.inspection).val(this.zindex = this.target.css("z-index"));
+                                $("#card-zindex", this.inspection).val(this.data.zindex = this.target.css("z-index"));
                                 var position =  this.target.position();
-                                $("#card-left", this.inspection).val(this.left =  position.left);
-                                $("#card-top", this.inspection).val(this.top =  position.top);
+                                $("#card-left", this.inspection).val(this.data.left =  position.left);
+                                $("#card-top", this.inspection).val(this.data.top =  position.top);
                             },
 
                             onInspectionChanged: function (input) {
                                 var input_id = $(input).attr("id");
                                 switch (input_id) {
                                     case "card-left": {
-                                        this.left =  $(input).val();
+                                        this.data.left =  $(input).val();
                                         break;
                                     }
                                     case "card-top": {
-                                        this.top =  $(input).val();
+                                        this.data.top =  $(input).val();
                                         break;
                                     }
                                     case "card-zindex": {
-                                        this.zindex =  $(input).val();
+                                        this.data.zindex =  $(input).val();
                                         break;
                                     }
                                 }
@@ -647,9 +656,9 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
 
                             onUpdate:function() {
                                 var style = {
-                                    "left":this.left + "px",
-                                    "top":this.top + "px",
-                                    "z-index":this.zindex,
+                                    "left":this.data.left + "px",
+                                    "top":this.data.top + "px",
+                                    "z-index":this.data.zindex,
                                 };
                                 this.target.css(style);
                             },
@@ -664,7 +673,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             },
 
                             setData:function(v) {
-
+                                this.data = $.extend(this.data, v);
                             },
 
                             onRemove:function() {
@@ -800,10 +809,10 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                         containment: "#containment-wrapper",
                         start:function( event, ui ) {
                             $(this).click();
-                            $(this).getComponentMap()["position"].onUpdateInspection();
+                            $(this).getComponent("position").onUpdateInspection();
                         },
                         drag: function( event, ui ) {
-                            $(this).getComponentMap()["position"].onUpdateInspection();
+                            $(this).getComponent("position").onUpdateInspection();
                         },
                         stop: function( event, ui ) {
                             Controller.api.sync(true);
@@ -816,6 +825,14 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                         $(".card.card-shadow").removeClass("card-shadow card-selected");
                         $(this).addClass("card-shadow card-selected");
                         $(this).updateInspection();
+                    });
+                    $(this).on("dblclick", function(e){
+                        var component = $(this).getComponent("position");
+                        var data = component.getData();
+                        data.zindex++;
+                        component.setData(data);
+                        component.update();
+                        return false;
                     });
                     return $(this);
                 },

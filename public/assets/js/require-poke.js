@@ -42,6 +42,8 @@ require.config({
         'jsoneditor': '../libs/jquery-jsoneditor/jquery.jsoneditor.min',
         'x-editable': '../libs/x-editable/dist/bootstrap3-editable/js/bootstrap-editable',
         'dragsort': '../libs/fastadmin-dragsort/jquery.dragsort',
+        'jquery-layout': '../libs/jquery-layout/source/stable/jquery.layout_and_plugins',
+
     },
     // shim依赖配置
     shim: {
@@ -52,6 +54,10 @@ require.config({
             exports: '$.fn.extend'
         },
         'jquery-sortable': {
+            deps: ['jquery'],
+            exports: '$.fn.extend'
+        },
+        'jquery-layout': {
             deps: ['jquery'],
             exports: '$.fn.extend'
         },
