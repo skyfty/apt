@@ -118,15 +118,9 @@
     content: "?";
     color: #ff0000;
 }
-.suitrand {
-    background: #e5f941;
-}
 .suitwan:before, .suitwan:after {
     content: "∞";
     color: #ff0000;
-}
-.suitwan {
-    background: #f7d1f6;
 }
 div[class*='suit']:before {
     position: absolute;

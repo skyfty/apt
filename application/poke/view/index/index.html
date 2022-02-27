@@ -199,29 +199,35 @@
         </div>
         <div class="panel-body">
             <fieldset>
-                <label for="name">数字</label>
-                <select class="form-control  input-sm attr-input-card" id="card-name" value="<%=name%>">
-                    <option value="A">A</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="J">J</option>
-                    <option value="Q">Q</option>
-                    <option value="K">K</option>
-                </select>
-                <label for="email">花色</label>
-                <select class="form-control  input-sm attr-input-card" id="card-color" value="<%=color%>">
-                    <option value="suitdiamonds">♦</option>
-                    <option value="suithearts">♥</option>
-                    <option value="suitclubs">♣</option>
-                    <option value="suitspades">♠</option>
-                </select>
+                <form class="row">
+                    <div class="form-group col-xs-6">
+                        <label for="name">数字</label>
+                        <select class="form-control  input-sm attr-input-card" id="card-name" value="<%=name%>">
+                            <option value="A">A</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="J">J</option>
+                            <option value="Q">Q</option>
+                            <option value="K">K</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-xs-6">
+                        <label for="email">花色</label>
+                        <select class="form-control  input-sm attr-input-card" id="card-color" value="<%=color%>">
+                            <option value="suitdiamonds">♦</option>
+                            <option value="suithearts">♥</option>
+                            <option value="suitclubs">♣</option>
+                            <option value="suitspades">♠</option>
+                        </select>
+                    </div>
+                </form>
             </fieldset>
         </div>
     </div>
