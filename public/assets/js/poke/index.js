@@ -1,8 +1,6 @@
-define(['jquery', 'bootstrap', 'poke', 'ztree', 'jquery-layout'], function ($, undefined, Poke, undefined, undefined) {
+define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, undefined) {
     var Controller = {
         index: function () {
-            // $("body").layout({ applyDemoStyles: true });
-
             var panel_underpan = $( "#panel-underpan" );
             var panel_card = $( "#panel-card" );
             var panel_inspection_component = $( "#panel-inspection-component" );
