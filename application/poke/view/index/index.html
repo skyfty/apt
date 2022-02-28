@@ -9,14 +9,7 @@
 
     <link rel="shortcut icon" href="__CDN__/assets/img/favicon.ico" />
     <!-- Loading Bootstrap -->
-    <link href="__CDN__/assets/css/poke.css?v={$site.version}" rel="stylesheet">
-
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
-    <!--[if lt IE 9]>
-    <script src="__CDN__/assets/js/html5shiv.js"></script>
-    <script src="__CDN__/assets/js/respond.min.js"></script>
-
-    <![endif]-->
+    <link href="__CDN__/assets/css/poke2.css?v={$site.version}" rel="stylesheet">
 
     <script type="text/javascript">
         var require = {
@@ -29,88 +22,91 @@
     </script>
 </head>
 
-<body>
-<div class="container-fluid " onselectstart="return false">
-    <div class="row">
-        <div class="col-xs-2 col-md-2 col-lg-2 panel-tree-level-wrapper panel-stage-wrapper">
-            <div class=" panel panel-default">
-                <div class="panel-heading">关卡树</div>
-                <div class="panel-body">
-                    <div class="btn-group btn-group-xs" role="group" aria-label="...">
-                        <button type="button" id="add-level" class="btn btn-default">新建</button>
-                        <button type="button" id="downlaod-level" class="btn btn-default">下载</button>
-                    </div>
-                    <ul id="treeDemo" class="ztree"></ul>
-                </div>
+<body class="easyui-layout" onselectstart="return false">
+<div class="  panel-stage-wrapper" data-options="region:'east',split:true" title="检查器" style="width:300px;">
+    <div id="panel-inspection-card" class="panel-inspection" >
+        <div>
+            <div id="panel-inspection-component" class="easyui-accordion">
 
             </div>
         </div>
-        <div  class="col-xs-8  col-md-8 col-lg-8  panel-stage-wrapper " >
-            <div id="containment-wrapper">
+        <div class="panel-inspection-button">
+            <div class="dropdown"  id="btn-component-add">
+                <button class="btn btn-default btn-block  btn-sm" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    增加组件
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dLabel">
+                    <li  data-name="position"><a href="#">位置</a></li>
+                    <li  data-name="direction"><a href="#">方向</a></li>
+                    <li data-name="face"><a href="#">牌面</a></li>
+                    <li data-name="rand"><a href="#">随机</a></li>
+                    <li data-name="wan"><a href="#">万能</a></li>
+                    <li data-name="custom"><a href="#">自定义</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="panel-inspection-button">
+            <button type="button" id="btn-card-delete" class="btn btn-danger btn-block  btn-sm">删除</button>
+        </div>
+    </div>
+    <div id="panel-inspection-level" class="panel-inspection">
+        <div>
+            <div>
 
-                <div id="contenter-card">
-                    <div id="panel-card" data-panel="card">
-                    </div>
-                </div>
-
-                <div id="panel-underpan" data-panel="underpan">
-
-                </div>
             </div>
         </div>
 
-        <div  class="col-xs-2  panel-stage-wrapper">
-            <div class=" panel panel-default">
-                <div class="panel-heading">检查器</div>
-                <div class="panel-body">
-                    <div id="panel-inspection-card" class="panel-inspection" >
-                        <div class="row">
-                            <div class="col-xs-12" id="panel-inspection-component">
+    </div>
+    <div id="panel-inspection-stage" class="panel-inspection">
+        <div>
+            <div>
 
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <div class="dropdown"  id="btn-component-add">
-                                    <button id="dLabel"  class="btn btn-default btn-block  btn-sm" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        增加组件
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dLabel">
-                                        <li  data-name="position"><a href="#">位置</a></li>
-                                        <li  data-name="direction"><a href="#">方向</a></li>
-                                        <li data-name="face"><a href="#">牌面</a></li>
-                                        <li data-name="rand"><a href="#">随机</a></li>
-                                        <li data-name="wan"><a href="#">万能</a></li>
-                                        <li data-name="custom"><a href="#">自定义</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row" style="padding-top: 10px">
-                            <div class="col-xs-12">
-                                <button type="button" id="btn-card-delete" class="btn btn-danger btn-block  btn-sm">删除</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="panel-inspection-stage" class="panel-inspection">
-                        <div class="row">
-                            <div class="col-xs-12">
-
-                            </div>
-                        </div>
-
-                    </div>
-                    <div id="panel-inspection-underpan" class="panel-inspection">
-                        <div class="row">
-                            <div class="col-xs-12">
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
             </div>
+        </div>
+
+    </div>
+    <div id="panel-inspection-underpan" class="panel-inspection">
+        <div>
+            <div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="menu-tree-level" class="easyui-menu" style="width:120px;">
+    <div id="edit-level-tree" data-options="iconCls:'icon-edit'">编辑</div>
+    <div id="remove-level-tree" data-options="iconCls:'icon-remove'">删除</div>
+</div>
+<div title="关卡" style="width:200px;" data-options="
+				region:'west',split:true,
+				tools:[{
+					iconCls:'icon-add',
+					handler:function(){
+						$('#menu-tree-level').addLevel();
+					}
+				},{
+					iconCls:'icon-save',
+					handler:function(){
+						$('#menu-tree-level').downloadLevels();
+					}
+				},{
+					iconCls:'icon-cancel',
+					handler:function(){
+						$('#menu-tree-level').deleteLevels();
+					}
+				}]">
+    <ul class="easyui-tree" id="tree-level"> </ul>
+</div>
+<div data-options="region:'center'">
+    <div class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'"  title="牌桌" class="panel-stage-wrapper" id="contenter-card">
+            <div id="panel-card" data-panel="card" class="panel-grid-line">
+            </div>
+        </div>
+        <div  id="panel-underpan"  title="底牌" data-panel="underpan" data-options="region:'south',split:true" style="height:140px;">
         </div>
     </div>
 </div>
@@ -120,7 +116,7 @@
 </html>
 
 <script id="tmpl-card" type="text/html">
-    <div class="card ui-widget-content" style="z-index: <%=zindex%>;left:<%=left%>px;top:<%=top%>px">
+    <div class="card ui-widget-content" style="z-index: <%=zindex%>;left:<%=left%>px;top:<%=top%>px" data-panel="<%=panel%>">
         <div>
             <p><%=name%></p>
         </div>
@@ -128,13 +124,10 @@
 </script>
 
 <script id="tmpl-component-card-direction" type="text/html">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title pull-left">正反面</h3><a href="#" class="panel-title pull-right btn-component-remove <%=primary?'hide':'show' %>"><i class="fa fa-remove"></i></a>
-        </div>
-        <div class="panel-body">
+    <div  title="正反面" class="panel-component">
+        <div class="form-group">
             <fieldset>
-                <select class="form-control  input-sm attr-input-card" id="card-direction">
+                <select class="form-control input-sm attr-input-card" id="card-direction">
                     <option value="front">正面</option>
                     <option value="back">反面</option>
                 </select>
@@ -144,13 +137,10 @@
 </script>
 
 <script id="tmpl-component-card-rand" type="text/html">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title pull-left">随机</h3><a href="#" class="panel-title pull-right btn-component-remove <%=primary?'hide':'show' %>"><i class="fa fa-remove"></i></a>
-        </div>
-        <div class="panel-body">
+    <div title="随机" class="panel-component">
+        <div class="form-group">
             <fieldset>
-                <textarea class="form-control  attr-input-card" id="card-scope" rows="3"></textarea>
+                <textarea class="form-control input-sm attr-input-card" id="card-scope" rows="3"></textarea>
 
             </fieldset>
         </div>
@@ -159,80 +149,62 @@
 
 
 <script id="tmpl-component-card-wan" type="text/html">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title pull-left">万能</h3><a href="#" class="panel-title pull-right btn-component-remove <%=primary?'hide':'show' %>"><i class="fa fa-remove"></i></a>
-        </div>
-        <div class="panel-body">
+    <div title="万能" class="panel-component">
+        <div>
             没有可编辑属性
         </div>
     </div>
 </script>
 
 <script id="tmpl-component-card-position" type="text/html">
-    <div class="panel panel-default panel-component">
-        <div class="panel-heading">
-            <h3 class="panel-title pull-left">位置</h3><a href="#" class="panel-title pull-right btn-component-remove <%=primary?'hide':'show' %>"><i class="fa fa-remove"></i></a>
-        </div>
-        <div class="panel-body">
-            <fieldset>
-                <form class="row">
-                    <div class="form-group col-xs-4">
-                        <label for="card-left">X</label><input type="number" class="form-control  input-sm attr-input-card" id="card-left"/>
-                    </div>
-                    <div class="form-group  col-xs-4">
-                        <label for="card-top">Y</label><input type="number" class="form-control  input-sm attr-input-card" id="card-top"/>
-                    </div>
+    <div  title="位置" class="panel-component">
+        <div class="form-inline">
+            <div class="form-group">
+                <label for="card-left">X: </label><input type="number" class="form-control input-sm attr-input-card" style="width: 70px" id="card-left"/>
+            </div>
+            <div class="form-group">
+                <label for="card-top">Y: </label><input type="number" class="form-control input-sm attr-input-card"  style="width: 70px" id="card-top"/>
+            </div>
 
-                    <div class="form-group  col-xs-4">
-                        <label for="card-zindex">Z</label><input type="number" class="form-control  input-sm attr-input-card" id="card-zindex"/>
-                    </div>
+            <div class="form-group">
+                <label for="card-zindex">Z: </label><input type="number" class="form-control input-sm attr-input-card" style="width: 70px" id="card-zindex"/>
+            </div>
 
-                </form>
-
-            </fieldset>
         </div>
     </div>
 </script>
 
 
 <script id="tmpl-component-card-face" type="text/html">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title pull-left">牌面</h3><a href="#" class="panel-title pull-right btn-component-remove <%=primary?'hide':'show' %>"><i class="fa fa-remove"></i></a>
-        </div>
-        <div class="panel-body">
-            <fieldset>
-                <form class="row">
-                    <div class="form-group col-xs-6">
-                        <label for="name">数字</label>
-                        <select class="form-control  input-sm attr-input-card" id="card-name" value="<%=name%>">
-                            <option value="A">A</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                            <option value="J">J</option>
-                            <option value="Q">Q</option>
-                            <option value="K">K</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-xs-6">
-                        <label for="email">花色</label>
-                        <select class="form-control  input-sm attr-input-card" id="card-color" value="<%=color%>">
-                            <option value="suitdiamonds">♦</option>
-                            <option value="suithearts">♥</option>
-                            <option value="suitclubs">♣</option>
-                            <option value="suitspades">♠</option>
-                        </select>
-                    </div>
-                </form>
-            </fieldset>
+    <div title="牌面" style="padding:10px;" class="panel-component">
+        <div class="form-inline">
+            <div class="form-group">
+                <label for="name">数字: </label>
+                <select class="form-control input-sm attr-input-card" id="card-name" value="<%=name%>">
+                    <option value="A">A</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="J">J</option>
+                    <option value="Q">Q</option>
+                    <option value="K">K</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="email">花色: </label>
+                <select class="form-control input-sm attr-input-card" id="card-color" value="<%=color%>">
+                    <option value="suitdiamonds">♦</option>
+                    <option value="suithearts">♥</option>
+                    <option value="suitclubs">♣</option>
+                    <option value="suitspades">♠</option>
+                </select>
+            </div>
         </div>
     </div>
 </script>

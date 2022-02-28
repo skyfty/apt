@@ -1,11 +1,11 @@
-define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, undefined) {
+define(['jquery', 'bootstrap', 'poke', 'easyui'], function ($, undefined, Poke, undefined, undefined) {
     var Controller = {
         index: function () {
-            var panel_underpan = $( "#panel-underpan" );
-            var panel_card = $( "#panel-card" );
-            var panel_inspection_component = $( "#panel-inspection-component" );
+            Controller.panel_underpan = $( "#panel-underpan" );
+            Controller.panel_card = $( "#panel-card" );
+            Controller.panel_inspection_component = $( "#panel-inspection-component" );
 
-            panel_underpan.sortable({
+            Controller.panel_underpan.sortable({
                 start:function( event, ui) {
                     $(ui.item).click();
                 },
@@ -13,7 +13,11 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                     Controller.api.sync(true);
                 }
             }).on("dblclick", function(){
-                var ele = $(Template("tmpl-card", {})).appendTo(panel_underpan);
+                var node = $("#tree-level").tree('getSelected');
+                if (node == null) {
+                    return;
+                }
+                let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_underpan);
                 ele.bindUnderpan();
                 ele.addComponent("face", Controller.api.components.face.create(ele));
                 ele.updateComponent();
@@ -21,15 +25,18 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 Controller.api.sync(true);
             });
 
-            panel_card.on("dblclick", function(evt){
-                var def = {
-                    "zindex":10,
-                    "left":Math.max(0, evt.offsetX),
-                    "top":Math.max(0, evt.offsetY)
-                };
-                var ele = $(Template("tmpl-card", {})).appendTo(panel_card);
+            $("#contenter-card").on("dblclick", function(evt){
+                var node = $("#tree-level").tree('getSelected');
+                if (node == null) {
+                    return;
+                }
+                let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_card);
                 ele.bindCard();
-                ele.addComponent("position",Controller.api.components.position.create(ele, def));
+                ele.addComponent("position",Controller.api.components.position.create(ele, {
+                    "zindex":10,
+                    "left":Math.max(0, evt.offsetX - 35),
+                    "top":Math.max(0, evt.offsetY - 50)
+                }));
                 ele.addComponent("face",Controller.api.components.face.create(ele));
                 ele.addComponent("direction",Controller.api.components.direction.create(ele));
                 ele.updateComponent();
@@ -37,167 +44,100 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 Controller.api.sync(true);
             });
 
-            var setting = {
-                edit: {
-                    enable: true,
-                    editNameSelectAll: true,
-                    showRemoveBtn: function (treeId, treeNode) {
-                        return treeNode.getParentNode() == null;
-                    },
-                    showRenameBtn: function(treeId, treeNode) {
-                        return treeNode.getParentNode() == null;
+            let nodes = [];
+            for(const i in levels) {
+                nodes.push(Controller.api.getNewLevelTree(levels[i].id, levels[i].name, JSON.parse(levels[i].content)));
+            }
+            $("#tree-level").tree({
+                data:nodes,
+                dnd:true,
+                onContextMenu: function(e,node){
+                    e.preventDefault();
+                    if (typeof node.content !== "undefined") {
+                        $(this).tree('select', node.target);
+                        let ele = $("#menu-tree-level");
+                        ele.menu('show', {
+                            left: e.pageX,
+                            top: e.pageY
+                        });
                     }
                 },
-
-                check: {
-                    enable: true,
-                    nocheckInherit: true
-
+                checkbox:function(node){
+                    return typeof node.content !== "undefined";
                 },
-                view: {
-                    showIcon: function(treeId, treeNode) {
-                        return treeNode.isParent;
-                    },
-                    showLine: false,
-                    selectedMulti: false
+                onBeforeDrag:function(node){
+                    return typeof node.content !== "undefined";
                 },
-                data: {
-                    simpleData: {
-                        enable: true
+                onStopDrag:function(node){
+                    return typeof node.content !== "undefined";
+                },
+                onDragOver:function(node){
+                    return typeof node.content !== "undefined";
+                },
+                onBeforeEdit:function(node){
+                    if (node.text.length == 0) {
+                        setTimeout(function() {
+                            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                            zTree.cancelEditName();
+                            alert("节点名称不能为空.");
+                        }, 0);
+                        return false;
                     }
+                    return true;
                 },
-                callback:{
-                    onClick:function(event, treeId, treeNode) {
-                        if (typeof treeNode.rowid != "undefined") {
-                            $(".panel-inspection").hide();
-                            $("#panel-inspection-stage").show();
+                onClick: function(node){
+                    $(".panel-inspection").hide();
+                    $(node.inspection).show();
 
-                            panel_underpan.html("");
-                            panel_card.html("");
-                            panel_inspection_component.html("");
-
-                            const underpans = treeNode.content.underpans;
-                            for(const  i in underpans){
-                                const components = underpans[i];
-                                var ele = $(Template("tmpl-card", {})).appendTo(panel_underpan);
-                                ele.bindUnderpan();
-                                for(const c in components) {
-                                    ele.addComponent(c,Controller.api.components[c].create(ele, components[c]));
-                                }
-                                ele.updateComponent();
+                    if (typeof node.content !== "undefined") {
+                        Controller.api.resetStage();
+                        for(const  i in node.content.underpans){
+                            const components = node.content.underpans[i];
+                            let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_underpan);
+                            ele.bindUnderpan();
+                            for(const c in components) {
+                                ele.addComponent(c,Controller.api.components[c].create(ele, components[c]));
                             }
+                            ele.updateComponent();
+                        }
 
-                            const cards = treeNode.content.cards;
-                            for(const  i in cards){
-                                const components = cards[i];
-                                var ele = $(Template("tmpl-card", {})).appendTo(panel_card);
-                                ele.bindCard();
-                                for(const c in components) {
-                                    ele.addComponent(c,Controller.api.components[c].create(ele, components[c]));
-                                }
-                                ele.updateComponent();
+                        for(const i in node.content.cards){
+                            const components = node.content.cards[i];
+                            let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_card);
+                            ele.bindCard();
+                            for(const c in components) {
+                                ele.addComponent(c,Controller.api.components[c].create(ele, components[c]));
                             }
-                            panel_card.scrollTop();
-                            panel_card.scrollLeft();
+                            ele.updateComponent();
                         }
-                        $(".card.card-shadow", panel_card).removeClass("card-shadow card-selected");
-                    },
-                    beforeRemove: function (treeId, treeNode) {
-                        return confirm("确认删除 节点 -- " + treeNode.name + " 吗？");
-                    },
-                    onRemove: function (event, treeId, treeNode) {
-                        Fast.api.ajax({
-                            url: "index/del",
-                            data: {id: treeNode.rowid}
-                        }, function (data, ret) {
-                            panel_underpan.html("");
-                            panel_card.html("");
-                            panel_inspection.html("");
-                            return false;
-                        });
-                    },
-                    beforeRename: function(treeId, treeNode, newName, isCancel) {
-                        if (newName.length == 0) {
-                            setTimeout(function() {
-                                var zTree = $.fn.zTree.getZTreeObj("treeDemo");
-                                zTree.cancelEditName();
-                                alert("节点名称不能为空.");
-                            }, 0);
-                            return false;
-                        }
-                        return true;
-                    },
-                    onRename: function (e, treeId, treeNode, isCancel) {
-                        if (isCancel) return;
-                        Fast.api.ajax({
-                            url: "index/rename",
-                            data: {id: treeNode.rowid, name:treeNode.name}
-                        });
-                    },
-
-                    beforeDrag: function (treeId, treeNodes, targetNode, moveType) {
-                        return targetNode.getParentNode() == null;
-                    },
-                    beforeDrop: function (treeId, treeNodes, targetNode, moveType) {
-                        return targetNode.getParentNode() == null;
                     }
                 }
-            };
+            });
 
-            var zNodes = [
-            ];
-            for(var i in levels) {
-                var newNode = Controller.api.getNewLevelTree(levels[i].id, levels[i].name, JSON.parse(levels[i].content));
-                zNodes.push(newNode);
-            }
-            Controller.zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
-
-            $("#add-level").on("click", function(){
-                const level_content = JSON.stringify({"cards":[], "underpans":[]});
+            $("#menu-tree-level #edit-level-tree").on("click", function(){
+                var node = $("#tree-level").tree('getSelected');
+                $("#tree-level").tree('beginEdit',node.target);
+            });
+            $("#menu-tree-level #remove-level-tree").on("click", function(){
+                if (confirm("确认要删除吗") !== true) {
+                    return;
+                }
+                var node = $("#tree-level").tree('getSelected');
                 Fast.api.ajax({
-                    url: "index/add",
-                    data: {name: "新关卡", content:level_content}
+                    url: "index/del",
+                    data: {id: node.id}
                 }, function (data, ret) {
-                    var newNode = Controller.api.getNewLevelTree(data.id, data.name, JSON.parse(data.content));
-                    var treeNode = Controller.zTreeObj.addNodes(null, newNode);
-                    document.getElementById(treeNode[0].tId+"_a").click();
+                    Controller.api.resetStage();
+                    $("#tree-level").tree('remove', node.target);
                     return false;
                 });
             });
 
-            $("#downlaod-level").on("click", function(){
-                const nodes = Controller.zTreeObj.getCheckedNodes(true);
-                const ids = $.map(nodes, function(n, i){
-                    return n.rowid;
-                });
-                var options = {
-                    url: "index/download",
-                    type: "POST",
-                    dataType: "json",
-                    data: {
-                        ids: ids
-                    },
-                    success: function (ret) {
-                        ret = Fast.events.onAjaxResponse(ret);
-                        if (ret.code === 1) {
-                            var ele = $("<a href='"+ret.url+"' target='_blank'>click</a>");
-                            ele[0].click();
-                        } else {
-                            Fast.events.onAjaxError(ret);
-                        }
-                    },
-                    error: function (xhr) {
-                        var ret = {code: xhr.status, msg: xhr.statusText, data: null};
-                        Fast.events.onAjaxError(ret);
-                    }
-                };
-                $.ajax(options);
-            });
-
             $("#btn-card-delete").on("click", function(){
                 $(".card-selected").remove();
+                Controller.panel_inspection_component.resetInspection();
                 Controller.api.sync(true);
-                panel_inspection_component.html("");
+                $("#tree-level").tree('getSelected').target.click();
             });
 
 
@@ -209,34 +149,36 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
             $('#btn-component-add .dropdown-menu li').on('click', function () {
                 $(".card-selected").onAddComponent($(this).data("name"));
                 Controller.api.sync(true);
-            })
-
-            window.onresize = function(){
-                const bodyHeight = window.height;
-                // $(".panel-stage-wrapper").css({height:bodyHeight});
-                // $("#contenter-card").css({
-                //     width:panel_underpan.css("width"),
-                //
-                // });
-            };
-            window.onresize();
+            });
         },
 
         api: {
+            resetStage:function() {
+                Controller.panel_underpan.html("");
+                Controller.panel_card.html("");
+                Controller.panel_inspection_component.resetInspection();
+            },
             getNewLevelTree:function(id, name, cards) {
-                var newNode = {
-                    name:name,
-                    rowid:id,
-                    checked:false,
+                let newNode = {
+                    text:name,
+                    id:id,
+                    state:"closed",
+                    checkbox: true,
+                    iconCls:"icon-add",
+                    inspection:"#panel-inspection-level",
                     children:[
                         {
-                            name:"台桌",
-                            nocheck:true,
-                            children:[]
+                            text:"台桌",
+                            iconCls:"icon-help",
+                            children:[],
+                            checkbox:false,
+                            inspection:"#panel-inspection-stage",
                         },
                         {
-                            name:"底牌",
-                            nocheck:true,
+                            text:"底牌",
+                            iconCls:"icon-help",
+                            checkbox:false,
+                            inspection:"#panel-inspection-underpan",
                             children : []
                         }
                     ],
@@ -244,9 +186,19 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 };
                 return newNode;
             },
-
+            loadLevels: function (url, custom) {
+                let deferred = $.Deferred();
+                $.ajax({type: "GET", url:url,
+                    data: custom
+                }).then(function(ret){
+                    if (ret && ret.rows && ret.rows.length > 0) {
+                        deferred.resolve(ret);
+                    }
+                });
+                return deferred.promise();
+            },
             collectComponentData:function() {
-                var data = {};
+                let data = {};
                 const componentMap = $(this).getComponentMap();
                 for(const i in componentMap) {
                     data[i] = componentMap[i].getData();
@@ -255,22 +207,22 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
             },
 
             push:function() {
-                var cards = [];
+                let cards = [];
                 $("#panel-card .card").each(function(){
                     cards.push(Controller.api.collectComponentData.apply(this));
                 });
-                var underpans=[];
+                let underpans=[];
                 $("#panel-underpan .card").each(function(){
                     underpans.push(Controller.api.collectComponentData.apply(this));
                 });
 
-                var nodes = Controller.zTreeObj.getSelectedNodes();
-                var options = {
+                var node = $('#tree-level').tree('getSelected');
+                let options = {
                     url: "index/update",
                     type: "POST",
                     dataType: "json",
                     data: {
-                        id: nodes[0].rowid,
+                        id: node.id,
                         content:JSON.stringify({
                             cards:cards,
                             underpans:underpans
@@ -279,14 +231,14 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                     success: function (ret) {
                         ret = Fast.events.onAjaxResponse(ret);
                         if (ret.code === 1) {
-                            nodes[0].content = JSON.parse(ret.data);
-                            Controller.zTreeObj.updateNode(nodes[0]);
+                            node.content = JSON.parse(ret.data);
+                            $('#tree-level').tree("update", node);
                         } else {
                             Fast.events.onAjaxError(ret);
                         }
                     },
                     error: function (xhr) {
-                        var ret = {code: xhr.status, msg: xhr.statusText, data: null};
+                        let ret = {code: xhr.status, msg: xhr.statusText, data: null};
                         Fast.events.onAjaxError(ret);
                     }
                 };
@@ -337,7 +289,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             },
 
                             onInspectionChanged: function (input) {
-                                var input_id = $(input).attr("id");
+                                let input_id = $(input).attr("id");
                                 switch (input_id) {
                                     case "card-name": {
                                         this.data.name = $(input).val();
@@ -354,9 +306,9 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             onUpdate:function() {
                                 $("p", target).html(this.data.name);
 
-                                var suitClass = [];
-                                var suits = Controller.api.components.face.suits;
-                                for(var i in suits) {
+                                let suitClass = [];
+                                let suits = Controller.api.components.face.suits;
+                                for(let i in suits) {
                                     suitClass.push(suits[i]);
                                 }
                                 target.removeClass(suitClass.join(" "));
@@ -372,7 +324,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             },
 
                             onRemove:function() {
-                                this.inspection.remove();
+                                this.inspection.removeInspectionPanel();
                             },
 
                             onAttach:function() {
@@ -410,7 +362,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             },
 
                             onInspectionChanged: function (input) {
-                                var input_id = $(input).attr("id");
+                                let input_id = $(input).attr("id");
                                 switch (input_id) {
                                     case "card-direction": {
                                         this.direction = $(input).val();
@@ -434,7 +386,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             },
                             onRemove:function() {
                                 target.removeClass("back front");
-                                this.inspection.remove();
+                                this.inspection.removeInspectionPanel();
                             },
 
                             onAttach:function() {
@@ -474,7 +426,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             },
 
                             setFaceComponent:function(v) {
-                                var face_component = $(this.target).getComponent("face");
+                                let face_component = $(this.target).getComponent("face");
                                 face_component.enable(v);
                                 if (v) {
                                     face_component.setData({
@@ -491,7 +443,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             },
 
                             onInspectionChanged: function (input) {
-                                var input_id = $(input).attr("id");
+                                let input_id = $(input).attr("id");
                                 switch (input_id) {
                                     case "card-scope": {
                                         this.scope = $(input).val();
@@ -512,7 +464,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                                 this.scope = v;
                             },
                             onRemove:function() {
-                                this.inspection.remove();
+                                this.inspection.removeInspectionPanel();
                                 this.setFaceComponent(true);
                             },
 
@@ -556,7 +508,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                                 this.onUpdate();
                             },
                             setFaceComponent:function(v) {
-                                var face_component = $(this.target).getComponent("face");
+                                let face_component = $(this.target).getComponent("face");
                                 face_component.enable(v);
                                 if (v) {
                                     face_component.setData({
@@ -583,7 +535,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
 
                             },
                             onRemove:function() {
-                                this.inspection.remove();
+                                this.inspection.removeInspectionPanel();
                                 this.setFaceComponent(true);
                             },
 
@@ -628,13 +580,13 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
 
                             onUpdateInspection:function() {
                                 $("#card-zindex", this.inspection).val(this.data.zindex = this.target.css("z-index"));
-                                var position =  this.target.position();
+                                let position =  this.target.position();
                                 $("#card-left", this.inspection).val(this.data.left =  position.left);
                                 $("#card-top", this.inspection).val(this.data.top =  position.top);
                             },
 
                             onInspectionChanged: function (input) {
-                                var input_id = $(input).attr("id");
+                                let input_id = $(input).attr("id");
                                 switch (input_id) {
                                     case "card-left": {
                                         this.data.left =  $(input).val();
@@ -653,7 +605,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             },
 
                             onUpdate:function() {
-                                var style = {
+                                let style = {
                                     "left":this.data.left + "px",
                                     "top":this.data.top + "px",
                                     "z-index":this.data.zindex,
@@ -662,7 +614,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             },
 
                             getData:function() {
-                                var position =  this.target.position();
+                                let position =  this.target.position();
                                 return {
                                     left:position.left,
                                     top:position.top,
@@ -675,7 +627,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                             },
 
                             onRemove:function() {
-                                this.inspection.remove();
+                                this.inspection.removeInspectionPanel();
 
                             },
 
@@ -694,7 +646,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
         init: function () {
             $.fn.extend({
                 getComponentMap:function() {
-                    var componentMap = $(this).data("ComponentMap");
+                    let componentMap = $(this).data("ComponentMap");
                     if (typeof componentMap === "undefined") {
                         componentMap = [];
                         $(this).data("ComponentMap", componentMap);
@@ -704,10 +656,10 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                 addComponent:function(name, component) {
                     $(this).getComponentMap()[name] = component;
                     return component;
-                 },
+                },
                 removeComponent:function(component) {
-                    var componentMap = $(this).getComponentMap();
-                    for(const idx in componentMap) {
+                    let componentMap = $(this).getComponentMap();
+                    for(let idx in componentMap) {
                         if (typeof component === "string") {
                             var iss = idx === component;
                             if (iss) {
@@ -726,21 +678,21 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                     }
                 },
                 updateComponent:function() {
-                    var componentMap = $(this).getComponentMap();
+                    let componentMap = $(this).getComponentMap();
                     for(const idx in componentMap) {
                         componentMap[idx].update()
                     }
                 },
 
                 getComponent:function(name) {
-                    var componentMap = $(this).getComponentMap();
+                    let componentMap = $(this).getComponentMap();
                     return componentMap[name] || null;
                 },
 
                 onShowComponentMenu:function() {
                     $("#btn-component-add .dropdown-menu li").show();
 
-                    var panel_id = $(this).parent().data("panel");
+                    let panel_id = $(this).data("panel");
                     for(const i in Controller.api.components) {
                         const component = Controller.api.components[i];
                         if ($.inArray(panel_id, component.containment) === -1) {
@@ -748,7 +700,7 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                         }
                     }
 
-                    var componentMap = $(this).getComponentMap();
+                    let componentMap = $(this).getComponentMap();
                     for(const i in componentMap) {
                         if (componentMap[i].onlyone) {
                             $("#btn-component-add [data-name='"+i+"']").hide();
@@ -758,19 +710,17 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
 
                 onAddComponent:function (name) {
                     const ele = $(this);
-                    var component = ele.addComponent(name, Controller.api.components[name].create(ele));
-                    $("#panel-inspection-component").append(component.getInspection());
+                    let component = ele.addComponent(name, Controller.api.components[name].create(ele));
+                    Controller.panel_inspection_component.addInspectionPanel(component);
                     component.onAttach();
                     ele.updateComponent();
                 },
 
                 updateInspection:function() {
-                    var panel_inspection_component = $("#panel-inspection-component");
-                    panel_inspection_component.html("");
-
-                    var componentMap = $(this).getComponentMap();
+                    Controller.panel_inspection_component.resetInspection();
+                    let componentMap = $(this).getComponentMap();
                     for(const idx in componentMap) {
-                        panel_inspection_component.append(componentMap[idx].getInspection());
+                        Controller.panel_inspection_component.addInspectionPanel(componentMap[idx]);
                     }
                     for(const idx in componentMap) {
                         componentMap[idx].onUpdateInspection();
@@ -782,11 +732,6 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                         callback.call(component, this);
                         Controller.api.sync();
                     });
-
-                    $(".btn-component-remove", this).on("click", function(env){
-                        component.target.removeComponent(component);
-                        Controller.api.sync();
-                    });
                 },
 
                 bindUnderpan: function () {
@@ -796,48 +741,140 @@ define(['jquery', 'bootstrap', 'poke', 'ztree'], function ($, undefined, Poke, u
                         $(".card.card-shadow").removeClass("card-shadow card-selected");
                         $(this).addClass("card-shadow card-selected");
                         $(this).updateInspection();
-                    });
+                    }).data("panel", "underpan");
+
                     return $(this);
                 },
 
                 bindCard: function () {
                     $(this).draggable({
-                        opacity:true,
-                        scroll: false,
-                        containment: "#containment-wrapper",
-                        start:function( event, ui ) {
+                        onBeforeDrag:function(e) {
                             $(this).click();
+                        },
+                        onDrag: function(e) {
+                            var d = e.data;
+                            if (d.left < 0){d.left = 0}
+                            if (d.top < 0){d.top = 0}
+                            if (d.left + $(d.target).outerWidth() > $(d.parent).width()){
+                                d.left = $(d.parent).width() - $(d.target).outerWidth();
+                            }
+                            if (d.top + $(d.target).outerHeight() > $(d.parent).height()){
+                                d.top = $(d.parent).height() - $(d.target).outerHeight();
+                            }
                             $(this).getComponent("position").onUpdateInspection();
                         },
-                        drag: function( event, ui ) {
-                            $(this).getComponent("position").onUpdateInspection();
-                        },
-                        stop: function( event, ui ) {
+                        onStopDrag: function(e) {
                             Controller.api.sync(true);
                         }
-                    });
-                    $(this).on("click", function(ent){
-                        $(".panel-inspection").hide();
-                        $("#panel-inspection-card").show();
-
-                        $(".card.card-shadow").removeClass("card-shadow card-selected");
-                        $(this).addClass("card-shadow card-selected");
-                        $(this).updateInspection();
-                    });
-                    $(this).on("dblclick", function(e){
-                        var component = $(this).getComponent("position");
-                        var data = component.getData();
+                    }).on("dblclick", function(e){
+                        let component = $(this).getComponent("position");
+                        let data = component.getData();
                         data.zindex++;
                         component.setData(data);
                         component.update();
                         return false;
-                    });
+                    }).on("click", function(ent){
+                        $(".panel-inspection").hide();
+                        $("#panel-inspection-card").show();
+
+                        $(".card.card-shadow").removeClass("card-shadow card-selected");
+                        $(this).addClass("card-shadow card-selected").updateInspection();
+                    }).data("panel", "card");
                     return $(this);
                 },
 
                 shake:function() {
-                    this.addClass('animated shake').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                    $(this).addClass('animated shake').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
                         $(this).removeClass('shake');
+                    });
+                },
+                resetInspection:function() {
+                    const panels = $(this).accordion("panels");
+                    const panel_length = panels.length;
+                    for(var idx  = 0; idx < panel_length; ++idx) {
+                        $(this).accordion("remove", 0);
+                    }
+                },
+
+                removeInspectionPanel:function() {
+                    let title = $(this).attr("title");
+                    Controller.panel_inspection_component.accordion('remove',title);
+                },
+
+                addInspectionPanel:function(component, inspection) {
+                    if (typeof inspection === "undefined") {
+                        inspection = component.getInspection();
+                    }
+                    $(this).accordion('add', {
+                        title: inspection.attr("title"),
+                        content: inspection,
+                        closable:!component.primary,
+                        collapsed:false,collapsible:false,
+                        onBeforeClose:function() {
+                            return component.primary;
+                        },
+                        onClose:function() {
+                            component.target.removeComponent(component);
+                            Controller.api.sync();
+                        }
+                    });
+                },
+
+
+                addLevel:function() {
+                    const level_content = JSON.stringify({"cards":[], "underpans":[]});
+                    Fast.api.ajax({
+                        url: "index/add",
+                        data: {name: "新关卡", content:level_content}
+                    }, function (data, ret) {
+                        var newNode = Controller.api.getNewLevelTree(data.id, data.name, JSON.parse(data.content));
+                        $("#tree-level").tree('append', {
+                            data: [newNode]
+                        });
+                        return false;
+                    });
+                },
+
+                downloadLevels:function() {
+                    var nodes = $("#tree-level").tree('getChecked');	// get checked nodes
+                    const ids = $.map(nodes, function(n, i){
+                        return n.id;
+                    });
+                    let options = {
+                        url: "index/download",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            ids: ids
+                        },
+                        success: function (ret) {
+                            ret = Fast.events.onAjaxResponse(ret);
+                            if (ret.code === 1) {
+                                var ele = $("<a href='"+ret.url+"' target='_blank'>click</a>");
+                                ele[0].click();
+                            } else {
+                                Fast.events.onAjaxError(ret);
+                            }
+                        },
+                        error: function (xhr) {
+                            let ret = {code: xhr.status, msg: xhr.statusText, data: null};
+                            Fast.events.onAjaxError(ret);
+                        }
+                    };
+                    $.ajax(options);
+                },
+                deleteLevels:function() {
+                    var nodes = $("#tree-level").tree('getChecked');	// get checked nodes
+                    const ids = $.map(nodes, function(n, i){
+                        return n.id;
+                    });
+                    Fast.api.ajax({
+                        url: "index/del",
+                        data: {ids: ids}
+                    }, function (data, ret) {
+                        Controller.api.resetStage();
+                        $("#tree-level").tree('remove', node.target);
+                        return false;
                     });
                 }
             })

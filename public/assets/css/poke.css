@@ -1,59 +1,45 @@
 @import url("../libs/bootstrap/dist/css/bootstrap.min.css");
 @import url("../libs/font-awesome/css/font-awesome.min.css");
 @import url("../libs/toastr/toastr.min.css");
-@import url("../libs/fastadmin-layer/dist/theme/default/layer.css");
 @import url("../libs/nice-validator/dist/jquery.validator.css");
 @import url("../libs/jquery-ui/themes/ui-lightness/jquery-ui.min.css");
-@import url("../libs/jquery.dragscroll/src/jquery.dragscroll.css");
+@import url("../libs/jquery-easyui/themes/bootstrap/easyui.css");
+@import url("../libs/jquery-easyui/themes/icon.css");
+
+
 @import url("animate.css");
 
-.panel-stage-wrapper {
-    height: 820px;
-}
-
-.panel-tree-level-wrapper {
-}
-
-.panel-inspection-wrapper {
-}
-
 #contenter-card {
-    position: relative;
-    height:660px;
-    overflow:scroll;
-    padding: 10px;
+
 }
+
+.panel-inspection {
+    display: none;
+}
+
+#panel-inspection-card {
+    min-width:275px;
+
+}
+
+.panel-grid-line {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    color: blue;
+    box-sizing: border-box;
+    border: 1px dotted #dbd9d9;
+    background: -webkit-linear-gradient(top, transparent 15px, #dbd9d9 0), -webkit-linear-gradient(left, transparent 15px, #dbd9d9 0);
+    background-size: 16px 16px;
+}
+
 #panel-card {
+    position: relative;
     cursor:grab;
     width: 2340px;
     height: 1080px;
+    border: dotted 1px #dbd9d9;
 }
-#panel-underpan {
-    min-height:160px;
-    border:1px solid #ddd;
-    padding: 12px;
-    overflow-x:auto;
-    white-space: nowrap;
-    border-right: none;
-    border-left: none;
-}
-
-#containment-wrapper {
-    border-top: solid #ddd 1px;
-    border-left: solid #ddd 1px;
-    border-right: solid #ddd 1px;
-    border-radius: 4px;
-}
-
-.panel-tree-level-wrapper .panel-body {
-    overflow:hidden;
-
-}
-
-.panel {
-    height: 100%;
-}
-
 .card {
     width: 70px;
     height: 100px;
@@ -71,7 +57,6 @@
     background: #a7a4a4;
 }
 
-
 .card p {
     text-align: center;
     font: 40px/100px Georgia, Times New Roman, serif;
@@ -81,6 +66,12 @@
     position: absolute;
 
 }
+
+#panel-underpan {
+    min-height:130px;
+    padding: 5px;
+}
+
 #panel-underpan .card {
     position:relative;
     float: left;
@@ -89,10 +80,13 @@
     display: inline-block
 }
 
+
+.panel-component {
+    padding: 5px;
+}
 #panel-underpan .card.card-selected {
     z-index: 10;
 }
-
 
 .suitdiamonds:before, .suitdiamonds:after {
     content: "♦";
@@ -136,27 +130,30 @@ div[class*='suit']:after {
     bottom: 0px;
 }
 
-.form-inline-30 {
-    width: 33%
-}
-#panel-inspection-component {
-
-    padding-right: 7px;
-    padding-left: 7px;
+.panel-inspection-button {
+    padding: 5px;
 }
 
-#panel-inspection-component .panel {
-    margin-bottom: 5px;
-}
 
-#panel-inspection-component .panel-heading {
-    padding: 2px 15px;
-    height: 19px;
-}
-#panel-inspection-component .panel-body {
-    padding: 9px;
-}
+/*!*重点代码*!*/
+/*!*默认*!*/
+/*.tree-icon{*/
+/*    background:url('./img/m1.png') no-repeat center center !important;*/
+/*}*/
+/*!*折叠时图片*!*/
+/*.tree-folder{*/
+/*    background:url('./img/check.png') no-repeat center center !important;*/
+/*}*/
+/*!*展开时图片*!*/
+/*.tree-folder-open {*/
+/*    background: url('./img/add2.png') no-repeat center center !important;*/
+/*}*/
 
-#panel-inspection-component .panel-heading .panel-title {
-    font-size: 11px;
-}
+/*!*折叠时图片*!*/
+/*.tree-file{*/
+/*    background:url('./img/check.png') no-repeat center center !important;*/
+/*}*/
+/*!*展开时图片*!*/
+/*.tree-file-open {*/
+/*    background: url('./img/add2.png') no-repeat center center !important;*/
+/*}*/
