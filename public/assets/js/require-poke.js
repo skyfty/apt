@@ -46,7 +46,7 @@ require.config({
         'easyui': '../libs/jquery-easyui/jquery.easyui.min',
         'dragscroll': '../libs/jquery.dragscroll/src/jquery.dragscroll',
         'ruler': '../libs/jqueryui-ruler/js/jquery.ui.ruler',
-
+        'zoomooz': '../libs/jaukia-zoomooz/jquery.zoomooz',
     },
     // shim依赖配置
     shim: {

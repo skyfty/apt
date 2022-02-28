@@ -45,6 +45,20 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 Controller.api.sync(true);
             });
 
+            Controller.panel_card.on("mousewheel DOMMouseScroll", function(e){
+                // var delta = (e.originalEvent.wheelDelta && (e.originalEvent.wheelDelta > 0 ? 1 : -1))||
+                //     (e.originalEvent.detail && (e.originalEvent.detail > 0 ? -1 : 1));
+                //
+                // $(this).zoomTo({
+                //     targetsize:1,
+                //     duration:600,
+                //     root: Controller.contenter_card,
+                //     animationendcallback:function(){
+                //         console.log("lskf");
+                //     }
+                // });
+            });
+
             let nodes = [];
             for(const i in levels) {
                 nodes.push(Controller.api.getNewLevelTree(levels[i].id, levels[i].name, JSON.parse(levels[i].content)));
@@ -92,7 +106,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
                     if (typeof node.content !== "undefined") {
                         Controller.api.resetStage();
-                        require(['dragscroll'], function () {
+                        require(['dragscroll', 'zoomooz'], function () {
                             Controller.contenter_card.dragscroll({
                                 autoFadeBars: true,
                                 scrollBars: false,
@@ -145,9 +159,8 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
             $("#btn-card-delete").on("click", function(){
                 $(".card-selected").remove();
-                Controller.panel_inspection_component.resetInspection();
+                Controller.panel_inspection_component.resetInspection(true);
                 Controller.api.sync(true);
-                $("#tree-level").tree('getSelected').target.click();
             });
 
 
@@ -167,7 +180,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             resetStage:function() {
                 Controller.panel_underpan.html("");
                 Controller.panel_card.html("");
-                Controller.panel_inspection_component.resetInspection();
+                Controller.panel_inspection_component.resetInspection(true);
             },
             getNewLevelTree:function(id, name, cards) {
                 let newNode = {
@@ -799,11 +812,14 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         $(this).removeClass('shake');
                     });
                 },
-                resetInspection:function() {
+                resetInspection:function(whole) {
                     const panels = $(this).accordion("panels");
                     const panel_length = panels.length;
                     for(var idx  = 0; idx < panel_length; ++idx) {
                         $(this).accordion("remove", 0);
+                    }
+                    if (whole === true) {
+                        $(".panel-inspection").hide();
                     }
                 },
 
