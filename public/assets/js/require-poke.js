@@ -42,8 +42,7 @@ require.config({
         'jsoneditor': '../libs/jquery-jsoneditor/jquery.jsoneditor.min',
         'x-editable': '../libs/x-editable/dist/bootstrap3-editable/js/bootstrap-editable',
         'dragsort': '../libs/fastadmin-dragsort/jquery.dragsort',
-        'jquery-layout': '../libs/jquery-layout/source/stable/jquery.layout_and_plugins',
-
+        'easyui': '../libs/jquery-easyui/jquery.easyui.min',
     },
     // shim依赖配置
     shim: {
@@ -57,8 +56,11 @@ require.config({
             deps: ['jquery'],
             exports: '$.fn.extend'
         },
-        'jquery-layout': {
-            deps: ['jquery'],
+        'easyui': {
+            deps: [
+                'jquery',
+                'css!../libs/jquery-easyui/themes/bootstrap/easyui.css'
+            ],
             exports: '$.fn.extend'
         },
         'plupload': {

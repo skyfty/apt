@@ -10,6 +10,12 @@ class Index extends Poke
         $this->assign("levels", $poke);
         return $this->view->fetch();
     }
+    public function index2()
+    {
+        $poke = model("Poke")->select();
+        $this->assign("levels", $poke);
+        return $this->view->fetch();
+    }
 
     public function add() {
         $poke = model("Poke")->create($_POST);

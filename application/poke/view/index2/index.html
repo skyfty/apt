@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>{$title|default=''}</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <link rel="shortcut icon" href="__CDN__/assets/img/favicon.ico" />
+    <!-- Loading Bootstrap -->
+    <link href="__CDN__/assets/css/poke2.css?v={$site.version}" rel="stylesheet">
+
+    <script type="text/javascript">
+        var require = {
+            config:  {$config|json_encode},
+        };
+    </script>
+    <script type="text/javascript">
+        var levels = {$levels|json_encode};
+
+    </script>
+</head>
+
+<body class="easyui-layout" onselectstart="return false">
+<div class="  panel-stage-wrapper" data-options="region:'east',split:true" title="检查器" style="width:300px;">
+    <div id="panel-inspection-card" class="panel-inspection" >
+        <div>
+            <div id="panel-inspection-component" class="easyui-accordion">
+
+            </div>
+        </div>
+        <div class="panel-inspection-button">
+            <div class="dropdown"  id="btn-component-add">
+                <button class="btn btn-default btn-block  btn-sm" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    增加组件
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dLabel">
+                    <li  data-name="position"><a href="#">位置</a></li>
+                    <li  data-name="direction"><a href="#">方向</a></li>
+                    <li data-name="face"><a href="#">牌面</a></li>
+                    <li data-name="rand"><a href="#">随机</a></li>
+                    <li data-name="wan"><a href="#">万能</a></li>
+                    <li data-name="custom"><a href="#">自定义</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="panel-inspection-button">
+            <button type="button" id="btn-card-delete" class="btn btn-danger btn-block  btn-sm">删除</button>
+        </div>
+    </div>
+    <div id="panel-inspection-level" class="panel-inspection">
+        <div>
+            <div>
+
+            </div>
+        </div>
+
+    </div>
+    <div id="panel-inspection-stage" class="panel-inspection">
+        <div>
+            <div>
+
+            </div>
+        </div>
+
+    </div>
+    <div id="panel-inspection-underpan" class="panel-inspection">
+        <div>
+            <div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="menu-tree-level" class="easyui-menu" style="width:120px;">
+    <div id="edit-level-tree" data-options="iconCls:'icon-edit'">编辑</div>
+    <div id="remove-level-tree" data-options="iconCls:'icon-remove'">删除</div>
+</div>
+<div title="关卡" style="width:200px;" data-options="
+				region:'west',split:true,
+				tools:[{
+					iconCls:'icon-add',
+					handler:function(){
+						$('#menu-tree-level').addLevel();
+					}
+				},{
+					iconCls:'icon-save',
+					handler:function(){
+						$('#menu-tree-level').downloadLevels();
+					}
+				},{
+					iconCls:'icon-cancel',
+					handler:function(){
+						$('#menu-tree-level').deleteLevels();
+					}
+				}]">
+    <ul class="easyui-tree" id="tree-level"> </ul>
+</div>
+<div data-options="region:'center'">
+    <div class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'"  title="牌桌" class="panel-stage-wrapper" id="contenter-card">
+            <div id="panel-card" data-panel="card" class="panel-grid-line">
+            </div>
+        </div>
+        <div  id="panel-underpan"  title="底牌" data-panel="underpan" data-options="region:'south',split:true" style="height:140px;">
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
+
+<script id="tmpl-card" type="text/html">
+    <div class="card ui-widget-content" style="z-index: <%=zindex%>;left:<%=left%>px;top:<%=top%>px" data-panel="<%=panel%>">
+        <div>
+            <p><%=name%></p>
+        </div>
+    </div>
+</script>
+
+<script id="tmpl-component-card-direction" type="text/html">
+    <div  title="正反面" class="panel-component">
+        <div class="form-group">
+            <fieldset>
+                <select class="form-control input-sm attr-input-card" id="card-direction">
+                    <option value="front">正面</option>
+                    <option value="back">反面</option>
+                </select>
+            </fieldset>
+        </div>
+    </div>
+</script>
+
+<script id="tmpl-component-card-rand" type="text/html">
+    <div title="随机" class="panel-component">
+        <div class="form-group">
+            <fieldset>
+                <textarea class="form-control input-sm attr-input-card" id="card-scope" rows="3"></textarea>
+
+            </fieldset>
+        </div>
+    </div>
+</script>
+
+
+<script id="tmpl-component-card-wan" type="text/html">
+    <div title="万能" class="panel-component">
+        <div>
+            没有可编辑属性
+        </div>
+    </div>
+</script>
+
+<script id="tmpl-component-card-position" type="text/html">
+    <div  title="位置" class="panel-component">
+        <div class="form-inline">
+            <div class="form-group">
+                <label for="card-left">X: </label><input type="number" class="form-control input-sm attr-input-card" style="width: 70px" id="card-left"/>
+            </div>
+            <div class="form-group">
+                <label for="card-top">Y: </label><input type="number" class="form-control input-sm attr-input-card"  style="width: 70px" id="card-top"/>
+            </div>
+
+            <div class="form-group">
+                <label for="card-zindex">Z: </label><input type="number" class="form-control input-sm attr-input-card" style="width: 70px" id="card-zindex"/>
+            </div>
+
+        </div>
+    </div>
+</script>
+
+
+<script id="tmpl-component-card-face" type="text/html">
+    <div title="牌面" style="padding:10px;" class="panel-component">
+        <div class="form-inline">
+            <div class="form-group">
+                <label for="name">数字: </label>
+                <select class="form-control input-sm attr-input-card" id="card-name" value="<%=name%>">
+                    <option value="A">A</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="J">J</option>
+                    <option value="Q">Q</option>
+                    <option value="K">K</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="email">花色: </label>
+                <select class="form-control input-sm attr-input-card" id="card-color" value="<%=color%>">
+                    <option value="suitdiamonds">♦</option>
+                    <option value="suithearts">♥</option>
+                    <option value="suitclubs">♣</option>
+                    <option value="suitspades">♠</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</script>
+
+
+<script src="__CDN__/assets/js/require{$Think.config.app_debug?'':'.min'}.js" data-main="__CDN__/assets/js/require-poke{$Think.config.app_debug?'':'.min'}.js?v={$site.version}"></script>
