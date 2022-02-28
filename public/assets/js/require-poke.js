@@ -22,6 +22,7 @@ require.config({
         'jquery-ui': '../libs/jquery-ui/jquery-ui.min',
         'bootstrap': '../libs/bootstrap/dist/js/bootstrap.min',
         'bootstrap-select': '../libs/bootstrap-select/dist/js/bootstrap-select',
+        'bootstrap-select-lang': '../libs/bootstrap-select/dist/js/i18n/defaults-zh_CN',
         'slimscroll': '../libs/jquery-slimscroll/jquery.slimscroll',
         'validator-core': '../libs/nice-validator/dist/jquery.validator',
         'validator-lang': '../libs/nice-validator/dist/local/zh-CN',
@@ -43,11 +44,15 @@ require.config({
         'x-editable': '../libs/x-editable/dist/bootstrap3-editable/js/bootstrap-editable',
         'dragsort': '../libs/fastadmin-dragsort/jquery.dragsort',
         'easyui': '../libs/jquery-easyui/jquery.easyui.min',
+        'dragscroll': '../libs/jquery.dragscroll/src/jquery.dragscroll',
+        'ruler': '../libs/jqueryui-ruler/js/jquery.ui.ruler',
+
     },
     // shim依赖配置
     shim: {
         'addons': ['poke'],
         'bootstrap': ['jquery'],
+        'bootstrap-select-lang': ['bootstrap-select'],
         'slimscroll': {
             deps: ['jquery'],
             exports: '$.fn.extend'
@@ -60,6 +65,20 @@ require.config({
             deps: [
                 'jquery',
                 'css!../libs/jquery-easyui/themes/bootstrap/easyui.css'
+            ],
+            exports: '$.fn.extend'
+        },
+        'ruler': {
+            deps: [
+                'jquery',
+                'css!../libs/jqueryui-ruler/css/jquery.ui.ruler.css'
+            ],
+            exports: '$.fn.extend'
+        },
+        'dragscroll': {
+            deps: [
+                'jquery',
+                'css!../libs/jquery.dragscroll/src/jquery.dragscroll.css'
             ],
             exports: '$.fn.extend'
         },

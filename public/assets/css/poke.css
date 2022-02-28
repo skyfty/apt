@@ -1,18 +1,17 @@
 @import url("../libs/bootstrap/dist/css/bootstrap.min.css");
 @import url("../libs/font-awesome/css/font-awesome.min.css");
 @import url("../libs/toastr/toastr.min.css");
-@import url("../libs/nice-validator/dist/jquery.validator.css");
 @import url("../libs/jquery-ui/themes/ui-lightness/jquery-ui.min.css");
 @import url("../libs/jquery-easyui/themes/bootstrap/easyui.css");
 @import url("../libs/jquery-easyui/themes/icon.css");
-
-
 @import url("animate.css");
 
 #contenter-card {
 
 }
-
+#contenter-card::-webkit-scrollbar{
+    display: none;
+}
 .panel-inspection {
     display: none;
 }
@@ -28,8 +27,8 @@
     text-align: center;
     color: blue;
     box-sizing: border-box;
-    border: 1px dotted #dbd9d9;
-    background: -webkit-linear-gradient(top, transparent 15px, #dbd9d9 0), -webkit-linear-gradient(left, transparent 15px, #dbd9d9 0);
+    border: 1px dotted #eeeded;
+    background: -webkit-linear-gradient(top, transparent 15px, #eeeded 0), -webkit-linear-gradient(left, transparent 15px, #eeeded 0);
     background-size: 16px 16px;
 }
 

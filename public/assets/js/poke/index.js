@@ -1,9 +1,10 @@
-define(['jquery', 'bootstrap', 'poke', 'easyui'], function ($, undefined, Poke, undefined, undefined) {
+define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, undefined, undefined) {
     var Controller = {
         index: function () {
             Controller.panel_underpan = $( "#panel-underpan" );
             Controller.panel_card = $( "#panel-card" );
             Controller.panel_inspection_component = $( "#panel-inspection-component" );
+            Controller.contenter_card = $("#contenter-card");
 
             Controller.panel_underpan.sortable({
                 start:function( event, ui) {
@@ -25,7 +26,7 @@ define(['jquery', 'bootstrap', 'poke', 'easyui'], function ($, undefined, Poke, 
                 Controller.api.sync(true);
             });
 
-            $("#contenter-card").on("dblclick", function(evt){
+            Controller.contenter_card.on("dblclick", function(evt){
                 var node = $("#tree-level").tree('getSelected');
                 if (node == null) {
                     return;
@@ -91,6 +92,15 @@ define(['jquery', 'bootstrap', 'poke', 'easyui'], function ($, undefined, Poke, 
 
                     if (typeof node.content !== "undefined") {
                         Controller.api.resetStage();
+                        require(['dragscroll'], function () {
+                            Controller.contenter_card.dragscroll({
+                                autoFadeBars: true,
+                                scrollBars: false,
+                                smoothness: 15,
+                                mouseWheelVelocity: 2
+                            });
+                        });
+
                         for(const  i in node.content.underpans){
                             const components = node.content.underpans[i];
                             let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_underpan);
@@ -150,6 +160,7 @@ define(['jquery', 'bootstrap', 'poke', 'easyui'], function ($, undefined, Poke, 
                 $(".card-selected").onAddComponent($(this).data("name"));
                 Controller.api.sync(true);
             });
+
         },
 
         api: {
@@ -819,7 +830,6 @@ define(['jquery', 'bootstrap', 'poke', 'easyui'], function ($, undefined, Poke, 
                         }
                     });
                 },
-
 
                 addLevel:function() {
                     const level_content = JSON.stringify({"cards":[], "underpans":[]});
