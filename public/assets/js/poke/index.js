@@ -60,34 +60,38 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             });
 
             let nodes = [];
-            for(const i in levels) {
-                nodes.push(Controller.api.getNewLevelTree(levels[i].id, levels[i].name, JSON.parse(levels[i].content)));
+            for(const i in pokebags) {
+                let bag = Controller.api.getNewBagTree(pokebags[i].id, pokebags[i].name, "closed", JSON.parse(pokebags[i].content))
+                for(const j in pokebags[i].levels) {
+                    let level = pokebags[i].levels[j];
+                    let levelNode = Controller.api.getNewLevelTree(level.id, level.name, "closed",JSON.parse(level.content));
+                    bag.children.push(levelNode);
+                }
+                nodes.push(bag);
             }
             $("#tree-level").tree({
                 data:nodes,
                 dnd:true,
                 onContextMenu: function(e,node){
                     e.preventDefault();
-                    if (typeof node.content !== "undefined") {
-                        $(this).tree('select', node.target);
-                        let ele = $("#menu-tree-level");
-                        ele.menu('show', {
-                            left: e.pageX,
-                            top: e.pageY
-                        });
-                    }
+                    $(this).tree('select', node.target);
+                    $("#menu-tree-" + node.type).menu('show', {
+                        left: e.pageX,
+                        top: e.pageY
+                    });
                 },
                 checkbox:function(node){
-                    return typeof node.content !== "undefined";
+                    return false;
                 },
                 onBeforeDrag:function(node){
-                    return typeof node.content !== "undefined";
+                    return node.type === "level";
                 },
-                onStopDrag:function(node){
-                    return typeof node.content !== "undefined";
+
+                onDragOver:function(target, source){
+                    return source.type === "level";
                 },
-                onDragOver:function(node){
-                    return typeof node.content !== "undefined";
+                onBeforeDrop:function(target,source,point){
+                    return source.type === "level" && (point === "top" || point === "bottom");
                 },
                 onBeforeEdit:function(node){
                     if (node.text.length == 0) {
@@ -138,24 +142,43 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 }
             });
 
-            $("#menu-tree-level #edit-level-tree").on("click", function(){
+            $("#menu-tree-level #edit-level-tree,#edit-bag-tree").on("click", function(){
                 var node = $("#tree-level").tree('getSelected');
                 $("#tree-level").tree('beginEdit',node.target);
             });
-            $("#menu-tree-level #remove-level-tree").on("click", function(){
-                if (confirm("确认要删除吗") !== true) {
-                    return;
-                }
+            $("#menu-tree-level #download-bag-tree").on("click", function(){
                 var node = $("#tree-level").tree('getSelected');
-                Fast.api.ajax({
-                    url: "index/del",
-                    data: {id: node.id}
-                }, function (data, ret) {
-                    Controller.api.resetStage();
-                    $("#tree-level").tree('remove', node.target);
-                    return false;
-                });
+                if (node != null) {
+                    Controller.api.download([node.id], "bag/download");
+                }
             });
+            $("#menu-tree-level #download-level-tree").on("click", function(){
+                var node = $("#tree-level").tree('getSelected');
+                if (node != null) {
+                    Controller.api.download([node.id], "level/download");
+                }
+            });
+
+            $("#menu-tree-level #remove-level-tree").on("click", function(){
+                var node = $("#tree-level").tree('getSelected');
+                if (node != null) {
+                    Controller.api.deleteTreeNode(node, "level/del");
+                }
+            });
+            $("#menu-tree-bag #new-level-bag-tree").on("click", function(){
+                var node = $("#tree-level").tree('getSelected');
+                if (node != null && node.type === "bag") {
+                    Controller.api.addLevel(node);
+                }
+            });
+
+            $("#menu-tree-bag #remove-bag-tree").on("click", function(){
+                var node = $("#tree-level").tree('getSelected');
+                if (node != null) {
+                    Controller.api.deleteTreeNode(node, "bag/del");
+                }
+            });
+
 
             $("#btn-card-delete").on("click", function(){
                 $(".card-selected").remove();
@@ -177,17 +200,30 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
         },
 
         api: {
+            deleteTreeNode:function(node, url) {
+                if (confirm("确认要删除吗") !== true) {
+                    return;
+                }
+                Fast.api.ajax({
+                    url: url,
+                    data: {ids: [node.id]}
+                }, function (data, ret) {
+                    Controller.api.resetStage();
+                    $("#tree-level").tree('remove', node.target);
+                    return false;
+                });
+            },
             resetStage:function() {
                 Controller.panel_underpan.html("");
                 Controller.panel_card.html("");
                 Controller.panel_inspection_component.resetInspection(true);
             },
-            getNewLevelTree:function(id, name, cards) {
+            getNewLevelTree:function(id, name, state, cards) {
                 let newNode = {
                     text:name,
                     id:id,
-                    state:"closed",
-                    checkbox: true,
+                    type:"level",
+                    state:state,
                     iconCls:"icon-add",
                     inspection:"#panel-inspection-level",
                     children:[
@@ -210,6 +246,20 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 };
                 return newNode;
             },
+            getNewBagTree:function(id, name, state, cards) {
+                let newNode = {
+                    text:name,
+                    id:id,
+                    type:"bag",
+                    state:state,
+                    iconCls:"icon-add",
+                    inspection:"#panel-inspection-bag",
+                    children:[
+                    ],
+                    content : cards
+                };
+                return newNode;
+            },
             loadLevels: function (url, custom) {
                 let deferred = $.Deferred();
                 $.ajax({type: "GET", url:url,
@@ -220,6 +270,59 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     }
                 });
                 return deferred.promise();
+            },
+
+            addLevel:function(bag) {
+                const level_content = JSON.stringify({"cards":[], "underpans":[]});
+                Fast.api.ajax({
+                    url: "level/add",
+                    data: {pokebag_model_id:bag.id, name: "新关卡", content:level_content}
+                }, function (data, ret) {
+                    var newNode = Controller.api.getNewLevelTree(data.id, data.name, "opened", JSON.parse(data.content));
+                    $("#tree-level").tree('append', {
+                        parent:bag.target,
+                        data: [newNode]
+                    });
+                    return false;
+                });
+            },
+            download:function(ids, url) {
+                let options = {
+                    url: url,
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        ids: ids
+                    },
+                    success: function (ret) {
+                        ret = Fast.events.onAjaxResponse(ret);
+                        if (ret.code === 1) {
+                            var ele = $("<a href='"+ret.url+"' target='_blank'>click</a>");
+                            ele[0].click();
+                        } else {
+                            Fast.events.onAjaxError(ret);
+                        }
+                    },
+                    error: function (xhr) {
+                        let ret = {code: xhr.status, msg: xhr.statusText, data: null};
+                        Fast.events.onAjaxError(ret);
+                    }
+                };
+                $.ajax(options);
+            },
+            deleteLevels:function() {
+                var nodes = $("#tree-level").tree('getChecked');	// get checked nodes
+                const ids = $.map(nodes, function(n, i){
+                    return n.id;
+                });
+                Fast.api.ajax({
+                    url: "level/del",
+                    data: {ids: ids}
+                }, function (data, ret) {
+                    Controller.api.resetStage();
+                    $("#tree-level").tree('remove', node.target);
+                    return false;
+                });
             },
             collectComponentData:function() {
                 let data = {};
@@ -242,7 +345,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
                 var node = $('#tree-level').tree('getSelected');
                 let options = {
-                    url: "index/update",
+                    url: "level/update",
                     type: "POST",
                     dataType: "json",
                     data: {
@@ -847,13 +950,13 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     });
                 },
 
-                addLevel:function() {
-                    const level_content = JSON.stringify({"cards":[], "underpans":[]});
+                addBag:function() {
+                    const bag_content = JSON.stringify({});
                     Fast.api.ajax({
-                        url: "index/add",
-                        data: {name: "新关卡", content:level_content}
+                        url: "bag/add",
+                        data: {name: "新关卡包", content:bag_content}
                     }, function (data, ret) {
-                        var newNode = Controller.api.getNewLevelTree(data.id, data.name, JSON.parse(data.content));
+                        var newNode = Controller.api.getNewBagTree(data.id, data.name, JSON.parse(data.content));
                         $("#tree-level").tree('append', {
                             data: [newNode]
                         });
@@ -861,48 +964,6 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     });
                 },
 
-                downloadLevels:function() {
-                    var nodes = $("#tree-level").tree('getChecked');	// get checked nodes
-                    const ids = $.map(nodes, function(n, i){
-                        return n.id;
-                    });
-                    let options = {
-                        url: "index/download",
-                        type: "POST",
-                        dataType: "json",
-                        data: {
-                            ids: ids
-                        },
-                        success: function (ret) {
-                            ret = Fast.events.onAjaxResponse(ret);
-                            if (ret.code === 1) {
-                                var ele = $("<a href='"+ret.url+"' target='_blank'>click</a>");
-                                ele[0].click();
-                            } else {
-                                Fast.events.onAjaxError(ret);
-                            }
-                        },
-                        error: function (xhr) {
-                            let ret = {code: xhr.status, msg: xhr.statusText, data: null};
-                            Fast.events.onAjaxError(ret);
-                        }
-                    };
-                    $.ajax(options);
-                },
-                deleteLevels:function() {
-                    var nodes = $("#tree-level").tree('getChecked');	// get checked nodes
-                    const ids = $.map(nodes, function(n, i){
-                        return n.id;
-                    });
-                    Fast.api.ajax({
-                        url: "index/del",
-                        data: {ids: ids}
-                    }, function (data, ret) {
-                        Controller.api.resetStage();
-                        $("#tree-level").tree('remove', node.target);
-                        return false;
-                    });
-                }
             })
         }
     };

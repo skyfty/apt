@@ -11,7 +11,7 @@ use think\Loader;
 /**
  * 前台控制器基类
  */
-class Poke extends Controller
+class Common extends Controller
 {
     public function _initialize()
     {

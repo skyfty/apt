@@ -8,7 +8,7 @@ use think\Lang;
  * Ajax异步请求接口
  * @internal
  */
-class Ajax extends Poke
+class Ajax extends Common
 {
     /**
      * 加载语言包
