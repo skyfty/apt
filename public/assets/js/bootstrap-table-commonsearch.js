@@ -177,11 +177,11 @@
             var name = $(this).data("name");
             var sym = $(this).is("select") ? $("option:selected", this).val() : $(this).val().toUpperCase();
             var obj = $("[name='" + name + "']", that.$commonsearch);
-            if (obj.size() == 0)
+            if (obj.length == 0)
                 return true;
             var vObjCol = ColumnsForSearch[i];
             var process = !that.options.searchFormTemplate && vObjCol && typeof vObjCol.process == 'function' ? vObjCol.process : null;
-            if (obj.size() > 1) {
+            if (obj.length > 1) {
                 if (/BETWEEN$/.test(sym)) {
                     var value_begin = $.trim($("[name='" + name + "']:first", that.$commonsearch).val()),
                         value_end = $.trim($("[name='" + name + "']:last", that.$commonsearch).val());
@@ -326,11 +326,11 @@
 
         that.$container.on("click", "." + that.options.searchClass, function () {
             var obj = $("form [name='" + $(this).data("field") + "']", that.$commonsearch);
-            if (obj.size() > 0) {
+            if (obj.length > 0) {
                 var value = $(this).data("value");
                 if (obj.is("select")) {
                     $("option[value='" + value + "']", obj).prop("selected", true);
-                } else if (obj.size() > 1) {
+                } else if (obj.length > 1) {
                     $("form [name='" + $(this).data("field") + "'][value='" + value + "']", that.$commonsearch).prop("checked", true);
                 } else {
                     obj.val(value);

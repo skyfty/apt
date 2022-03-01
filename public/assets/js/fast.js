@@ -150,7 +150,7 @@ define(['jquery', 'bootstrap', 'toastr', 'layer', 'lang'], function ($, undefine
                             Fast.api.layerfooter(layero, index, that);
 
                             //绑定事件
-                            if (layerfooter.size() > 0) {
+                            if (layerfooter.length > 0) {
                                 // 监听窗口内的元素及属性变化
                                 // Firefox和Chrome早期版本中带有前缀
                                 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
@@ -207,7 +207,7 @@ define(['jquery', 'bootstrap', 'toastr', 'layer', 'lang'], function ($, undefine
             layerfooter: function (layero, index, that) {
                 var frame = Layer.getChildFrame('html', index);
                 var layerfooter = frame.find(".layer-footer");
-                if (layerfooter.size() > 0) {
+                if (layerfooter.length > 0) {
                     $(".layui-layer-footer", layero).remove();
                     var footer = $("<div />").addClass('layui-layer-btn layui-layer-footer');
                     footer.html(layerfooter.html());
