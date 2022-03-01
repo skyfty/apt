@@ -10,12 +10,12 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 start:function( event, ui) {
                     $(ui.item).click();
                 },
-                stop: function( event, ui ) {//结束时触发
+                stop: function() {//结束时触发
                     Controller.api.sync(true);
                 }
             }).on("dblclick", function(){
                 var node = $("#tree-level").tree('getSelected');
-                if (node == null) {
+                if (node == null || node.type === "bag") {
                     return;
                 }
                 let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_underpan);
@@ -28,7 +28,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
             Controller.contenter_card.on("dblclick", function(evt){
                 var node = $("#tree-level").tree('getSelected');
-                if (node == null) {
+                if (node == null || node.type === "bag") {
                     return;
                 }
                 let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_card);
@@ -46,25 +46,23 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             });
 
             Controller.panel_card.on("mousewheel DOMMouseScroll", function(e){
-                // var delta = (e.originalEvent.wheelDelta && (e.originalEvent.wheelDelta > 0 ? 1 : -1))||
-                //     (e.originalEvent.detail && (e.originalEvent.detail > 0 ? -1 : 1));
-                //
-                // $(this).zoomTo({
-                //     targetsize:1,
-                //     duration:600,
-                //     root: Controller.contenter_card,
-                //     animationendcallback:function(){
-                //         console.log("lskf");
-                //     }
-                // });
+
             });
 
             let nodes = [];
             for(const i in pokebags) {
-                let bag = Controller.api.getNewBagTree(pokebags[i].id, pokebags[i].name, "closed", JSON.parse(pokebags[i].content))
-                for(const j in pokebags[i].levels) {
-                    let level = pokebags[i].levels[j];
-                    let levelNode = Controller.api.getNewLevelTree(level.id, level.name, "closed",JSON.parse(level.content));
+                let pokebag = pokebags[i];
+                let bag = Controller.api.getNewBagTree(pokebag.id, pokebag.name, "closed", JSON.parse(pokebag.params))
+                for(const j in pokebag.levels) {
+                    let level = pokebag.levels[j];
+                    let levelNode = Controller.api.getNewLevelTree(
+                        level.id,
+                        level.name,
+                        JSON.parse(level.composition),
+                        JSON.parse(level.params),
+                        JSON.parse(level.stage),
+                        JSON.parse(level.underpan),
+                        "closed");
                     bag.children.push(levelNode);
                 }
                 nodes.push(bag);
@@ -104,41 +102,31 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     }
                     return true;
                 },
+
+                selectedLevelId:0,
                 onClick: function(node){
                     $(".panel-inspection").hide();
-                    $(node.inspection).show();
 
-                    if (typeof node.content !== "undefined") {
+                    if (node.type === "bag" || node.type === "level") {
                         Controller.api.resetStage();
-                        require(['dragscroll', 'zoomooz'], function () {
-                            Controller.contenter_card.dragscroll({
-                                autoFadeBars: true,
-                                scrollBars: false,
-                                smoothness: 15,
-                                mouseWheelVelocity: 2
-                            });
-                        });
-
-                        for(const  i in node.content.underpans){
-                            const components = node.content.underpans[i];
-                            let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_underpan);
-                            ele.bindUnderpan();
-                            for(const c in components) {
-                                ele.addComponent(c,Controller.api.components[c].create(ele, components[c]));
-                            }
-                            ele.updateComponent();
-                        }
-
-                        for(const i in node.content.cards){
-                            const components = node.content.cards[i];
-                            let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_card);
-                            ele.bindCard();
-                            for(const c in components) {
-                                ele.addComponent(c,Controller.api.components[c].create(ele, components[c]));
-                            }
-                            ele.updateComponent();
+                    } else if (node.type === "underpan" || node.type === "stage") {
+                        if (node.id !== this.selectedLevelId) {
+                            Controller.api.resetStage();
+                        } else {
+                            Controller.panel_inspection_component.resetInspection(true);
                         }
                     }
+                    if (node.type === "underpan" || node.type === "stage" ||  node.type === "level") {
+                        if (node.type === "level") {
+                            Controller.api.updateStage(node);
+                        } else if (node.id !== this.selectedLevelId) {
+                            Controller.api.updateStage($(this).tree("getParent", node.target));
+                        }
+                        this.selectedLevelId = node.id;
+                    }
+                    var html = $(Template("tmpl-inspection-" + node.type, node.params || {}));
+                    html.bindAttrInput(node.onInspectionChanged, node);
+                    $(node.inspection).show().html(html);
                 }
             });
 
@@ -148,20 +136,20 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             });
             $("#menu-tree-level #download-bag-tree").on("click", function(){
                 var node = $("#tree-level").tree('getSelected');
-                if (node != null) {
+                if (node != null && node.type === "bag") {
                     Controller.api.download([node.id], "bag/download");
                 }
             });
             $("#menu-tree-level #download-level-tree").on("click", function(){
                 var node = $("#tree-level").tree('getSelected');
-                if (node != null) {
+                if (node != null && node.type === "level") {
                     Controller.api.download([node.id], "level/download");
                 }
             });
 
             $("#menu-tree-level #remove-level-tree").on("click", function(){
                 var node = $("#tree-level").tree('getSelected');
-                if (node != null) {
+                if (node != null && node.type === "level") {
                     Controller.api.deleteTreeNode(node, "level/del");
                 }
             });
@@ -174,7 +162,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
             $("#menu-tree-bag #remove-bag-tree").on("click", function(){
                 var node = $("#tree-level").tree('getSelected');
-                if (node != null) {
+                if (node != null && node.type === "bag") {
                     Controller.api.deleteTreeNode(node, "bag/del");
                 }
             });
@@ -200,6 +188,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
         },
 
         api: {
+
             deleteTreeNode:function(node, url) {
                 if (confirm("确认要删除吗") !== true) {
                     return;
@@ -207,7 +196,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 Fast.api.ajax({
                     url: url,
                     data: {ids: [node.id]}
-                }, function (data, ret) {
+                }, function () {
                     Controller.api.resetStage();
                     $("#tree-level").tree('remove', node.target);
                     return false;
@@ -218,47 +207,107 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 Controller.panel_card.html("");
                 Controller.panel_inspection_component.resetInspection(true);
             },
-            getNewLevelTree:function(id, name, state, cards) {
-                let newNode = {
-                    text:name,
-                    id:id,
-                    type:"level",
-                    state:state,
-                    iconCls:"icon-add",
-                    inspection:"#panel-inspection-level",
-                    children:[
+
+            updateStage:function(node) {
+                require(['dragscroll', 'zoomooz'], function () {
+                    Controller.contenter_card.dragscroll({
+                        autoFadeBars: true,
+                        scrollBars: false,
+                        smoothness: 15,
+                        mouseWheelVelocity: 2
+                    });
+                });
+
+                for(const  i in node.composition.underpans){
+                    const components = node.composition.underpans[i];
+                    let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_underpan);
+                    ele.bindUnderpan();
+                    for(const c in components) {
+                        ele.addComponent(c,Controller.api.components[c].create(ele, components[c]));
+                    }
+                    ele.updateComponent();
+                }
+
+                for(const i in node.composition.cards){
+                    const components = node.composition.cards[i];
+                    let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_card);
+                    ele.bindCard();
+                    for(const c in components) {
+                        ele.addComponent(c,Controller.api.components[c].create(ele, components[c]));
+                    }
+                    ele.updateComponent();
+                }
+            },
+
+            getNewLevelTree:function(id, name, composition, params, stage, underpan, state) {
+                return {
+                    text: name,
+                    id: id,
+                    type: "level",
+                    state: state,
+                    iconCls: "icon-add",
+                    inspection: "#panel-inspection-level",
+                    children: [
                         {
-                            text:"台桌",
-                            iconCls:"icon-help",
-                            children:[],
-                            checkbox:false,
-                            inspection:"#panel-inspection-stage",
+                            text: "台桌",
+                            id: id,
+                            iconCls: "icon-help",
+                            children: [],
+                            checkbox: false,
+                            type: "stage",
+                            inspection: "#panel-inspection-stage",
+                            params:stage,
+                            onInspectionChanged: function (inspection) {
+                                console.log("lskdf");
+                            }
                         },
                         {
-                            text:"底牌",
-                            iconCls:"icon-help",
-                            checkbox:false,
-                            inspection:"#panel-inspection-underpan",
-                            children : []
+                            text: "底牌",
+                            id: id,
+                            iconCls: "icon-help",
+                            checkbox: false,
+                            type: "underpan",
+                            inspection: "#panel-inspection-underpan",
+                            children: [],
+                            params:underpan,
+                            onInspectionChanged: function (inspection) {
+                                console.log("lskdf");
+
+                            }
                         }
                     ],
-                    content : cards
+                    composition: composition,
+                    params:params,
+                    onInspectionChanged: function (inspection) {
+                        Fast.api.ajax({
+                            url: "level/params",
+                            data: {id:this.id, params:JSON.stringify(this.params)}
+                        }, function (data) {
+                            return false;
+                        });
+                    }
+
                 };
-                return newNode;
             },
-            getNewBagTree:function(id, name, state, cards) {
-                let newNode = {
-                    text:name,
-                    id:id,
-                    type:"bag",
-                    state:state,
-                    iconCls:"icon-add",
-                    inspection:"#panel-inspection-bag",
-                    children:[
-                    ],
-                    content : cards
+            getNewBagTree:function(id, name, state, params) {
+                return {
+                    text: name,
+                    id: id,
+                    type: "bag",
+                    state: state,
+                    iconCls: "icon-add",
+                    inspection: "#panel-inspection-bag",
+                    children: [],
+                    params: params,
+                    onInspectionChanged: function (inspection) {
+                        Fast.api.ajax({
+                            url: "bag/params",
+                            data: {id:this.id, params:JSON.stringify(this.params)}
+                        }, function (data) {
+                            return false;
+                        });
+                    }
                 };
-                return newNode;
             },
             loadLevels: function (url, custom) {
                 let deferred = $.Deferred();
@@ -273,12 +322,25 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             },
 
             addLevel:function(bag) {
-                const level_content = JSON.stringify({"cards":[], "underpans":[]});
+                const composition = JSON.stringify({"cards":[], "underpans":[]});
+                const defparams = JSON.stringify({});
                 Fast.api.ajax({
                     url: "level/add",
-                    data: {pokebag_model_id:bag.id, name: "新关卡", content:level_content}
-                }, function (data, ret) {
-                    var newNode = Controller.api.getNewLevelTree(data.id, data.name, "opened", JSON.parse(data.content));
+                    data: {
+                        pokebag_model_id:bag.id,
+                        name: "新关卡",
+                        composition:composition,
+                        params:defparams,stage:defparams,underpan:defparams,
+                    }
+                }, function (data) {
+                    var newNode = Controller.api.getNewLevelTree(
+                        data.id,
+                        data.name,
+                        JSON.parse(data.composition),
+                        JSON.parse(data.params),
+                        JSON.parse(data.stage),
+                        JSON.parse(data.underpan),
+                        "opened");
                     $("#tree-level").tree('append', {
                         parent:bag.target,
                         data: [newNode]
@@ -318,7 +380,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 Fast.api.ajax({
                     url: "level/del",
                     data: {ids: ids}
-                }, function (data, ret) {
+                }, function () {
                     Controller.api.resetStage();
                     $("#tree-level").tree('remove', node.target);
                     return false;
@@ -334,6 +396,14 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             },
 
             push:function() {
+                var node = $('#tree-level').tree('getSelected');
+                if (node == null || node.type === "bag") {
+                    return;
+                }
+                if(node.type !== "level") {
+                    node = $('#tree-level').tree('getParent', node.target);
+                }
+
                 let cards = [];
                 $("#panel-card .card").each(function(){
                     cards.push(Controller.api.collectComponentData.apply(this));
@@ -343,14 +413,13 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     underpans.push(Controller.api.collectComponentData.apply(this));
                 });
 
-                var node = $('#tree-level').tree('getSelected');
                 let options = {
                     url: "level/update",
                     type: "POST",
                     dataType: "json",
                     data: {
                         id: node.id,
-                        content:JSON.stringify({
+                        composition:JSON.stringify({
                             cards:cards,
                             underpans:underpans
                         })
@@ -358,7 +427,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     success: function (ret) {
                         ret = Fast.events.onAjaxResponse(ret);
                         if (ret.code === 1) {
-                            node.content = JSON.parse(ret.data);
+                            node.composition = JSON.parse(ret.data);
                             $('#tree-level').tree("update", node);
                         } else {
                             Fast.events.onAjaxError(ret);
@@ -428,6 +497,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                     }
                                 }
                                 this.onUpdate();
+                                Controller.api.sync(true);
                             },
 
                             onUpdate:function() {
@@ -497,6 +567,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                     }
                                 }
                                 this.onUpdate();
+                                Controller.api.sync(true);
                             },
 
                             onUpdate:function() {
@@ -578,6 +649,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                     }
                                 }
                                 this.onUpdate();
+                                Controller.api.sync(true);
                             },
 
                             onUpdate:function() {
@@ -729,6 +801,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                     }
                                 }
                                 this.onUpdate();
+                                Controller.api.sync(false);
                             },
 
                             onUpdate:function() {
@@ -855,9 +928,8 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 },
 
                 bindAttrInput:function(callback, component) {
-                    $(".attr-input-card", this).on("change", function(env){
+                    $(".attr-input-card", this).on("change", function(){
                         callback.call(component, this);
-                        Controller.api.sync();
                     });
                 },
 
@@ -875,7 +947,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
                 bindCard: function () {
                     $(this).draggable({
-                        onBeforeDrag:function(e) {
+                        onBeforeDrag:function() {
                             $(this).click();
                         },
                         onDrag: function(e) {
@@ -890,17 +962,17 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             }
                             $(this).getComponent("position").onUpdateInspection();
                         },
-                        onStopDrag: function(e) {
+                        onStopDrag: function() {
                             Controller.api.sync(true);
                         }
-                    }).on("dblclick", function(e){
+                    }).on("dblclick", function(){
                         let component = $(this).getComponent("position");
                         let data = component.getData();
                         data.zindex++;
                         component.setData(data);
                         component.update();
                         return false;
-                    }).on("click", function(ent){
+                    }).on("click", function(){
                         $(".panel-inspection").hide();
                         $("#panel-inspection-card").show();
 
@@ -951,12 +1023,12 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 },
 
                 addBag:function() {
-                    const bag_content = JSON.stringify({});
+                    const params = JSON.stringify({});
                     Fast.api.ajax({
                         url: "bag/add",
-                        data: {name: "新关卡包", content:bag_content}
-                    }, function (data, ret) {
-                        var newNode = Controller.api.getNewBagTree(data.id, data.name, JSON.parse(data.content));
+                        data: {name: "新关卡包", params:params}
+                    }, function (data) {
+                        var newNode = Controller.api.getNewBagTree(data.id, data.name, JSON.parse(data.params));
                         $("#tree-level").tree('append', {
                             data: [newNode]
                         });

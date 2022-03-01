@@ -31,11 +31,19 @@ class Level extends Common
         if ($poke == null) {
             $this->error(__('Can not find the record'));
         }
-        $poke->content     = $_POST['content'];
+        $poke->composition     = $_POST['composition'];
         $poke->save();
-        $this->result($poke->content, 1);
+        $this->result($poke->composition, 1);
     }
 
+    public function params() {
+        $poke = model("Poke")->get($this->request->param("id"));
+        if ($poke == null) {
+            $this->error(__('Can not find the record'));
+        }
+        $poke->allowField(true)->save($_POST);
+        $this->success();
+    }
     public function download() {
         $pokes = model("Poke")->all($this->request->param("ids/a"));
         if ($pokes == null) {

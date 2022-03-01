@@ -30,14 +30,13 @@ class Bag extends Common
         $this->result($poke, 1);
     }
 
-    public function update() {
+    public function params() {
         $poke = model("Pokebag")->get($this->request->param("id"));
         if ($poke == null) {
             $this->error(__('Can not find the record'));
         }
-        $poke->content     = $_POST['content'];
-        $poke->save();
-        $this->result($poke->content, 1);
+        $poke->allowField(true)->save($_POST);
+        $this->success();
     }
 
     public function download() {
