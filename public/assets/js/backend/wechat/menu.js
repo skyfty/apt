@@ -58,7 +58,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'sortable'], function
             });
             //添加主菜单
             $(document).on('click', '#add-item', function () {
-                var menu_item_total = $(".menu-item").size();
+                var menu_item_total = $(".menu-item").length;
                 if (menu_item_total < 3) {
                     var item = '<li class="menu-item" data-type="click" data-action="key|" data-name="添加菜单" > <a href="javascript:;" class="menu-link"> <i class="icon-menu-dot"></i> <i class="weixin-icon sort-gray"></i> <span class="title">添加菜单</span> </a> <div class="sub-menu-box" style=""> <ul class="sub-menu-list"><li class=" add-sub-item"><a href="javascript:;" title="添加子菜单"><span class=" "><i class="weixin-icon add-gray"></i></span></a></li> </ul> <i class="arrow arrow-out"></i> <i class="arrow arrow-in"></i> </div></li>';
                     var itemDom = $(item);
@@ -76,7 +76,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'sortable'], function
                 var prev = current.prev("li[data-type]");
                 var next = current.next("li[data-type]");
 
-                if (prev.size() == 0 && next.size() == 0 && $(".sub-menu-box", current).size() == 0) {
+                if (prev.size() == 0 && next.size() == 0 && $(".sub-menu-box", current).length == 0) {
                     last = current.closest(".menu-item");
                 } else if (prev.size() > 0 || next.size() > 0) {
                     last = prev.size() > 0 ? prev : next;
@@ -116,7 +116,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'sortable'], function
                 if (currentItem.size() > 0) {
                     currentItem.attr('data-type', type);
                     currentItem.attr('data-action', key + "|" + value);
-                    if (currentItem.siblings().size() == 4) {
+                    if (currentItem.siblings().length == 4) {
                         $(".add-sub-item").show();
                     } else if (false) {
 
@@ -153,7 +153,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'sortable'], function
                         actions = action.split('|');
                         if (item.hasClass('menu-item')) {
                             sub_menu_i = 0;
-                            if (item.find('.sub-menu-item').size() > 0) {
+                            if (item.find('.sub-menu-item').length > 0) {
                                 menus[menu_i] = {"name": name, "sub_button": "sub_button"}
                             } else {
                                 if (actions[0] == 'url')
@@ -185,7 +185,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'sortable'], function
             }
             //添加子菜单
             $(document).on('click', ".add-sub-item", function () {
-                var sub_menu_item_total = $(this).parent().find(".sub-menu-item").size();
+                var sub_menu_item_total = $(this).parent().find(".sub-menu-item").length;
                 if (sub_menu_item_total < 5) {
                     var item = '<li class="sub-menu-item" data-type="click" data-action="key|" data-name="添加子菜单"><a href="javascript:;"><span class=" "><i class="weixin-icon sort-gray"></i><span class="sub-title">添加子菜单</span></span></a></li>';
                     var itemDom = $(item);
@@ -208,7 +208,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'sortable'], function
                     $("#menu-list > li").not(this).find(".sub-menu-box").hide();
                     $(".sub-menu-box", this).toggle();
                     //如果当前还没有子菜单
-                    if ($(".sub-menu-item", this).size() == 0) {
+                    if ($(".sub-menu-item", this).length == 0) {
                         $(".is-item").show();
                         $(".is-sub-item").show();
                     } else {

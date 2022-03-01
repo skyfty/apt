@@ -310,7 +310,7 @@
             html.push(sprintf('<i class="%s %s"></i>', that.options.iconsPrefix, that.options.icons.commonSearchIcon))
             html.push('</button></div>');
         }
-        if (that.$toolbar.find(".pull-right").size() > 0) {
+        if (that.$toolbar.find(".pull-right").length > 0) {
             $(html.join('')).insertBefore(that.$toolbar.find(".pull-right:first"));
         } else {
             that.$toolbar.append(html.join(''));

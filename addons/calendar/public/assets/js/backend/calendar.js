@@ -12,8 +12,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template', 'jquery-u
                 url: "calendar/index",
                 data: function () {
                     return {
-                        type: $(".fc-my-button.fc-state-active").size() > 0 ? 'my' : 'all',
-                        admin_id: $("#c-admin_id").size() > 0 ? $("#c-admin_id").val() : 0
+                        type: $(".fc-my-button.fc-state-active").length > 0 ? 'my' : 'all',
+                        admin_id: $("#c-admin_id").length > 0 ? $("#c-admin_id").val() : 0
                     };
                 }
             };
@@ -161,7 +161,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template', 'jquery-u
 
                 },
                 eventAfterAllRender: function (view) {
-                    if ($(".fc-all-button.fc-state-active,.fc-my-button.fc-state-active").size() == 0) {
+                    if ($(".fc-all-button.fc-state-active,.fc-my-button.fc-state-active").length == 0) {
                         $(".fc-toolbar").append('<div id="calendarTrash" class="calendar-trash"><i class="fa fa-trash-o"></i><b>' + __('Drag here to delete') + '</b></div>');
                         $(".fc-all-button").addClass("fc-state-active");
                         $(".fc-toolbar .fc-left").append('<form class="form-inline"><input type="text" id="c-admin_id" name="admin_id" placeholder="' + __('Please select a user') + '" class="form-control input-sm selectpage" /></form>');

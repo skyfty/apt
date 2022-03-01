@@ -17,7 +17,7 @@
 		this.each(function(i, cont) {
 
 			//if list container is table, the browser automatically wraps rows in tbody if not specified so change list container to tbody so that children returns rows as user expected
-			if ($(cont).is("table") && $(cont).children().size() == 1 && $(cont).children().is("tbody"))
+			if ($(cont).is("table") && $(cont).children().length == 1 && $(cont).children().is("tbody"))
 				cont = $(cont).children().get(0);
 
 			var newList = {
@@ -31,7 +31,7 @@
 
 				init: function() {
 					//set options to default values if not set
-					opts.tagName = opts.tagName == "" ? ($(this.container).children().size() == 0 ? "li" : $(this.container).children().get(0).tagName.toLowerCase()) : opts.tagName;
+					opts.tagName = opts.tagName == "" ? ($(this.container).children().length == 0 ? "li" : $(this.container).children().get(0).tagName.toLowerCase()) : opts.tagName;
 					if (opts.itemSelector == "")
 						opts.itemSelector = opts.tagName;
 					if (opts.dragSelector == "")
@@ -61,10 +61,10 @@
 				grabItem: function(e) {
 					var list = lists[$(this).attr("data-listidx")];
 					var item = $(e.target).closest("[data-listidx] > " + opts.tagName).get(0);
-					var insideMoveableItem = list.getItems().filter(function() { return this == item; }).size() > 0;
+					var insideMoveableItem = list.getItems().filter(function() { return this == item; }).length > 0;
 
 					//if not left click or if clicked on excluded element (e.g. text box) or not a moveable list item return
-					if (e.which != 1 || $(e.target).is(opts.dragSelectorExclude) || $(e.target).closest(opts.dragSelectorExclude).size() > 0 || !insideMoveableItem)
+					if (e.which != 1 || $(e.target).is(opts.dragSelectorExclude) || $(e.target).closest(opts.dragSelectorExclude).length > 0 || !insideMoveableItem)
 						return;
 
 					//prevents selection, stops issue on Fx where dragging hyperlink doesn't work and on IE where it triggers mousemove even though mouse hasn't moved,

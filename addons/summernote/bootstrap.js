@@ -12,7 +12,7 @@ require(['form', 'upload'], function (Form, Upload) {
         _bindevent.apply(this, [form]);
         try {
             //绑定summernote事件
-            if ($(".summernote,.editor", form).size() > 0) {
+            if ($(".summernote,.editor", form).length > 0) {
                 require(['summernote'], function () {
                     $(".summernote,.editor", form).summernote({
                         height: 250,

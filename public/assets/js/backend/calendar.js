@@ -34,7 +34,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template','fullcalen
                     url: '/calendar/index',
                     data:function(){
                         return {
-                            branch_model_id:$("#branch_model_id").size() > 0 ? $("#branch_model_id").val() : branch_model_id,
+                            branch_model_id:$("#branch_model_id").length > 0 ? $("#branch_model_id").val() : branch_model_id,
                         };
                     }
                 },
@@ -75,7 +75,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template','fullcalen
                     });
                 },
                 eventAfterAllRender: function (view) {
-                    if ($(".fc-all-button.fc-state-active,.fc-my-button.fc-state-active").size() == 0) {
+                    if ($(".fc-all-button.fc-state-active,.fc-my-button.fc-state-active").length == 0) {
                         $(".fc-all-button").addClass("fc-state-active");
                     }
                 }

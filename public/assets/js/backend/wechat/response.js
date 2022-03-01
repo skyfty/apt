@@ -138,7 +138,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'adminlte'], function
                         delete(datas.app);
                         var form = $("form.form-ajax");
                         $.each(datas, function (i, j) {
-                            form.field("row[content][" + i + "]" + ($("input[name='row[content][" + i + "][]']", form).size() > 0 ? '[]' : ''), j);
+                            form.field("row[content][" + i + "]" + ($("input[name='row[content][" + i + "][]']", form).length > 0 ? '[]' : ''), j);
                         });
                     }
                 });

@@ -171,7 +171,7 @@ define(['jquery', 'bootstrap', 'moment', 'moment/locale/zh-cn', 'bootstrap-table
                 table.on('post-body.bs.table', function (e, settings, json, xhr) {
                     $(Table.config.refreshbtn, toolbar).find(".fa").removeClass("fa-spin");
                     $(Table.config.disabledbtn, toolbar).toggleClass('disabled', true);
-                    if ($(Table.config.firsttd, table).find("input[type='checkbox'][data-index]").size() > 0) {
+                    if ($(Table.config.firsttd, table).find("input[type='checkbox'][data-index]").length > 0) {
                         // 挺拽选择,需要重新绑定事件
                         require(['drag', 'drop'], function () {
                             $(Table.config.firsttd, table).drag("start", function (ev, dd) {
@@ -233,7 +233,7 @@ define(['jquery', 'bootstrap', 'moment', 'moment/locale/zh-cn', 'bootstrap-table
                     Fast.api.open(url, __('Add'), $(this).data() || {});
                 });
                 // 导入按钮事件
-                if ($(Table.config.importbtn, toolbar).size() > 0) {
+                if ($(Table.config.importbtn, toolbar).length > 0) {
                     require(['upload'], function (Upload) {
                         Upload.api.plupload($(Table.config.importbtn, toolbar), function (data, ret) {
                             Fast.api.ajax({

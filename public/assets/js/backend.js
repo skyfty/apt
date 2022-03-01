@@ -93,7 +93,7 @@ define(['fast', 'template', 'moment'], function (Fast, Template, Moment) {
                 if (url.indexOf("{ids}") > -1) {
                     var ids = 0;
                     var tableId = $(elem).data("table-id");
-                    if (tableId && $("#" + tableId).size() > 0 && $("#" + tableId).data("bootstrap.table")) {
+                    if (tableId && $("#" + tableId).length > 0 && $("#" + tableId).data("bootstrap.table")) {
                         var Table = require("table");
                         ids = Table.api.selectedids($("#" + tableId)).join(",");
                     }
@@ -233,11 +233,11 @@ define(['fast', 'template', 'moment'], function (Fast, Template, Moment) {
                 return false;
             });
             //修复含有fixed-footer类的body边距
-            if ($(".fixed-footer").size() > 0) {
+            if ($(".fixed-footer").length > 0) {
                 $(document.body).css("padding-bottom", $(".fixed-footer").outerHeight());
             }
             //修复不在iframe时layer-footer隐藏的问题
-            if ($(".layer-footer").size() > 0 && self === top) {
+            if ($(".layer-footer").length > 0 && self === top) {
                 $(".layer-footer").show();
             }
             //tooltip和popover

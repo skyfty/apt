@@ -183,7 +183,7 @@ define(['jquery', 'bootstrap', 'toastr', 'layer', 'lang'], function ($, undefine
                         }
                     }
                 }, options ? options : {});
-                if ($(window).width() < 480 || (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream && top.$(".tab-pane.active").size() > 0)) {
+                if ($(window).width() < 480 || (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream && top.$(".tab-pane.active").length > 0)) {
                     options.area = [top.$(".tab-pane.active").width() + "px", top.$(".tab-pane.active").height() + "px"];
                     options.offset = [top.$(".tab-pane.active").scrollTop() + "px", "0px"];
                 }
@@ -211,7 +211,7 @@ define(['jquery', 'bootstrap', 'toastr', 'layer', 'lang'], function ($, undefine
                     $(".layui-layer-footer", layero).remove();
                     var footer = $("<div />").addClass('layui-layer-btn layui-layer-footer');
                     footer.html(layerfooter.html());
-                    if ($(".row", footer).size() === 0) {
+                    if ($(".row", footer).length === 0) {
                         $(">", footer).wrapAll("<div class='row'></div>");
                     }
                     footer.insertAfter(layero.find('.layui-layer-content'));
@@ -326,7 +326,7 @@ define(['jquery', 'bootstrap', 'toastr', 'layer', 'lang'], function ($, undefine
             // 绑定ESC关闭窗口事件
             $(window).keyup(function (e) {
                 if (e.keyCode == 27) {
-                    if ($(".layui-layer").size() > 0) {
+                    if ($(".layui-layer").length > 0) {
                         var index = 0;
                         $(".layui-layer").each(function () {
                             index = Math.max(index, parseInt($(this).attr("times")));

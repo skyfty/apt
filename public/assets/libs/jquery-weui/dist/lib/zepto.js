@@ -459,7 +459,7 @@ var Zepto = (function() {
       return this.filter(function(){
         return isObject(selector) ?
           $.contains(this, selector) :
-          $(this).find(selector).size()
+          $(this).find(selector).length
       })
     },
     eq: function(idx){
