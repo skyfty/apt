@@ -61,8 +61,13 @@ class Level extends Common
         }
 
         foreach($pokes as $k=>$poke) {
-            $data = json_decode($poke['content'], true);
             $data['name'] = $poke['name'];
+            $data['level'] = [
+                'composition'=>json_decode($poke['composition'], true),
+                'params'=>json_decode($poke['params'], true),
+                'stage'=>json_decode($poke['stage'], true),
+                'underpan'=>json_decode($poke['underpan'], true),
+            ];
             $zip->addFromString($data['name'].".json", json_encode($data, JSON_UNESCAPED_UNICODE));
         }
         $zip->close();
