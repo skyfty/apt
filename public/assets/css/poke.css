@@ -133,26 +133,18 @@ div[class*='suit']:after {
     padding: 5px;
 }
 
+.icon-bag {
+    background:url('../img/poke/bag.png') no-repeat center center !important;
+}
 
-/*!*重点代码*!*/
-/*!*默认*!*/
-/*.tree-icon{*/
-/*    background:url('./img/m1.png') no-repeat center center !important;*/
-/*}*/
-/*!*折叠时图片*!*/
-/*.tree-folder{*/
-/*    background:url('./img/check.png') no-repeat center center !important;*/
-/*}*/
-/*!*展开时图片*!*/
-/*.tree-folder-open {*/
-/*    background: url('./img/add2.png') no-repeat center center !important;*/
-/*}*/
+.icon-level {
+    background:url('../img/poke/level.png') no-repeat center center !important;
+}
 
-/*!*折叠时图片*!*/
-/*.tree-file{*/
-/*    background:url('./img/check.png') no-repeat center center !important;*/
-/*}*/
-/*!*展开时图片*!*/
-/*.tree-file-open {*/
-/*    background: url('./img/add2.png') no-repeat center center !important;*/
-/*}*/
+.icon-underpan {
+    background:url('../img/poke/underpan.png') no-repeat center center !important;
+}
+
+.icon-stage {
+    background:url('../img/poke/stage.png') no-repeat center center !important;
+}

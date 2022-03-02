@@ -292,13 +292,13 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     id: id,
                     type: "level",
                     state: state,
-                    iconCls: "icon-add",
+                    iconCls: "icon-level",
                     inspection: "#panel-inspection-level",
                     children: [
                         {
                             text: "台桌",
                             id: id,
-                            iconCls: "icon-help",
+                            iconCls: "icon-stage",
                             children: [],
                             checkbox: false,
                             type: "stage",
@@ -311,7 +311,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         {
                             text: "底牌",
                             id: id,
-                            iconCls: "icon-help",
+                            iconCls: "icon-underpan",
                             checkbox: false,
                             type: "underpan",
                             inspection: "#panel-inspection-underpan",
@@ -342,7 +342,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     id: id,
                     type: "bag",
                     state: state,
-                    iconCls: "icon-add",
+                    iconCls: "icon-bag",
                     inspection: "#panel-inspection-bag",
                     children: [],
                     params: params,
