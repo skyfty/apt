@@ -33,20 +33,42 @@
                 <input class="easyui-passwordbox" id="password" prompt="密码" iconWidth="28" style="width:100%;height:34px;padding:10px">
             </div>
             <div style="text-align:center;padding:5px">
-                <button type="button" id="btn-login" class="easyui-linkbutton" >登录</button>
+                <button type="button" id="btn-login"  class="btn btn-primary btn-block  btn-sm" >登录</button>
+            </div>
+        </div>
+    </form>
+</div>
+{/if}
+<div id="window-rest-password" class="easyui-window" title="重置密码" style="width:415px;height:290px;display: none"
+     data-options="modal:true,resizable:false,collapsible:false,minimizable:false,maximizable:false,closed:true,inline:false">
+    <form id="form-login" method="post">
+        <div class="easyui-panel" style="width:400px;padding:50px 60px">
+            <div style="margin-bottom:20px">
+                <input class="easyui-passwordbox" id="password" prompt="新密码" iconWidth="28" style="width:100%;height:34px;padding:10px">
+            </div>
+            <div style="margin-bottom:20px">
+                <input class="easyui-passwordbox" id="reppassword" prompt="重复新密码" iconWidth="28" style="width:100%;height:34px;padding:10px">
+            </div>
+            <div style="text-align:center;padding:5px">
+                <button type="button" id="btn-rest-password" class="btn btn-primary btn-block  btn-sm" >确认</button>
             </div>
         </div>
     </form>
     <div id="viewer"></div>
 </div>
-{/if}
+
 <div data-options="region:'north',split:true,border:false,minHeight:50,maxHeight:50">
     <div class="easyui-panel" style="padding:5px;">
         <a href="#" class="easyui-menubutton" data-options="menu:'#mm1',iconCls:'icon-man'">{$admin.nickname ?? "未登录"}</a>
         <a href="#" class="easyui-menubutton" data-options="menu:'#mm2',iconCls:'icon-help'">帮助</a>
     </div>
     <div id="mm1" style="width:150px;">
-        <div data-options="" id="btn-logout">退出</div>
+        <div data-options="" id="menu-reset-password" onclick="$('#window-rest-password').window('open')">
+            重置密码
+        </div>
+        <div class="menu-sep"></div>
+
+        <div data-options="" id="menu-logout">退出</div>
     </div>
     <div id="mm2" style="width:100px;">
         <div>Help</div>

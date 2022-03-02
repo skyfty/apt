@@ -19,10 +19,11 @@ class Admin extends Model
         parent::init();
     }
 
-    // 密码加密
-    protected function encryptPassword($password, $salt = '', $encrypt = 'md5')
+    public function resetPassword($password)
     {
-        return $encrypt($password . $salt);
+        $password = md5(md5($password) . $this->salt);
+        $ret = $this->update(['password' => $password,'id'=>$this->id]);
+        return $ret;
     }
 
     public function staff() {

@@ -2,6 +2,8 @@
 
 namespace app\poke\controller;
 
+use app\poke\model\Admin;
+
 class Index extends Common
 {
     protected $noNeedLogin = ['index', 'login'];
@@ -57,4 +59,17 @@ class Index extends Common
         $this->success(__('Logout successful'), 'index/index');
     }
 
+    /**
+     * 注销登录
+     */
+    public function resetpassword()
+    {
+        $password = $this->request->post('password');
+        if ($password === "") {
+            $this->error("param error");
+        }
+        $admin = Admin::get(intval($this->auth->id));
+        $admin->resetPassword($password);
+        $this->success();
+    }
 }

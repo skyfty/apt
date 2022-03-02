@@ -202,11 +202,27 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 });
             });
 
-            $("#btn-logout").on("click", function(){
+            $("#menu-logout").on("click", function(){
                 Fast.api.ajax({
                     url: "/index/logout",
                 }, function (data, ret) {
                     window.location.assign(ret.url);
+                    return false;
+                });
+            });
+
+            $("#btn-rest-password").on("click", function(){
+                let password = $("#password").val();
+                let reppassword = $("#reppassword").val();
+                if (password === "" || password !== reppassword) {
+                    Fast.api.msg("密码参数输入错误");
+                    return;
+                }
+                Fast.api.ajax({
+                    url: "/index/resetpassword",
+                    data: {password: password}
+                }, function (data, ret) {
+                    $("#window-rest-password").window("close");
                     return false;
                 });
             });
