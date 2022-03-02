@@ -2,15 +2,9 @@
 
 namespace app\poke\controller;
 
-
-use think\Config;
-use think\Hook;
-use think\Validate;
-
 class Index extends Common
 {
     protected $noNeedLogin = ['index', 'login'];
-    protected $noNeedRight = ['index', 'login'];
 
     public function index()
     {

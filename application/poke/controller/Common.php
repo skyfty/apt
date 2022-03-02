@@ -39,36 +39,29 @@ class Common extends Controller
         //移除HTML标签
         $this->request->filter('trim,strip_tags,htmlspecialchars');
 
-        $this->auth = Auth::instance();
-
         $modulename = $this->request->module();
         $controllername = Loader::parseName($this->request->controller());
         $actionname = strtolower($this->request->action());
-
-        $token = $this->request->server('HTTP_TOKEN', $this->request->request('token', \think\Cookie::get('token')));
-
         $path = str_replace('.', '/', $controllername) . '/' . $actionname;
+
+        // 定义是否AJAX请求
+        !defined('IS_AJAX') && define('IS_AJAX', $this->request->isAjax());
+
+        $this->auth = Auth::instance();
+
         // 设置当前请求的URI
         $this->auth->setRequestUri($path);
         // 检测是否需要验证登录
         if (!$this->auth->match($this->noNeedLogin)) {
-            //初始化
-            $this->auth->init($token);
             //检测是否登录
             if (!$this->auth->isLogin()) {
-                $this->error(__('Please login first'), null, 401);
-            }
-            // 判断是否需要验证权限
-            if (!$this->auth->match($this->noNeedRight)) {
-                // 判断控制器和方法判断是否有对应权限
-                if (!$this->auth->check($path)) {
-                    $this->error(__('You have no permission'), null, 403);
+                $url = Session::get('referer');
+                $url = $url ? $url : $this->request->url();
+                if ($url == '/') {
+                    $this->redirect('index/index', [], 302, ['referer' => $url]);
+                    exit;
                 }
-            }
-        } else {
-            // 如果有传递token才验证是否登录状态
-            if ($token) {
-                $this->auth->init($token);
+                $this->error(__('Please login first'), url('index/index', ['url' => $url]));
             }
         }
 

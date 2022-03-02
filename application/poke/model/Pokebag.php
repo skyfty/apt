@@ -10,7 +10,8 @@ class Pokebag extends   \app\common\model\Pokebag
     protected static function init()
     {
         self::beforeInsert(function($row){
-            $row['creator_model_id'] =  1;
+            $auth = Auth::instance();
+            $row['creator_model_id'] =$row['owners_model_id'] = $auth->isLogin() ? $auth->id : 1;
         });
         parent::init();
 

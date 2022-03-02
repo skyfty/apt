@@ -42,12 +42,11 @@
 {/if}
 <div data-options="region:'north',split:true,border:false,minHeight:50,maxHeight:50">
     <div class="easyui-panel" style="padding:5px;">
-        <a href="#" class="easyui-linkbutton" data-options="plain:true">Home</a>
-        <a href="#" class="easyui-menubutton" data-options="menu:'#mm1',iconCls:'icon-man'">{$admin.nickname}</a>
+        <a href="#" class="easyui-menubutton" data-options="menu:'#mm1',iconCls:'icon-man'">{$admin.nickname ?? "未登录"}</a>
         <a href="#" class="easyui-menubutton" data-options="menu:'#mm2',iconCls:'icon-help'">帮助</a>
     </div>
     <div id="mm1" style="width:150px;">
-        <div data-options="iconCls:'icon-undo'" id="btn-logout">退出</div>
+        <div data-options="" id="btn-logout">退出</div>
     </div>
     <div id="mm2" style="width:100px;">
         <div>Help</div>
@@ -55,7 +54,7 @@
         <div>About</div>
     </div>
 </div>
-<div class="  panel-stage-wrapper" data-options="region:'east',split:true" title="检查器" style="width:300px;">
+<div class="  panel-stage-wrapper" data-options="region:'east',split:true,minWidth:280" title="检查器" style="width:280px;">
     <div id="panel-inspection-card" class="panel-inspection" >
         <div>
             <div id="panel-inspection-component" class="easyui-accordion">

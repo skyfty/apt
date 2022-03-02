@@ -197,7 +197,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     url: "/index/login",
                     data: {username: username,password: password}
                 }, function (data, ret) {
-                    window.location.assign(data.url);
+                    window.location.assign(ret.url);
                     return false;
                 });
             });
@@ -206,7 +206,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 Fast.api.ajax({
                     url: "/index/logout",
                 }, function (data, ret) {
-                    window.location.assign(data.url);
+                    window.location.assign(ret.url);
                     return false;
                 });
             });
