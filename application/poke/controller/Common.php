@@ -2,24 +2,75 @@
 
 namespace app\poke\controller;
 
+use app\poke\library\Auth;
 use think\Config;
 use think\Controller;
 use think\Hook;
 use think\Lang;
 use think\Loader;
+use think\Session;
 
 /**
  * 前台控制器基类
  */
 class Common extends Controller
 {
+
+    /**
+     * 无需登录的方法,同时也就不需要鉴权了
+     * @var array
+     */
+    protected $noNeedLogin = [];
+
+    /**
+     * 无需鉴权的方法,但需要登录
+     * @var array
+     */
+    protected $noNeedRight = [];
+
+    /**
+     * 权限Auth
+     * @var Auth
+     */
+    protected $auth = null;
+
     public function _initialize()
     {
         //移除HTML标签
         $this->request->filter('trim,strip_tags,htmlspecialchars');
+
+        $this->auth = Auth::instance();
+
         $modulename = $this->request->module();
         $controllername = Loader::parseName($this->request->controller());
         $actionname = strtolower($this->request->action());
+
+        $token = $this->request->server('HTTP_TOKEN', $this->request->request('token', \think\Cookie::get('token')));
+
+        $path = str_replace('.', '/', $controllername) . '/' . $actionname;
+        // 设置当前请求的URI
+        $this->auth->setRequestUri($path);
+        // 检测是否需要验证登录
+        if (!$this->auth->match($this->noNeedLogin)) {
+            //初始化
+            $this->auth->init($token);
+            //检测是否登录
+            if (!$this->auth->isLogin()) {
+                $this->error(__('Please login first'), null, 401);
+            }
+            // 判断是否需要验证权限
+            if (!$this->auth->match($this->noNeedRight)) {
+                // 判断控制器和方法判断是否有对应权限
+                if (!$this->auth->check($path)) {
+                    $this->error(__('You have no permission'), null, 403);
+                }
+            }
+        } else {
+            // 如果有传递token才验证是否登录状态
+            if ($token) {
+                $this->auth->init($token);
+            }
+        }
 
         // 语言检测
         $lang = strip_tags($this->request->langset());
@@ -52,6 +103,7 @@ class Common extends Controller
         $this->loadlang($controllername);
         $this->assign('site', $site);
         $this->assign('config', $config);
+        $this->assign('admin', Session::get('admin'));
     }
 
     /**

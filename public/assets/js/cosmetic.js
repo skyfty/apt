@@ -217,7 +217,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                 //绑定事件
                 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                     var panel = $($(this).attr("href"));
-                    if (panel.size() <= 0) {
+                    if (panel.length <= 0) {
                         return;
                     }
 
@@ -381,7 +381,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                     $scope.navtitle = e.target.innerText;
 
                     var panel = $($(this).attr("href"));
-                    if (panel.size() > 0) {
+                    if (panel.length > 0) {
                         var idx = $(this).attr("data-scenery-index");
                         $timeout(function(){$scope.redrawScenery(idx)});
                     }
@@ -492,7 +492,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
 
                 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                     var panel = $($(this).attr("href"));
-                    if (panel.size() > 0) {
+                    if (panel.length > 0) {
                         var idx = $(this).attr("data-scenery-index");
                         $timeout(function(){$scope.redrawScenery(idx)});
                     }

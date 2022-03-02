@@ -10,6 +10,9 @@ use think\Lang;
  */
 class Ajax extends Common
 {
+    protected $noNeedLogin = ['*'];
+    protected $noNeedRight = ['*'];
+
     /**
      * 加载语言包
      */

@@ -1,6 +1,7 @@
 define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, undefined, undefined) {
     var Controller = {
         index: function () {
+
             Controller.panel_underpan = $( "#panel-underpan" );
             Controller.panel_card = $( "#panel-card" );
             Controller.panel_inspection_component = $( "#panel-inspection-component" );
@@ -185,6 +186,30 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 Controller.api.sync(true);
             });
 
+            window.addEventListener('resize', function(event){
+                $("window-login").window("center");
+            });
+
+            $("#btn-login").on("click", function(){
+                let username = $("#username").val();
+                let password = $("#password").val();
+                Fast.api.ajax({
+                    url: "/index/login",
+                    data: {username: username,password: password}
+                }, function (data, ret) {
+                    window.location.assign(data.url);
+                    return false;
+                });
+            });
+
+            $("#btn-logout").on("click", function(){
+                Fast.api.ajax({
+                    url: "/index/logout",
+                }, function (data, ret) {
+                    window.location.assign(data.url);
+                    return false;
+                });
+            });
         },
 
         api: {
