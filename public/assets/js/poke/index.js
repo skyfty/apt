@@ -508,6 +508,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             }, def),
                             onlyone:true,
                             inspection:null,
+                            toolbar:null,
                             target:target,
                             primary:true,
                             repels:[],
@@ -517,6 +518,13 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                 this.inspection.bindAttrInput(this.onInspectionChanged, this);
                                 return this.inspection;
                             },
+
+                            getToolbar:function() {
+                                this.toolbar = $(Template("tmpl-component-card-toolbar-face", this));
+
+                                return this.toolbar;
+                            },
+
                             enable:function(v) {
                                 $(".attr-input-card", this.inspection).prop('disabled', !v)
                             },

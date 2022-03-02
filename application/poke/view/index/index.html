@@ -175,6 +175,9 @@
 
 <script id="tmpl-card" type="text/html">
     <div class="card ui-widget-content" style="z-index: <%=zindex%>;left:<%=left%>px;top:<%=top%>px" data-panel="<%=panel%>">
+        <div class="toolbar-card easyui-panel">
+
+        </div>
         <div>
             <p><%=name%></p>
         </div>
@@ -232,7 +235,11 @@
     </div>
 </script>
 
+<script id="tmpl-component-card-toolbar-face" type="text/html">
+    <div>
 
+    </div>
+</script>
 <script id="tmpl-component-card-face" type="text/html">
     <div title="牌面" style="padding:10px;" class="panel-component">
         <div class="form-inline">
