@@ -8,7 +8,7 @@ use app\poke\model\Pokebag;
 class Bag extends Common
 {
     public function add() {
-        $cnt = model("Pokebag")->where("name", $_POST['name'])->count();
+        $cnt = model("Pokebag")->where('creator_model_id', $this->auth->id)->count();
         if ($cnt > 0) {
             $_POST['name'] = $_POST['name'] ."(".($cnt).")";
         }
