@@ -50,26 +50,9 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
             });
 
-            let nodes = [];
-            for(const i in pokebags) {
-                let pokebag = pokebags[i];
-                let bag = Controller.api.getNewBagTree(pokebag.id, pokebag.name, "closed", JSON.parse(pokebag.params))
-                for(const j in pokebag.levels) {
-                    let level = pokebag.levels[j];
-                    let levelNode = Controller.api.getNewLevelTree(
-                        level.id,
-                        level.name,
-                        JSON.parse(level.composition),
-                        JSON.parse(level.params),
-                        JSON.parse(level.stage),
-                        JSON.parse(level.underpan),
-                        "closed");
-                    bag.children.push(levelNode);
-                }
-                nodes.push(bag);
-            }
+
             $("#tree-level").tree({
-                data:nodes,
+                data:[],
                 dnd:true,
                 onContextMenu: function(e,node){
                     e.preventDefault();
@@ -226,9 +209,32 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     return false;
                 });
             });
+            setTimeout(Controller.api.initLevelTree, 400);
         },
 
         api: {
+
+            initLevelTree:function() {
+                let nodes = [];
+                for(const i in pokebags) {
+                    let pokebag = pokebags[i];
+                    let bag = Controller.api.getNewBagTree(pokebag.id, pokebag.name, "closed", JSON.parse(pokebag.params))
+                    for(const j in pokebag.levels) {
+                        let level = pokebag.levels[j];
+                        let levelNode = Controller.api.getNewLevelTree(
+                            level.id,
+                            level.name,
+                            JSON.parse(level.composition),
+                            JSON.parse(level.params),
+                            JSON.parse(level.stage),
+                            JSON.parse(level.underpan),
+                            "closed");
+                        bag.children.push(levelNode);
+                    }
+                    nodes.push(bag);
+                }
+                $("#tree-level").tree("loadData", nodes);
+            },
 
             deleteTreeNode:function(node, url) {
                 if (confirm("确认要删除吗") !== true) {

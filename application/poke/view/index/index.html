@@ -57,7 +57,7 @@
     <div id="viewer"></div>
 </div>
 
-<div data-options="region:'north',split:true,border:false,minHeight:50,maxHeight:50">
+<div data-options="region:'north',split:true,border:false,minHeight:50,maxHeight:50" style="display: none">
     <div class="easyui-panel" style="padding:5px;">
         <a href="#" class="easyui-menubutton" data-options="menu:'#mm1',iconCls:'icon-man'">{$admin.nickname ?? "未登录"}</a>
         <a href="#" class="easyui-menubutton" data-options="menu:'#mm2',iconCls:'icon-help'">帮助</a>
@@ -135,14 +135,14 @@
     </div>
 </div>
 
-<div id="menu-tree-bag" class="easyui-menu" style="width:120px;">
+<div id="menu-tree-bag" class="easyui-menu" style="width:120px;display: none">
     <div id="new-level-bag-tree" data-options="iconCls:'icon-edit'">新关卡</div>
     <div id="edit-bag-tree" data-options="iconCls:'icon-edit'">编辑</div>
     <div id="remove-bag-tree" data-options="iconCls:'icon-remove'">删除</div>
     <div id="download-bag-tree" data-options="iconCls:'icon-save'">下载</div>
 
 </div>
-<div id="menu-tree-level" class="easyui-menu" style="width:120px;">
+<div id="menu-tree-level" class="easyui-menu" style="width:120px;display: none">
     <div id="edit-level-tree" data-options="iconCls:'icon-edit'">编辑</div>
     <div id="remove-level-tree" data-options="iconCls:'icon-remove'">删除</div>
     <div id="download-level-tree" data-options="iconCls:'icon-save'">下载</div>
