@@ -46,11 +46,6 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 Controller.api.sync(true);
             });
 
-            Controller.panel_card.on("mousewheel DOMMouseScroll", function(e){
-
-            });
-
-
             $("#tree-level").tree({
                 data:[],
                 dnd:true,

@@ -22,7 +22,7 @@
 
 <body class="easyui-layout" onselectstart="return false">
 {if condition="$admin == null"}
-<div id="window-login" class="easyui-window" title="登录" style="width:415px;height:290px"
+<div id="window-login" class="easyui-window" title="登录" style="width:415px;height:290px;display: none;"
      data-options="modal:true,resizable:false,collapsible:false,minimizable:false,maximizable:false,closable:false,inline:false">
     <form id="form-login" method="post">
         <div class="easyui-panel" style="width:400px;padding:50px 60px">
@@ -76,7 +76,7 @@
         <div>About</div>
     </div>
 </div>
-<div class="  panel-stage-wrapper" data-options="region:'east',split:true,minWidth:280" title="检查器" style="width:280px;">
+<div class="  panel-stage-wrapper" data-options="region:'east',split:true,minWidth:280" title="检查器" style="width:280px;display: none">
     <div id="panel-inspection-card" class="panel-inspection" >
         <div>
             <div id="panel-inspection-component" class="easyui-accordion">
@@ -148,7 +148,7 @@
     <div id="download-level-tree" data-options="iconCls:'icon-save'">下载</div>
 
 </div>
-<div title="关卡" style="width:200px;" data-options="
+<div title="关卡" style="width:200px;display: none" data-options="
 				region:'west',split:true,
 				tools:[{
 					iconCls:'icon-add',
@@ -158,7 +158,7 @@
 				}]">
     <ul class="easyui-tree" id="tree-level"> </ul>
 </div>
-<div data-options="region:'center'">
+<div data-options="region:'center'" style="display: none">
     <div class="easyui-layout" data-options="fit:true">
         <div data-options="region:'center'"  title="牌桌" class="panel-stage-wrapper" id="contenter-card">
             <div id="panel-card" data-panel="card" class="panel-grid-line">
