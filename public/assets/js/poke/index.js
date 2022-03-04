@@ -9,7 +9,8 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
             Controller.panel_underpan.sortable({
                 start:function( event, ui) {
-                    $(ui.item).click();
+                    Controller.api.clearCardToolbar();
+                    $(ui.item).resetInspection();
                 },
                 stop: function() {//结束时触发
                     Controller.api.sync(true);
@@ -19,6 +20,8 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 if (node == null || node.type === "bag") {
                     return;
                 }
+                Controller.api.clearCardToolbar();
+
                 let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_underpan);
                 ele.bindUnderpan();
                 ele.addComponent("face", Controller.api.components.face.create(ele));
@@ -32,6 +35,8 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 if (node == null || node.type === "bag") {
                     return;
                 }
+                Controller.api.clearCardToolbar();
+
                 let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_card);
                 ele.bindCard();
                 ele.addComponent("position",Controller.api.components.position.create(ele, {
@@ -92,7 +97,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         if (node.id !== this.selectedLevelId) {
                             Controller.api.resetStage();
                         } else {
-                            Controller.panel_inspection_component.resetInspection(true);
+                            Controller.panel_inspection_component.clearInspection(true);
                         }
                     }
                     if (node.type === "underpan" || node.type === "stage" ||  node.type === "level") {
@@ -149,7 +154,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
             $("#btn-card-delete").on("click", function(){
                 $(".card-selected").remove();
-                Controller.panel_inspection_component.resetInspection(true);
+                Controller.panel_inspection_component.clearInspection(true);
                 Controller.api.sync(true);
             });
 
@@ -245,9 +250,10 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 });
             },
             resetStage:function() {
+                Controller.api.clearCardToolbar();
                 Controller.panel_underpan.html("");
                 Controller.panel_card.html("");
-                Controller.panel_inspection_component.resetInspection(true);
+                Controller.panel_inspection_component.clearInspection(true);
             },
 
             updateStage:function(node) {
@@ -256,7 +262,15 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         autoFadeBars: true,
                         scrollBars: false,
                         smoothness: 15,
-                        mouseWheelVelocity: 2
+                        mouseWheelVelocity: 2,
+                        onScrollStart: function () {
+                            if ($(".card-selected").data("panel") ==="card") {
+                                Controller.api.clearCardToolbar();
+                            }
+                        },
+                        onScrollEnd: function () {
+
+                        }
                     });
                 });
 
@@ -437,6 +451,10 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 return data;
             },
 
+            clearCardToolbar:function() {
+                $(".card.card-shadow.card-selected").tooltip("destroy");
+            },
+
             push:function() {
                 var node = $('#tree-level').tree('getSelected');
                 if (node == null || node.type === "bag") {
@@ -492,23 +510,22 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             components: {
                 face:{
                     suits:{
-                        'diamonds':'suitdiamonds',
-                        'hearts':'suithearts',
-                        'clubs':'suitclubs',
-                        'spades':'suitspades',
-                        'rand':'suitrand',
-                        'wan':'suitwan'
+                        'suitdiamonds':"♦",
+                        'suithearts':"♥",
+                        'suitclubs':"♣",
+                        'suitspades':"♠",
+                        'suitrand':"R",
+                        'suitwan':"W"
                     },
                     containment: ["underpan", "card"],
                     create:function(target, def) {
                         return {
                             data: $.extend({
                                 name:"A",
-                                color:Controller.api.components.face.suits['spades'],
+                                color:"suitspades",
                             }, def),
                             onlyone:true,
                             inspection:null,
-                            toolbar:null,
                             target:target,
                             primary:true,
                             repels:[],
@@ -520,11 +537,82 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             },
 
                             getToolbar:function() {
-                                this.toolbar = $(Template("tmpl-component-card-toolbar-face", this));
+                                if ($(".attr-input-card", this.inspection).prop('disabled')) {
+                                    return null;
+                                }
+                                let data = $.extend(this.data, {
+                                    icon:Controller.api.components.face.suits[this.data.color]
+                                });
+                                let toolbar = $(Template("tmpl-toolbar-card-face", data));
+                                let tooltip_option = {
+                                    content: $('<div></div>'),
+                                    showEvent: 'click',
+                                    onShow: function(){
+                                        var t = $(this);
+                                        t.tooltip('tip').unbind().bind('mouseenter', function(){
+                                            t.tooltip('show');
+                                        }).bind('mouseleave', function(){
+                                            t.tooltip('hide');
+                                        });
+                                    }
+                                };
+                                $("#card-name", toolbar).tooltip($.extend(tooltip_option,{
+                                    onUpdate: function(content){
+                                        content.panel({
+                                            width: 200,
+                                            height:60,
+                                            border: false,
+                                            content: function() {
+                                                let self = this;
+                                                let items = [];
+                                                $("#card-name option", self.inspection).each(function(){
+                                                    let v = $(this).val();
+                                                    items.push({"text":v, "value":v});
+                                                });
+                                                let html = $(Template("tmpl-toolbar-list-name", {items:items}));
+                                                $('a', html).linkbutton({
+                                                    plain: true
+                                                }).on("click", function(){
+                                                    let v = $(this).data("value");
+                                                    self.setData({name:v});
+                                                    self.update();
+                                                });
+                                                return html;
+                                            }.bind(this)
+                                        });
+                                    }.bind(this),
+                                }));
 
-                                return this.toolbar;
+                                $("#card-color", toolbar).tooltip($.extend(tooltip_option, {
+                                    onUpdate: function(content){
+                                        content.panel({
+                                            width: 110,
+                                            height:30,
+                                            border: false,
+                                            content: function() {
+                                                let self = this;
+                                                let items = [];
+                                                $("#card-color option", this.inspection).each(function(){
+                                                    let v = $(this).val();
+                                                    items.push({"text":$(this).html(), "value":v});
+                                                });
+                                                let html = $(Template("tmpl-toolbar-list-color", {items:items}));
+                                                $('a', html).linkbutton({
+                                                    plain: true
+                                                }).on("click", function(){
+                                                    let v = $(this).data("value");
+                                                    self.setData({color:v});
+                                                    self.update();
+                                                });
+                                                return html;
+                                            }.bind(this)
+                                        });
+                                    }.bind(this),
+                                }));
+
+
+                                return toolbar;
                             },
-
                             enable:function(v) {
                                 $(".attr-input-card", this.inspection).prop('disabled', !v)
                             },
@@ -547,6 +635,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                     }
                                 }
                                 this.onUpdate();
+                                target.resetToolbar(true);
                                 Controller.api.sync(true);
                             },
 
@@ -556,10 +645,10 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                 let suitClass = [];
                                 let suits = Controller.api.components.face.suits;
                                 for(let i in suits) {
-                                    suitClass.push(suits[i]);
+                                    suitClass.push(i);
                                 }
                                 target.removeClass(suitClass.join(" "));
-                                target.addClass(this.data.color)
+                                target.addClass(this.data.color);
                             },
 
                             getData:function() {
@@ -600,6 +689,29 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                 this.inspection.bindAttrInput(this.onInspectionChanged, this);
                                 return this.inspection;
                             },
+
+                            getToolbar:function() {
+                                if ($(".attr-input-card", this.inspection).prop('disabled')) {
+                                    return null;
+                                }
+                                let data = $.extend(this.data, {
+                                    direction : this.direction,
+                                    icon: (this.direction==="back"?"反":"前")
+                                });
+                                let toolbar = $(Template("tmpl-toolbar-card-direction", data));
+                                toolbar.on("click", function(){
+                                    this.onToolbarClick(toolbar)
+                                }.bind(this));
+                                return toolbar;
+                            },
+
+                            onToolbarClick:function(toolbar) {
+                                this.direction = (this.direction === "front" ?"back":"front");
+                                this.update();
+                                target.resetToolbar(true);
+                                Controller.api.sync(true);
+                            },
+
                             enable:function(v) {
                                 $(".attr-input-card", this.inspection).prop('disabled', !v)
                             },
@@ -617,6 +729,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                     }
                                 }
                                 this.onUpdate();
+                                target.resetToolbar(true);
                                 Controller.api.sync(true);
                             },
 
@@ -679,12 +792,13 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                 if (v) {
                                     face_component.setData({
                                         name:"A",
-                                        color:Controller.api.components.face.suits['spades']
+                                        color:'suitspades'
                                     });
                                 } else {
+                                    let rand = Controller.api.components.face.suits['suitrand'];
                                     face_component.setData({
-                                        name:"R",
-                                        color:Controller.api.components.face.suits['rand']
+                                        name:rand,
+                                        color:'suitrand'
                                     });
                                 }
                                 face_component.update();
@@ -699,6 +813,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                     }
                                 }
                                 this.onUpdate();
+                                target.resetToolbar(true);
                                 Controller.api.sync(true);
                             },
 
@@ -754,6 +869,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             },
 
                             onInspectionChanged: function (input) {
+                                target.resetToolbar(true);
                                 this.onUpdate();
                             },
                             setFaceComponent:function(v) {
@@ -762,12 +878,13 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                 if (v) {
                                     face_component.setData({
                                         name:"A",
-                                        color:Controller.api.components.face.suits['spades']
+                                        color:"suitspades"
                                     });
                                 } else {
+                                    let wan = Controller.api.components.face.suits['suitwan'];
                                     face_component.setData({
-                                        name:"W",
-                                        color:Controller.api.components.face.suits['wan']
+                                        name:wan,
+                                        color:'suitwan'
                                     });
                                 }
                                 face_component.update();
@@ -926,12 +1043,14 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             break;
                         }
                     }
+                    return this;
                 },
                 updateComponent:function() {
                     let componentMap = $(this).getComponentMap();
                     for(const idx in componentMap) {
                         componentMap[idx].update()
                     }
+                    return this;
                 },
 
                 getComponent:function(name) {
@@ -956,6 +1075,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             $("#btn-component-add [data-name='"+i+"']").hide();
                         }
                     }
+                    return this;
                 },
 
                 onAddComponent:function (name) {
@@ -964,10 +1084,11 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     Controller.panel_inspection_component.addInspectionPanel(component);
                     component.onAttach();
                     ele.updateComponent();
+                    return this;
                 },
 
                 updateInspection:function() {
-                    Controller.panel_inspection_component.resetInspection();
+                    Controller.panel_inspection_component.clearInspection();
                     let componentMap = $(this).getComponentMap();
                     for(const idx in componentMap) {
                         Controller.panel_inspection_component.addInspectionPanel(componentMap[idx]);
@@ -975,21 +1096,72 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     for(const idx in componentMap) {
                         componentMap[idx].onUpdateInspection();
                     }
+                    return this;
+                },
+
+                resetInspection:function() {
+                    $(".panel-inspection").hide();
+                    $("#panel-inspection-card").show();
+                    $(".card.card-shadow.card-selected").removeClass("card-shadow card-selected");
+                    $(this).addClass("card-shadow card-selected").updateInspection();
+                    return this;
+                },
+
+                updateToolbar:function() {
+                    let toolbar_card_container = $("<div></div>");
+                    let componentMap = $(this).getComponentMap();
+                    for(const idx in componentMap) {
+                        let component = componentMap[idx];
+                        if (typeof component.getToolbar === "function") {
+                            let toolbar = component.getToolbar();
+                            if (toolbar != null) {
+                                toolbar_card_container.append(toolbar);
+                            }
+                        }
+                    }
+
+                    $("a", toolbar_card_container).each(function(){
+                        $(this).linkbutton({
+                            plain:true,
+                            iconCls:$(this).data("icon")
+                        });
+                    });
+                    return toolbar_card_container;
+                },
+
+                resetToolbar:function(update) {
+                    let toolbar = $(this).updateToolbar();
+                    if (toolbar.children().length > 0) {
+                        $(this).tooltip({
+                            hideEvent: 'none',
+                            showDelay:0,
+                            position: 'top',
+                            content:  function(){
+                                return toolbar;
+                            },
+                            onShow: function(){
+                                var t = $(this);
+                                // t.tooltip('tip').focus().unbind().bind('blur',function(){
+                                //     t.tooltip('hide');
+                                // });
+                            }
+                        })
+                        $(this).tooltip("show");
+                    }
+                    return this;
                 },
 
                 bindAttrInput:function(callback, component) {
                     $(".attr-input-card", this).on("change", function(){
                         callback.call(component, this);
                     });
+                    return this;
                 },
 
                 bindUnderpan: function () {
                     $(this).on("click", function(){
-                        $(".panel-inspection").hide();
-                        $("#panel-inspection-card").show();
-                        $(".card.card-shadow").removeClass("card-shadow card-selected");
-                        $(this).addClass("card-shadow card-selected");
-                        $(this).updateInspection();
+                        Controller.api.clearCardToolbar();
+                        $(this).resetInspection().resetToolbar();
                     }).data("panel", "underpan");
 
                     return $(this);
@@ -998,7 +1170,8 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 bindCard: function () {
                     $(this).draggable({
                         onBeforeDrag:function() {
-                            $(this).click();
+                            Controller.api.clearCardToolbar();
+                            $(this).resetInspection();
                         },
                         onDrag: function(e) {
                             var d = e.data;
@@ -1013,6 +1186,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             $(this).getComponent("position").onUpdateInspection();
                         },
                         onStopDrag: function() {
+                            $(this).resetToolbar();
                             Controller.api.sync(true);
                         }
                     }).on("dblclick", function(){
@@ -1023,12 +1197,10 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         component.update();
                         return false;
                     }).on("click", function(){
-                        $(".panel-inspection").hide();
-                        $("#panel-inspection-card").show();
-
-                        $(".card.card-shadow").removeClass("card-shadow card-selected");
-                        $(this).addClass("card-shadow card-selected").updateInspection();
+                        Controller.api.clearCardToolbar();
+                        $(this).resetInspection().resetToolbar();
                     }).data("panel", "card");
+
                     return $(this);
                 },
 
@@ -1037,7 +1209,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         $(this).removeClass('shake');
                     });
                 },
-                resetInspection:function(whole) {
+                clearInspection:function(whole) {
                     const panels = $(this).accordion("panels");
                     const panel_length = panels.length;
                     for(var idx  = 0; idx < panel_length; ++idx) {

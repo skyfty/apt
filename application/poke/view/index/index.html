@@ -22,7 +22,7 @@
 
 <body class="easyui-layout" onselectstart="return false">
 {if condition="$admin == null"}
-<div id="window-login" class="easyui-window" title="登录" style="width:415px;height:290px;display: none;"
+<div id="window-login" class="easyui-window" title="登录" style="width:414px;height:291px;display: none;"
      data-options="modal:true,resizable:false,collapsible:false,minimizable:false,maximizable:false,closable:false,inline:false">
     <form id="form-login" method="post">
         <div class="easyui-panel" style="width:400px;padding:50px 60px">
@@ -32,14 +32,16 @@
             <div style="margin-bottom:20px">
                 <input class="easyui-passwordbox" id="password" prompt="密码" iconWidth="28" style="width:100%;height:34px;padding:10px">
             </div>
-            <div style="text-align:center;padding:5px">
-                <button type="button" id="btn-login"  class="btn btn-primary btn-block  btn-sm" >登录</button>
+            <div>
+                <a  id="btn-login"  href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" style="padding:5px 0px;width:100%;">
+                    <span style="font-size:14px;">登录</span>
+                </a>
             </div>
         </div>
     </form>
 </div>
 {/if}
-<div id="window-rest-password" class="easyui-window" title="重置密码" style="width:415px;height:290px;display: none"
+<div id="window-rest-password" class="easyui-window" title="重置密码" style="width:414px;height:291px;display: none"
      data-options="modal:true,resizable:false,collapsible:false,minimizable:false,maximizable:false,closed:true,inline:false">
     <form id="form-login" method="post">
         <div class="easyui-panel" style="width:400px;padding:50px 60px">
@@ -49,8 +51,10 @@
             <div style="margin-bottom:20px">
                 <input class="easyui-passwordbox" id="reppassword" prompt="重复新密码" iconWidth="28" style="width:100%;height:34px;padding:10px">
             </div>
-            <div style="text-align:center;padding:5px">
-                <button type="button" id="btn-rest-password" class="btn btn-primary btn-block  btn-sm" >确认</button>
+            <div>
+                <a   id="btn-rest-password"  href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" style="padding:5px 0px;width:100%;">
+                    <span style="font-size:14px;">确认</span>
+                </a>
             </div>
         </div>
     </form>
@@ -175,7 +179,7 @@
 
 <script id="tmpl-card" type="text/html">
     <div class="card ui-widget-content" style="z-index: <%=zindex%>;left:<%=left%>px;top:<%=top%>px" data-panel="<%=panel%>">
-        <div class="toolbar-card easyui-panel">
+        <div class="toolbar-card">
 
         </div>
         <div>
@@ -194,6 +198,11 @@
                 </select>
             </fieldset>
         </div>
+    </div>
+</script>
+<script id="tmpl-toolbar-card-direction" type="text/html">
+    <div style="float: right">
+    <a href="#" class="easyui-linkbutton" data-direction="<%=direction%>"  id="card-direction"><%=icon%></a>
     </div>
 </script>
 
@@ -235,11 +244,6 @@
     </div>
 </script>
 
-<script id="tmpl-component-card-toolbar-face" type="text/html">
-    <div>
-
-    </div>
-</script>
 <script id="tmpl-component-card-face" type="text/html">
     <div title="牌面" style="padding:10px;" class="panel-component">
         <div class="form-inline">
@@ -274,6 +278,14 @@
     </div>
 </script>
 
+<script id="tmpl-toolbar-card-face" type="text/html">
+    <div style="float: right">
+        <a href="#" class="easyui-linkbutton" id="card-name" data-name="<%=name%>"><%=name%></a>
+        <a href="#" class="easyui-linkbutton toolbar-icon-<%=color%>" id="card-color" data-color="<%=color%>"><%=icon%></a>
+    </div>
+
+</script>
+
 <script id="tmpl-inspection-bag" type="text/html">
     <div title="牌面" style="padding:10px;" class="panel-component">
 
@@ -294,4 +306,24 @@
 
     </div>
 </script>
+
+<script id="tmpl-toolbar-list-name" type="text/html">
+    <div>
+        <% for (var i = 0; i < items.length; i++) { %>
+        <a  href="#" data-value="<%= items[i].value %>"><%= items[i].text %></a>
+        <% } %>
+    </div>
+
+</script>
+
+<script id="tmpl-toolbar-list-color" type="text/html">
+    <div>
+        <% for (var i = 0; i < items.length; i++) { %>
+        <a  href="#" data-value="<%= items[i].value %>" class="toolbar-icon-<%= items[i].value %>"><%= items[i].text %></a>
+        <% } %>
+    </div>
+
+</script>
+
+
 <script src="__CDN__/assets/js/require{$Think.config.app_debug?'':'.min'}.js" data-main="__CDN__/assets/js/require-poke{$Think.config.app_debug?'':'.min'}.js?v={$site.version}"></script>

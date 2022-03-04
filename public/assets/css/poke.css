@@ -116,11 +116,9 @@
 }
 
 .suitrand:before, .suitrand:after {
-    content: "?";
     color: #ff0000;
 }
 .suitwan:before, .suitwan:after {
-    content: "∞";
     color: #ff0000;
 }
 div[class*='suit']:before {
@@ -135,6 +133,25 @@ div[class*='suit']:after {
     font-size: 29px;
     right: 5px;
     bottom: 0px;
+}
+
+.icon-front{
+    content: "∞";
+
+}
+.icon-back{
+    content: "∞";
+
+}
+
+.toolbar-icon-suitdiamonds,.toolbar-icon-suitdiamonds .l-btn-text,.toolbar-icon-suithearts, .toolbar-icon-suithearts .l-btn-text {
+    color: #ff0000;
+    font-size: 17px
+}
+
+.toolbar-icon-suitclubs,.toolbar-icon-suitclubs .l-btn-text, .toolbar-icon-suitspades,toolbar-icon-suitspades .l-btn-text{
+    color: #000;
+    font-size: 16px
 }
 
 .panel-inspection-button {
