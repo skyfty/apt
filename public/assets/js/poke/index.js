@@ -134,12 +134,14 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             $("#menu-tree-level #remove-level-tree").on("click", function(){
                 var node = $("#tree-level").tree('getSelected');
                 if (node != null && node.type === "level") {
+                    Controller.api.clearCardToolbar();
                     Controller.api.deleteTreeNode(node, "level/del");
                 }
             });
             $("#menu-tree-bag #new-level-bag-tree").on("click", function(){
                 var node = $("#tree-level").tree('getSelected');
                 if (node != null && node.type === "bag") {
+                    Controller.api.clearCardToolbar();
                     Controller.api.addLevel(node);
                 }
             });
@@ -147,12 +149,14 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             $("#menu-tree-bag #remove-bag-tree").on("click", function(){
                 var node = $("#tree-level").tree('getSelected');
                 if (node != null && node.type === "bag") {
+                    Controller.api.clearCardToolbar();
                     Controller.api.deleteTreeNode(node, "bag/del");
                 }
             });
 
 
             $("#btn-card-delete").on("click", function(){
+                Controller.api.clearCardToolbar();
                 $(".card-selected").remove();
                 Controller.panel_inspection_component.clearInspection(true);
                 Controller.api.sync(true);
@@ -160,6 +164,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
 
             $('#btn-component-add').on('show.bs.dropdown', function () {
+                Controller.api.clearCardToolbar();
                 $(".card-selected").onShowComponentMenu();
             });
 
@@ -209,6 +214,14 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     return false;
                 });
             });
+
+            $(document).on("keyup",function(event){
+                var key = event.keyCode;
+                let ele = $(".card.card-shadow.card-selected");
+                if (ele.length > 0) {
+                    ele.onChar(String.fromCharCode(key));
+                }
+            });
             setTimeout(Controller.api.initLevelTree, 400);
         },
 
@@ -234,6 +247,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     nodes.push(bag);
                 }
                 $("#tree-level").tree("loadData", nodes);
+                return this;
             },
 
             deleteTreeNode:function(node, url) {
@@ -248,12 +262,14 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     $("#tree-level").tree('remove', node.target);
                     return false;
                 });
+                return this;
             },
             resetStage:function() {
                 Controller.api.clearCardToolbar();
                 Controller.panel_underpan.html("");
                 Controller.panel_card.html("");
                 Controller.panel_inspection_component.clearInspection(true);
+                return this;
             },
 
             updateStage:function(node) {
@@ -293,6 +309,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     }
                     ele.updateComponent();
                 }
+                return this;
             },
 
             getNewLevelTree:function(id, name, composition, params, stage, underpan, state) {
@@ -344,6 +361,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     }
 
                 };
+                return this;
             },
             getNewBagTree:function(id, name, state, params) {
                 return {
@@ -364,6 +382,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         });
                     }
                 };
+                return this;
             },
             loadLevels: function (url, custom) {
                 let deferred = $.Deferred();
@@ -403,6 +422,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     });
                     return false;
                 });
+                return this;
             },
             download:function(ids, url) {
                 let options = {
@@ -427,6 +447,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     }
                 };
                 $.ajax(options);
+                return this;
             },
             deleteLevels:function() {
                 var nodes = $("#tree-level").tree('getChecked');	// get checked nodes
@@ -441,6 +462,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     $("#tree-level").tree('remove', node.target);
                     return false;
                 });
+                return this;
             },
             collectComponentData:function() {
                 let data = {};
@@ -453,6 +475,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
             clearCardToolbar:function() {
                 $(".card.card-shadow.card-selected").tooltip("destroy");
+                return this;
             },
 
             push:function() {
@@ -499,12 +522,14 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     }
                 };
                 $.ajax(options);
+                return this;
             },
 
             syncTimeoutId:0,
             sync:function(now) {
                 clearTimeout(this.syncTimeoutId);
                 this.syncTimeoutId = setTimeout(this.push, now===true?0:3000);
+                return this;
             },
 
             components: {
@@ -545,7 +570,6 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                 });
                                 let toolbar = $(Template("tmpl-toolbar-card-face", data));
                                 let tooltip_option = {
-                                    content: $('<div></div>'),
                                     showEvent: 'click',
                                     onShow: function(){
                                         var t = $(this);
@@ -554,45 +578,57 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                         }).bind('mouseleave', function(){
                                             t.tooltip('hide');
                                         });
-                                    }
+                                    },
                                 };
+
                                 $("#card-name", toolbar).tooltip($.extend(tooltip_option,{
-                                    onUpdate: function(content){
-                                        content.panel({
-                                            width: 200,
+                                    content:function() {
+                                        let self = $(this);
+                                        let target = self.data("target");
+                                        let toolbar_panel = $('<div></div>');
+
+                                        toolbar_panel.panel({
+                                            width: 195,
                                             height:60,
                                             border: false,
+                                            cache:false,
                                             content: function() {
-                                                let self = this;
                                                 let items = [];
-                                                $("#card-name option", self.inspection).each(function(){
+                                                $("#card-name option", target.inspection).each(function(){
                                                     let v = $(this).val();
-                                                    items.push({"text":v, "value":v});
+                                                    items.push({"text":$(this).html(), "value":v});
                                                 });
                                                 let html = $(Template("tmpl-toolbar-list-name", {items:items}));
                                                 $('a', html).linkbutton({
                                                     plain: true
                                                 }).on("click", function(){
                                                     let v = $(this).data("value");
-                                                    self.setData({name:v});
-                                                    self.update();
+                                                    self.data("name", v);
+                                                    $(".l-btn-text", self).html(v);
+                                                    target.setData({name:v});
+                                                    target.update();
+                                                    Controller.api.sync(true);
                                                 });
                                                 return html;
-                                            }.bind(this)
+                                            }
                                         });
-                                    }.bind(this),
-                                }));
+                                        return toolbar_panel;
+                                    },
+                                })).data("target", this);
 
                                 $("#card-color", toolbar).tooltip($.extend(tooltip_option, {
-                                    onUpdate: function(content){
-                                        content.panel({
-                                            width: 110,
+                                    content:function() {
+                                        let self = $(this);
+                                        let target = self.data("target");
+                                        let toolbar_panel = $('<div></div>');
+                                        toolbar_panel.panel({
+                                            width: 105,
                                             height:30,
                                             border: false,
+                                            cache:false,
                                             content: function() {
-                                                let self = this;
                                                 let items = [];
-                                                $("#card-color option", this.inspection).each(function(){
+                                                $("#card-color option", target.inspection).each(function(){
                                                     let v = $(this).val();
                                                     items.push({"text":$(this).html(), "value":v});
                                                 });
@@ -601,15 +637,18 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                                     plain: true
                                                 }).on("click", function(){
                                                     let v = $(this).data("value");
-                                                    self.setData({color:v});
-                                                    self.update();
+                                                    self.data("color", v);
+                                                    $(".l-btn-text", self).html($(this).html());
+                                                    target.setData({color:v});
+                                                    target.update();
+                                                    Controller.api.sync(true);
                                                 });
                                                 return html;
-                                            }.bind(this)
+                                            }
                                         });
-                                    }.bind(this),
-                                }));
-
+                                        return toolbar_panel;
+                                    }
+                                })).data("target", this);
 
                                 return toolbar;
                             },
@@ -635,8 +674,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                     }
                                 }
                                 this.onUpdate();
-                                target.resetToolbar(true);
-                                Controller.api.sync(true);
+                                Controller.ap.sync(true);
                             },
 
                             onUpdate:function() {
@@ -729,7 +767,6 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                     }
                                 }
                                 this.onUpdate();
-                                target.resetToolbar(true);
                                 Controller.api.sync(true);
                             },
 
@@ -813,7 +850,6 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                     }
                                 }
                                 this.onUpdate();
-                                target.resetToolbar(true);
                                 Controller.api.sync(true);
                             },
 
@@ -869,8 +905,8 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             },
 
                             onInspectionChanged: function (input) {
-                                target.resetToolbar(true);
                                 this.onUpdate();
+                                Controller.api.sync(true);
                             },
                             setFaceComponent:function(v) {
                                 let face_component = $(this.target).getComponent("face");
@@ -1153,6 +1189,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
                 bindAttrInput:function(callback, component) {
                     $(".attr-input-card", this).on("change", function(){
+                        Controller.api.clearCardToolbar();
                         callback.call(component, this);
                     });
                     return this;
@@ -1200,7 +1237,6 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         Controller.api.clearCardToolbar();
                         $(this).resetInspection().resetToolbar();
                     }).data("panel", "card");
-
                     return $(this);
                 },
 
@@ -1238,6 +1274,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             return component.primary;
                         },
                         onClose:function() {
+                            Controller.api.clearCardToolbar();
                             component.target.removeComponent(component);
                             Controller.api.sync();
                         }
@@ -1258,6 +1295,18 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     });
                 },
 
+                onChar:function(c) {
+                    switch(c) {
+                        case 'D': {
+                            $("#btn-card-delete").click();
+                            break;
+                        }
+                        case 'F': {
+                            $("#card-toolbar-direction").click();
+                            break;
+                        }
+                    }
+                }
             })
         }
     };
