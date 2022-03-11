@@ -37,7 +37,7 @@ class Min extends Command
         $resource = $input->getOption('resource') ?: '';
         $optimize = $input->getOption('optimize') ?: 'none';
 
-        if (!$module || !in_array($module, ['customer', 'backend', 'all']))
+        if (!$module || !in_array($module, ['customer', 'backend', 'poke', 'all']))
         {
             throw new Exception('Please input correct module name');
         }
@@ -45,7 +45,7 @@ class Min extends Command
             throw new Exception('Please input correct resource name');
         }
 
-        $moduleArr = $module == 'all' ? ['customer', 'staff', 'backend'] : [$module];
+        $moduleArr = $module == 'all' ? ['customer', 'staff', 'backend', 'poke'] : [$module];
         $resourceArr = $resource == 'all' ? ['js', 'css'] : [$resource];
 
         $minPath = __DIR__ . DS . 'Min' . DS;

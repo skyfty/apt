@@ -10,7 +10,7 @@ require.config({
         'toastr',
         'fast',
         'addtabs',
-        'form'
+        'form',
     ],
     paths: {
         'lang': "empty:",
@@ -63,8 +63,7 @@ require.config({
         },
         'easyui': {
             deps: [
-                'jquery',
-                'css!../libs/jquery-easyui/themes/bootstrap/easyui.css'
+                'jquery'
             ],
             exports: '$.fn.extend'
         },
