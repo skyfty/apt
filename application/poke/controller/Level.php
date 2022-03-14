@@ -48,6 +48,17 @@ class Level extends Common
         $poke->allowField(true)->save($_POST);
         $this->success();
     }
+
+    private function formatLevel($poke) {
+        return  [
+            'name'=>$poke['name'],
+            'composition'=>json_decode($poke['composition'], true),
+            'params'=>json_decode($poke['params'], true),
+            'stage'=>json_decode($poke['stage'], true),
+            'underpan'=>json_decode($poke['underpan'], true),
+        ];
+    }
+
     public function download() {
         $pokes = model("Poke")->all($this->request->param("ids/a"));
         if ($pokes == null) {
@@ -66,15 +77,20 @@ class Level extends Common
 
         foreach($pokes as $k=>$poke) {
             $data['name'] = $poke['name'];
-            $data['level'] = [
-                'composition'=>json_decode($poke['composition'], true),
-                'params'=>json_decode($poke['params'], true),
-                'stage'=>json_decode($poke['stage'], true),
-                'underpan'=>json_decode($poke['underpan'], true),
-            ];
+            $data['level'] = $this->formatLevel($poke);
             $zip->addFromString($data['name'].".json", json_encode($data, JSON_UNESCAPED_UNICODE));
         }
         $zip->close();
         $this->success("",$destFileDir.$fileName);
     }
+
+    public function get() {
+        $poke = model("Poke")->where("id|idcode|name", $this->request->param("name"));
+        if ($poke == null) {
+            $this->error(__('Can not find the record'));
+        }
+        $this->result( $this->formatLevel($poke), 1, '', '', ['Content-type'=>'application/json']);
+    }
+
+
 }

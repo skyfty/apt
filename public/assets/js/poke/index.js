@@ -556,7 +556,8 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             repels:[],
 
                             getInspection:function() {
-                                this.inspection = $(Template("tmpl-component-card-face", this));
+                                let html = Template("tmpl-component-card-face", this);
+                                this.inspection = $(html);
                                 this.inspection.bindAttrInput(this.onInspectionChanged, this);
                                 return this.inspection;
                             },
