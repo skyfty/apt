@@ -85,11 +85,24 @@ class Level extends Common
     }
 
     public function get() {
-        $poke = model("Poke")->where("id|idcode|name", $this->request->param("name"));
+        $name=explode(".", $this->request->param("name"));
+        if (count($name) == 2) {
+            $pokebag = model("pokebag")->where("id|idcode|name", $name[0])->find();
+            if ($pokebag == null) {
+                $this->error(__('Can not find the record'));
+            }
+            $where["pokebag_model_id"] = $pokebag['id'];
+            $where["id|idcode|name"] = $name[1];
+        } else {
+            $where = ["id|idcode|name"=>$name[0]];
+        }
+
+        $poke = model("Poke")->where($where)->find();
         if ($poke == null) {
             $this->error(__('Can not find the record'));
         }
-        $this->result( $this->formatLevel($poke), 1, '', '', ['Content-type'=>'application/json']);
+        $data = $this->formatLevel($poke);
+        $this->result($data, 1, 'success',"json");
     }
 
 
