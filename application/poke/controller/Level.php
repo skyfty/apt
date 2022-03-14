@@ -7,6 +7,8 @@ use app\poke\model\Poke;
 
 class Level extends Common
 {
+    protected $noNeedLogin = ['get'];
+
     public function add() {
         $cnt = model("Poke")->where('creator_model_id', $this->auth->id)->where("pokebag_model_id", $_POST['pokebag_model_id'])->count();
         if ($cnt > 0) {
@@ -51,7 +53,6 @@ class Level extends Common
 
     private function formatLevel($poke) {
         return  [
-            'name'=>$poke['name'],
             'composition'=>json_decode($poke['composition'], true),
             'params'=>json_decode($poke['params'], true),
             'stage'=>json_decode($poke['stage'], true),
@@ -101,7 +102,9 @@ class Level extends Common
         if ($poke == null) {
             $this->error(__('Can not find the record'));
         }
-        $data = $this->formatLevel($poke);
+        $data = [];
+        $data['name'] = $poke['name'];
+        $data['level'] = $this->formatLevel($poke);
         $this->result($data, 1, 'success',"json");
     }
 

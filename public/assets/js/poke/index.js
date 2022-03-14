@@ -219,7 +219,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 var key = event.keyCode;
                 let ele = $(".card.card-shadow.card-selected");
                 if (ele.length > 0) {
-                    ele.onChar(String.fromCharCode(key));
+                    ele.onChar(key);
                 }
             });
             setTimeout(Controller.api.initLevelTree, 400);
@@ -1296,15 +1296,24 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     });
                 },
 
-                onChar:function(c) {
-                    switch(c) {
-                        case 'D': {
+                onChar:function(key) {
+                    switch(key) {
+                        case 46: {
                             $("#btn-card-delete").click();
                             break;
                         }
-                        case 'F': {
-                            $("#card-toolbar-direction").click();
-                            break;
+                        default: {
+                            let c = String.fromCharCode(key)
+                            switch(c) {
+                                case 'D': {
+                                    $("#btn-card-delete").click();
+                                    break;
+                                }
+                                case 'F': {
+                                    $("#card-toolbar-direction").click();
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
