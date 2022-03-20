@@ -90,7 +90,7 @@ class Level extends Common
         if (count($name) == 2) {
             $pokebag = model("pokebag")->where("id|idcode|name", $name[0])->find();
             if ($pokebag == null) {
-                $this->error(__('Can not find the record'));
+                $this->result([], -1, 'error',"json");
             }
             $where["pokebag_model_id"] = $pokebag['id'];
             $where["id|idcode|name"] = $name[1];
@@ -100,7 +100,7 @@ class Level extends Common
 
         $poke = model("Poke")->where($where)->find();
         if ($poke == null) {
-            $this->error(__('Can not find the record'));
+            $this->result([], -1, 'error',"json");
         }
         $data = [];
         $data['name'] = $poke['name'];
