@@ -1,4 +1,7 @@
 define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, undefined, undefined) {
+    const CARD_HEIGHT_SPAN = 50;
+    const CARD_WIDTH_SPAN = 35;
+
     var Controller = {
         index: function () {
 
@@ -39,11 +42,14 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
                 let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_card);
                 ele.bindCard();
-                ele.addComponent("position",Controller.api.components.position.create(ele, {
+                let pos =  {
                     "zindex":10,
-                    "left":Math.max(0, evt.offsetX - 35),
-                    "top":Math.max(0, evt.offsetY - 50)
-                }));
+                    "left":Math.max(0, evt.offsetX),
+                    "top":Math.max(0, evt.offsetY)
+                };
+                pos = Controller.panel_card.screenToWorldPoint(pos);
+                ele.addComponent("position",Controller.api.components.position.create(ele, pos));
+
                 ele.addComponent("face",Controller.api.components.face.create(ele));
                 ele.addComponent("direction",Controller.api.components.direction.create(ele));
                 ele.updateComponent();
@@ -108,10 +114,9 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         }
                         this.selectedLevelId = node.id;
                     }
-                    var html = $(Template("tmpl-inspection-" + node.type, node.params || {}));
-                    html.bindAttrInput(node.onInspectionChanged, node);
-                    $(node.inspection).show().html(html);
-                }
+                    Controller.api.updateLevelInspection(node);
+                },
+
             });
 
             $("#menu-tree-level #edit-level-tree,#edit-bag-tree").on("click", function(){
@@ -226,7 +231,6 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
         },
 
         api: {
-
             initLevelTree:function() {
                 let nodes = [];
                 for(const i in pokebags) {
@@ -267,9 +271,17 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             resetStage:function() {
                 Controller.api.clearCardToolbar();
                 Controller.panel_underpan.html("");
-                Controller.panel_card.html("");
+                Controller.panel_card.html("").data("stage", {});
                 Controller.panel_inspection_component.clearInspection(true);
                 return this;
+            },
+
+            updateLevelInspection:function(node) {
+                var html = $(Template("tmpl-inspection-" + node.type, node.params || {}));
+                $("#btn-save", html).on("click", function(){
+                    node.onInspectionChanged(this);
+                });
+                $(node.inspection).show().html(html);
             },
 
             updateStage:function(node) {
@@ -290,6 +302,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     });
                 });
 
+                Controller.panel_card.data("underpans", node.getUnderpan());
                 for(const  i in node.composition.underpans){
                     const components = node.composition.underpans[i];
                     let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_underpan);
@@ -300,6 +313,8 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     ele.updateComponent();
                 }
 
+                let stage = node.getStage();
+                Controller.panel_card.css({width:stage.params.width, height:stage.params.height}).data("stage", stage);
                 for(const i in node.composition.cards){
                     const components = node.composition.cards[i];
                     let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_card);
@@ -330,9 +345,24 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             type: "stage",
                             inspection: "#panel-inspection-stage",
                             params:stage,
-                            onInspectionChanged: function (inspection) {
-                                console.log("lskdf");
-                            }
+                            onInspectionChanged: function (tree) {
+                                this.params.width  = $("#level-width", this.inspection).val();
+                                this.params.height = $("#level-height", this.inspection).val();
+                                Fast.api.ajax({
+                                    url: "level/params",
+                                    data: {
+                                        id:this.id,
+                                        stage:JSON.stringify(this.params)
+                                    }
+                                }, function (data) {
+                                    Controller.api.resetStage();
+                                    let tree_level = $("#tree-level");
+                                    let node = tree_level.tree('getSelected');
+                                    Controller.api.updateStage(tree_level.tree('getParent', node.target));
+                                    Controller.api.updateLevelInspection(node);
+                                    return false;
+                                }.bind(this));
+                            },
                         },
                         {
                             text: "底牌",
@@ -343,7 +373,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             inspection: "#panel-inspection-underpan",
                             children: [],
                             params:underpan,
-                            onInspectionChanged: function (inspection) {
+                            onInspectionChanged: function (tree) {
                                 console.log("lskdf");
 
                             }
@@ -351,15 +381,16 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     ],
                     composition: composition,
                     params:params,
-                    onInspectionChanged: function (inspection) {
-                        Fast.api.ajax({
-                            url: "level/params",
-                            data: {id:this.id, params:JSON.stringify(this.params)}
-                        }, function (data) {
-                            return false;
-                        });
-                    }
+                    onInspectionChanged: function (tree) {
 
+                    },
+
+                    getStage:function() {
+                        return this.children[0];
+                    },
+                    getUnderpan:function() {
+                        return this.children[1];
+                    }
                 };
                 return this;
             },
@@ -376,7 +407,10 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     onInspectionChanged: function (inspection) {
                         Fast.api.ajax({
                             url: "bag/params",
-                            data: {id:this.id, params:JSON.stringify(this.params)}
+                            data: {
+                                id:this.id,
+                                params:JSON.stringify(this.params)
+                            }
                         }, function (data) {
                             return false;
                         });
@@ -399,13 +433,14 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             addLevel:function(bag) {
                 const composition = JSON.stringify({"cards":[], "underpans":[]});
                 const defparams = JSON.stringify({});
+                const defstageparams = JSON.stringify({width:2340, height:1080});
                 Fast.api.ajax({
                     url: "level/add",
                     data: {
                         pokebag_model_id:bag.id,
                         name: "新关卡",
                         composition:composition,
-                        params:defparams,stage:defparams,underpan:defparams,
+                        params:defparams,stage:defstageparams,underpan:defparams,
                     }
                 }, function (data) {
                     var newNode = Controller.api.getNewLevelTree(
@@ -962,9 +997,9 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     create:function(target, def) {
                         return {
                             data:{
-                                left:def.left,
-                                top:def.top,
-                                zindex:def.zindex
+                                x:def.x,
+                                y:def.y,
+                                z:def.z
                             },
                             inspection:null,
                             target:target,
@@ -982,25 +1017,32 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             },
 
                             onUpdateInspection:function() {
-                                $("#card-zindex", this.inspection).val(this.data.zindex = this.target.css("z-index"));
-                                let position =  this.target.position();
-                                $("#card-left", this.inspection).val(this.data.left =  position.left);
-                                $("#card-top", this.inspection).val(this.data.top =  position.top);
+                                $("#card-zindex", this.inspection).val(this.data.z = this.target.css("z-index"));
+                                let pos = Controller.panel_card.screenToWorldPoint(this.target.position())
+                                this.data.x =  pos.x;
+                                this.data.y =  pos.y;
+                                pos = this.separatePosition(pos);
+                                $("#card-left", this.inspection).val(pos.x);
+                                $("#card-top", this.inspection).val(pos.y);
+                            },
+
+                            separatePosition:function(pos) {
+                                return {x:pos.x + CARD_WIDTH_SPAN, y:pos.y + CARD_HEIGHT_SPAN};
                             },
 
                             onInspectionChanged: function (input) {
                                 let input_id = $(input).attr("id");
                                 switch (input_id) {
                                     case "card-left": {
-                                        this.data.left =  $(input).val();
+                                        this.data.x =  $(input).val();
                                         break;
                                     }
                                     case "card-top": {
-                                        this.data.top =  $(input).val();
+                                        this.data.y =  $(input).val();
                                         break;
                                     }
                                     case "card-zindex": {
-                                        this.data.zindex =  $(input).val();
+                                        this.data.z =  $(input).val();
                                         break;
                                     }
                                 }
@@ -1009,20 +1051,25 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             },
 
                             onUpdate:function() {
+                                let pos = Controller.panel_card.worldToScreenPoint(this.data);
+                                pos.left -= CARD_WIDTH_SPAN;
+                                pos.top -= CARD_HEIGHT_SPAN;
+
                                 let style = {
-                                    "left":this.data.left + "px",
-                                    "top":this.data.top + "px",
-                                    "z-index":this.data.zindex,
+                                    "left":pos.left + "px",
+                                    "top":pos.top + "px",
+                                    "z-index":pos.zindex,
                                 };
                                 this.target.css(style);
                             },
 
                             getData:function() {
-                                let position =  this.target.position();
+                                let pos = Controller.panel_card.screenToWorldPoint(this.target.position())
+                                pos = this.separatePosition(pos);
                                 return {
-                                    left:position.left,
-                                    top:position.top,
-                                    zindex:this.target.css("z-index"),
+                                    x:pos.x,
+                                    y:pos.y,
+                                    z:this.target.css("z-index"),
                                 };
                             },
 
@@ -1045,6 +1092,8 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         };
                     }
                 },
+
+
             }
         },
         init: function () {
@@ -1316,6 +1365,16 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             }
                         }
                     }
+                },
+
+                worldToScreenPoint:function(pos) {
+                    let stage = $(this).data("stage");
+                    return {left:stage.params.width / 2 + parseInt(pos.x), top:stage.params.height /2 + parseInt(pos.y), zindex:parseInt(pos.z)};
+                },
+
+                screenToWorldPoint:function(pos) {
+                    let stage = $(this).data("stage");
+                    return {x: parseInt(pos.left) - stage.params.width / 2, y:parseInt(pos.top) - stage.params.height /2, z:pos.zindex};
                 }
             })
         }

@@ -165,7 +165,7 @@
 <div data-options="region:'center'" style="display: none">
     <div class="easyui-layout" data-options="fit:true">
         <div data-options="region:'center'"  title="牌桌" class="panel-stage-wrapper" id="contenter-card">
-            <div id="panel-card" data-panel="card" class="panel-grid-line">
+            <div id="panel-card" data-panel="card" class="panel-grid-line" style="width: 2340px; height: 1080px;">
             </div>
         </div>
         <div  id="panel-underpan"  title="底牌" data-panel="underpan" data-options="region:'south',split:true" style="height:140px;">
@@ -292,13 +292,21 @@
     </div>
 </script>
 <script id="tmpl-inspection-level" type="text/html">
-    <div title="牌面" style="padding:10px;" class="panel-component">
 
-    </div>
 </script>
 <script id="tmpl-inspection-stage" type="text/html">
-    <div title="牌面" style="padding:10px;" class="panel-component">
-
+    <div  title="牌桌大小"  style="padding:10px;" class="panel-component">
+        <div class="form-inline">
+            <div class="form-group">
+                <label for="level-width">牌桌宽度: </label><input type="number" class="form-control input-sm attr-input-card" value="<%=width%>" id="level-width"/>
+            </div>
+            <div class="form-group">
+                <label for="level-height">牌桌高度: </label><input type="number" class="form-control input-sm attr-input-card" value="<%=height%>" id="level-height"/>
+            </div>
+        </div>
+    </div>
+    <div class="panel-inspection-button">
+        <button type="button" id="btn-save" class="btn btn-primary btn-block  btn-sm">保存</button>
     </div>
 </script>
 <script id="tmpl-inspection-underpan" type="text/html">
