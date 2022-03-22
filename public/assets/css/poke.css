@@ -56,6 +56,10 @@
     background: #a7a4a4;
 }
 
+.card.current {
+    background: #f2dcf5;
+}
+
 .card p {
     text-align: center;
     font: 40px/100px Georgia, Times New Roman, serif;

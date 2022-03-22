@@ -11,6 +11,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             Controller.contenter_card = $("#contenter-card");
 
             Controller.panel_underpan.sortable({
+                items:"> div:not(.card.current)",
                 start:function( event, ui) {
                     Controller.api.clearCardToolbar();
                     $(ui.item).resetInspection();
@@ -28,6 +29,10 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_underpan);
                 ele.bindUnderpan();
                 ele.addComponent("face", Controller.api.components.face.create(ele));
+                ele.addComponent("hide",Controller.api.components.hide.create(ele));
+                if (Controller.panel_underpan.children().length == 1) {
+                    ele.addComponent("current",Controller.api.components.current.create(ele));
+                }
                 ele.updateComponent();
                 ele.click();
                 Controller.api.sync(true);
@@ -49,7 +54,6 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 };
                 pos = Controller.panel_card.screenToWorldPoint(pos);
                 ele.addComponent("position",Controller.api.components.position.create(ele, pos));
-
                 ele.addComponent("face",Controller.api.components.face.create(ele));
                 ele.addComponent("direction",Controller.api.components.direction.create(ele));
                 ele.updateComponent();
@@ -1019,9 +1023,9 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             onUpdateInspection:function() {
                                 $("#card-zindex", this.inspection).val(this.data.z = this.target.css("z-index"));
                                 let pos = Controller.panel_card.screenToWorldPoint(this.target.position())
+                                pos = this.separatePosition(pos);
                                 this.data.x =  pos.x;
                                 this.data.y =  pos.y;
-                                pos = this.separatePosition(pos);
                                 $("#card-left", this.inspection).val(pos.x);
                                 $("#card-top", this.inspection).val(pos.y);
                             },
@@ -1092,8 +1096,119 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         };
                     }
                 },
+                hide: {
+                    containment: ["underpan"],
 
+                    create:function(target, def) {
+                        return {
+                            data:{
+                            },
+                            inspection:null,
+                            target:target,
+                            primary:true,
+                            repels:[],
 
+                            getInspection:function() {
+                                this.inspection = $(Template("tmpl-component-card-hide", this));
+                                this.inspection.bindAttrInput(this.onInspectionChanged, this);
+                                return this.inspection;
+                            },
+                            enable:function(v) {
+                            },
+
+                            onUpdateInspection:function() {
+                            },
+
+                            onInspectionChanged: function (input) {
+                                this.onUpdate();
+                            },
+
+                            onUpdate:function() {
+                                // target.removeClass("back front");
+                                // target.addClass(this.direction)
+                            },
+
+                            getData:function() {
+                                return true;
+                            },
+
+                            setData:function(v) {
+                            },
+
+                            onRemove:function() {
+                                // target.removeClass("back front");
+                                this.inspection.removeInspectionPanel();
+                            },
+
+                            onAttach:function() {
+
+                            },
+                            update:function() {
+                                this.onUpdate();
+                                this.onUpdateInspection();
+                            }
+                        };
+                    }
+                },
+
+                current: {
+                    containment: ["underpan"],
+
+                    create:function(target, def) {
+                        return {
+                            data:{
+                            },
+                            inspection:null,
+                            target:target,
+                            primary:true,
+                            repels:[],
+                            onlyone:true,
+
+                            getInspection:function() {
+                                this.inspection = $(Template("tmpl-component-card-current", this));
+                                this.inspection.bindAttrInput(this.onInspectionChanged, this);
+                                return this.inspection;
+                            },
+                            enable:function(v) {
+                            },
+
+                            getToolbar:function() {
+                                return $(Template("tmpl-toolbar-card-current", {}));
+                            },
+
+                            onUpdateInspection:function() {
+                            },
+
+                            onInspectionChanged: function (input) {
+                                this.onUpdate();
+                            },
+
+                            onUpdate:function() {
+                                 target.addClass("current")
+                            },
+
+                            getData:function() {
+                                return true;
+                            },
+
+                            setData:function(v) {
+                            },
+
+                            onRemove:function() {
+                                target.removeClass("current");
+                                this.inspection.removeInspectionPanel();
+                            },
+
+                            onAttach:function() {
+
+                            },
+                            update:function() {
+                                this.onUpdate();
+                                this.onUpdateInspection();
+                            }
+                        };
+                    }
+                },
             }
         },
         init: function () {
