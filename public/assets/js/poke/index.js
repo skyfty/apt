@@ -845,7 +845,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             inspection:null,
                             target:target,
                             onlyone:true,
-                            scope: def || "",
+                            scope: def || "A-K[dhcs]",
                             repels:['wan'],
 
                             getInspection:function() {
@@ -1469,10 +1469,6 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         default: {
                             let c = String.fromCharCode(key)
                             switch(c) {
-                                case 'D': {
-                                    $("#btn-card-delete").click();
-                                    break;
-                                }
                                 case 'F': {
                                     $("#card-toolbar-direction").click();
                                     break;
