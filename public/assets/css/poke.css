@@ -123,7 +123,11 @@
     color: #ff0000;
 }
 .suitwan:before, .suitwan:after {
-    color: #ff0000;
+    content: "∀";
+    color: #FFD700;
+}
+
+.suitchromy:before, .suitchromy:after {
 }
 div[class*='suit']:before {
     position: absolute;

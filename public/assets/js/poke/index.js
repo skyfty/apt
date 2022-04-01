@@ -579,7 +579,8 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         'suitclubs':"♣",
                         'suitspades':"♠",
                         'suitrand':"R",
-                        'suitwan':"W"
+                        'suitwan':"W",
+                        'suitchromy':"C"
                     },
                     containment: ["underpan", "card"],
                     create:function(target, def) {
@@ -846,7 +847,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             target:target,
                             onlyone:true,
                             scope: def || "A-K[dhcs]",
-                            repels:['wan'],
+                            repels:['wan','chromy'],
 
                             getInspection:function() {
                                 this.inspection = $(Template("tmpl-component-card-rand", this));
@@ -856,11 +857,6 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
                             enable:function(v) {
                                 $(".attr-input-card", this.inspection).prop('disabled', !v)
-                            },
-
-                            onUpdateInspection:function() {
-                                this.setFaceComponent(false);
-                                $("#card-scope", this.inspection).val(this.scope);
                             },
 
                             setFaceComponent:function(v) {
@@ -879,6 +875,11 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                     });
                                 }
                                 face_component.update();
+                            },
+
+                            onUpdateInspection:function() {
+                                this.setFaceComponent(false);
+                                $("#card-scope", this.inspection).val(this.scope);
                             },
 
                             onInspectionChanged: function (input) {
@@ -904,6 +905,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                 this.scope = v;
                             },
                             onRemove:function() {
+                                this.target.removeClass("suitrand");
                                 this.inspection.removeInspectionPanel();
                                 this.setFaceComponent(true);
                             },
@@ -929,7 +931,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             inspection:null,
                             target:target,
                             onlyone:true,
-                            repels:['rand'],
+                            repels:['rand','chromy'],
 
                             getInspection:function() {
                                 this.inspection = $(Template("tmpl-component-card-wan", this));
@@ -977,6 +979,94 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
                             },
                             onRemove:function() {
+                                this.target.removeClass("suitwan");
+                                this.inspection.removeInspectionPanel();
+                                this.setFaceComponent(true);
+                            },
+
+                            onAttach:function() {
+                                this.setFaceComponent(false);
+                                for(const i in this.repels) {
+                                    $(this.target).removeComponent(this.repels[i]);
+                                }
+                            },
+
+                            update:function() {
+                                this.onUpdate();
+                                this.onUpdateInspection();
+                            }
+                        };
+                    }
+                },
+                chromy:{
+                    containment: ["underpan", "card"],
+
+                    create:function(target, def) {
+                        return {
+                            inspection:null,
+                            target:target,
+                            onlyone:true,
+                            repels:['rand','wan'],
+                            color: def || "suitspades",
+
+                            getInspection:function() {
+                                this.inspection = $(Template("tmpl-component-card-chromy", this));
+                                this.inspection.bindAttrInput(this.onInspectionChanged, this);
+                                return this.inspection;
+                            },
+                            enable:function(v) {
+
+                            },
+
+                            onUpdateInspection:function() {
+                                this.setFaceComponent(false);
+                                $("#card-color option[value='"+this.color+"']", this.inspection).prop("selected", "selected");
+                            },
+
+                            onInspectionChanged: function (input) {
+                                this.target.removeClass(this.color);
+                                let input_id = $(input).attr("id");
+                                switch (input_id) {
+                                    case "card-color": {
+                                        this.color = $(input).val();
+                                        break;
+                                    }
+                                }
+                                this.onUpdate();
+                                Controller.api.sync(true);
+                            },
+
+                            setFaceComponent:function(v) {
+                                let face_component = $(this.target).getComponent("face");
+                                face_component.enable(v);
+                                if (v) {
+                                    face_component.setData({
+                                        name:"A",
+                                        color:"suitspades"
+                                    });
+                                } else {
+                                    let vv = Controller.api.components.face.suits['suitchromy'];
+                                    face_component.setData({
+                                        name:vv,
+                                        color:'suitchromy ' + this.color
+                                    });
+                                }
+                                face_component.update();
+                            },
+
+                            onUpdate:function() {
+                                this.target.addClass(this.color)
+                            },
+
+                            getData:function() {
+                                return this.color;
+                            },
+
+                            setData:function(v) {
+                                this.color = v;
+                            },
+                            onRemove:function() {
+                                this.target.removeClass(["suitchromy",this.color]);
                                 this.inspection.removeInspectionPanel();
                                 this.setFaceComponent(true);
                             },

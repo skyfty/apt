@@ -99,6 +99,7 @@
                     <li data-name="face"><a href="#">牌面</a></li>
                     <li data-name="rand"><a href="#">随机</a></li>
                     <li data-name="wan"><a href="#">万能</a></li>
+                    <li data-name="chromy"><a href="#">同色</a></li>
                     <li data-name="custom"><a href="#">自定义</a></li>
                 </ul>
             </div>
@@ -220,7 +221,7 @@
 
             <fieldset>
                 <div class="alert alert-info" role="alert" style="margin-bottom: 5px">
-                    A-9[dhcs],4[ds],6[dc],5-K,2-Q[ds]  (d♦,h♥,c♣,s♠)
+                    A-9[dhcs],4[ds],6[dc],5-K,2-Q[ds]  (suitdiamonds♦,suithearts♥,suitclubs♣,suitspades♠)
                 </div>
                 <textarea class="form-control input-sm attr-input-card" id="card-scope" rows="3" placeholder="A-K[dhcs]"></textarea>
             </fieldset>
@@ -248,6 +249,25 @@
     <div title="万能" class="panel-component">
         <div>
             没有可编辑属性
+        </div>
+    </div>
+</script>
+
+
+<script id="tmpl-component-card-chromy" type="text/html">
+    <div title="同色" class="panel-component">
+        <div class="form-inline">
+            <div class="form-group">
+                <label for="email">花色: </label>
+                <select class="form-control input-sm attr-input-card" id="card-color" value="<%=color%>">
+                    <option value="suitdiamonds">♦</option>
+                    <option value="suithearts">♥</option>
+                    <option value="suitclubs">♣</option>
+                    <option value="suitspades">♠</option>
+                    <option value="suitwan">W</option>
+
+                </select>
+            </div>
         </div>
     </div>
 </script>
