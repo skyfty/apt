@@ -579,7 +579,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         'suitclubs':"♣",
                         'suitspades':"♠",
                         'suitrand':"R",
-                        'suitwan':"W",
+                        'suitwan':"∀",
                         'suitchromy':"C"
                     },
                     containment: ["underpan", "card"],
