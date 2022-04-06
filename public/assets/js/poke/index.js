@@ -839,7 +839,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     }
                 },
                 rand:{
-                    containment: ["underpan"],
+                    containment: ["underpan", "card"],
 
                     create:function(target, def) {
                         return {
@@ -924,7 +924,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     }
                 },
                 wan:{
-                    containment: ["underpan"],
+                    containment: ["underpan", "card"],
 
                     create:function(target, def) {
                         return {
@@ -999,7 +999,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     }
                 },
                 chromy:{
-                    containment: ["underpan"],
+                    containment: ["underpan", "card"],
 
                     create:function(target, def) {
                         return {
