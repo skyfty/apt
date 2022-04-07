@@ -13,6 +13,7 @@ class Oss extends Model
         'type'  =>  '\think\mongo\Connection',
         // 数据库名
         'database'       => 'uuu',
+
         // 用户名
         'username'       => '',
         // 密码
