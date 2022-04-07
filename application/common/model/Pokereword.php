@@ -2,6 +2,7 @@
 
 namespace app\common\model;
 
+use app\admin\library\Auth;
 use think\Model;
 
 class Pokereword extends Cosmetic
@@ -11,10 +12,13 @@ class Pokereword extends Cosmetic
 
     protected static function init()
     {
-        $beforeupdate = function($row){
 
-        };
-        self::beforeInsert($beforeupdate);self::beforeUpdate($beforeupdate);
+        parent::init();
+
+        self::beforeInsert(function($row){
+            $maxid = self::max("id") + 1;
+            $row['idcode'] = sprintf("PO%06d", $maxid);
+        });
     }
 
 }
