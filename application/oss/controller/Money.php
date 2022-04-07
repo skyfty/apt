@@ -16,7 +16,7 @@ class Money extends Api
         $pokereword->data([
             'amount'=>$amount,
             'type'=>'money',
-            'inout'=>1,
+            'ino'=>1,
             'user_id'=>1,
         ]);
         $pokereword->save();

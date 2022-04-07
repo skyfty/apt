@@ -13,9 +13,9 @@ class Money extends Pokereword
         parent::init();
 
         $update = function($row){
+            $total = Pokereword::where(["user_id"=>$row['user_id'], "type"=>"money"])->sum("amount*ino");
             $oss = Oss::get($row['user_id']);
             if ($oss) {
-                $total = Pokereword::where(["user_id"=>$row['user_id'], "type"=>"money"])->sum("amount*inout");
                 $oss->setField("money", $total);
             }
         };
