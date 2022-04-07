@@ -38,7 +38,7 @@ class Index extends Api
             $oss = new Oss;
         }
 
-        $data = $this->request->post();
+        $data = $this->request->except(['money'], "post");
         $data['user_id'] = $user['id'];
         $result = $oss->save($data);
         if ($result !== false) {
