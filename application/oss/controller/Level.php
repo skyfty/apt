@@ -22,7 +22,7 @@ class Level extends Api
         if (count($name) == 2) {
             $pokebag = model("pokebag")->where("id|idcode|name", $name[0])->find();
             if ($pokebag == null) {
-                $this->result([], -1, 'error',"json");
+                $this->result("not exist", [],-1,"json");
             }
             $where["pokebag_model_id"] = $pokebag['id'];
             $where["id|idcode|name"] = $name[1];
@@ -32,12 +32,12 @@ class Level extends Api
 
         $poke = model("Poke")->where($where)->find();
         if ($poke == null) {
-            $this->result([], -1, 'error',"json");
+            $this->result("not exist", [],-1,"json");
         }
         $data = [];
         $data['name'] = $poke['name'];
         $data['level'] = $this->formatLevel($poke);
-        $this->result($data, 1, 'success',"json");
+        $this->result('success', $data, 1, "json");
     }
 
 

@@ -17,7 +17,7 @@ class Bag extends Common
     }
 
     public function del() {
-        Pokebag::destroy($this->request->param("ids/s"));
+        Pokebag::destroy($this->request->param("ids/a"));
         $this->success();
     }
     public function rename() {

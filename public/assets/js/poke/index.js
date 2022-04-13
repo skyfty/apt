@@ -41,6 +41,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             Controller.contenter_card.on("dblclick", function(evt){
                 var node = $("#tree-level").tree('getSelected');
                 if (node == null || node.type === "bag") {
+                    $.messager.alert('error','没有选中关卡');
                     return;
                 }
                 Controller.api.clearCardToolbar();
@@ -90,7 +91,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         setTimeout(function() {
                             var zTree = $.fn.zTree.getZTreeObj("treeDemo");
                             zTree.cancelEditName();
-                            alert("节点名称不能为空.");
+                            $.messager.alert('error','节点名称不能为空');
                         }, 0);
                         return false;
                     }
@@ -212,7 +213,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 let password = $("#password").val();
                 let reppassword = $("#reppassword").val();
                 if (password === "" || password !== reppassword) {
-                    Fast.api.msg("密码参数输入错误");
+                    $.messager.alert('error','密码参数输入错误');
                     return;
                 }
                 Fast.api.ajax({
@@ -259,16 +260,17 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             },
 
             deleteTreeNode:function(node, url) {
-                if (confirm("确认要删除吗") !== true) {
-                    return;
-                }
-                Fast.api.ajax({
-                    url: url,
-                    data: {ids: [node.id]}
-                }, function () {
-                    Controller.api.resetStage();
-                    $("#tree-level").tree('remove', node.target);
-                    return false;
+                $.messager.confirm('提示', '确认要删除吗?', function(r){
+                    if (r){
+                        Fast.api.ajax({
+                            url: url,
+                            data: {ids: [node.id]}
+                        }, function () {
+                            Controller.api.resetStage();
+                            $("#tree-level").tree('remove', node.target);
+                            return false;
+                        });
+                    }
                 });
                 return this;
             },
