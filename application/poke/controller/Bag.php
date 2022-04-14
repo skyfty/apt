@@ -25,7 +25,7 @@ class Bag extends Common
         $name = $this->request->param("name");
         $cnt = model("Pokebag")->where("name", $name)->where("id", "neq", $id)->count();
         if ($cnt > 0) {
-            $this->error(__('record exists'));
+            $this->error(__('名称重复'));
         }
         $poke = model("Pokebag")->get($id);
         if ($poke == null) {

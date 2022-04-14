@@ -27,7 +27,7 @@ class Level extends Common
         $name = $this->request->param("name");
         $cnt = model("Poke")->where("name", $name)->where("id", "neq", $id)->count();
         if ($cnt > 0) {
-            $this->error(__('record exists'));
+            $this->error(__('名称重复'));
         }
 
         $poke = model("Poke")->get($id);
