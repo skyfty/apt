@@ -859,7 +859,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             inspection:null,
                             target:target,
                             onlyone:true,
-                            scope: def || "A-K[dhcs]",
+                            scope: def || "A-K",
                             repels:['wan','chromy'],
 
                             getInspection:function() {
