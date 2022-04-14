@@ -8,7 +8,7 @@ use app\poke\model\Pokebag;
 class Bag extends Common
 {
     public function add() {
-        $cnt = model("Pokebag")->where('creator_model_id', $this->auth->id)->count();
+        $cnt = model("Pokebag")->count();
         if ($cnt > 0) {
             $_POST['name'] = $_POST['name'] ."(".($cnt).")";
         }
@@ -21,11 +21,16 @@ class Bag extends Common
         $this->success();
     }
     public function rename() {
+        $name = $this->request->param("name");
+        $cnt = model("Pokebag")->where("name", $name)->count();
+        if ($cnt > 0) {
+            $this->error(__('record exists'));
+        }
         $poke = model("Pokebag")->get($this->request->param("id"));
         if ($poke == null) {
             $this->error(__('Can not find the record'));
         }
-        $poke->name     = $this->request->param("name");
+        $poke->name     = $name;
         $poke->save();
         $this->result($poke, 1);
     }

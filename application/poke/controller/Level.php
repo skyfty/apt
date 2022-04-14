@@ -10,7 +10,7 @@ class Level extends Common
     protected $noNeedLogin = ['get'];
 
     public function add() {
-        $cnt = model("Poke")->where('creator_model_id', $this->auth->id)->where("pokebag_model_id", $_POST['pokebag_model_id'])->count();
+        $cnt = model("Poke")->where("pokebag_model_id", $_POST['pokebag_model_id'])->count();
         if ($cnt > 0) {
             $_POST['name'] = $_POST['name'] ."(".($cnt).")";
         }
@@ -23,11 +23,17 @@ class Level extends Common
         $this->success();
     }
     public function rename() {
+        $name = $this->request->param("name");
+        $cnt = model("Poke")->where("name", $name)->count();
+        if ($cnt > 0) {
+            $this->error(__('record exists'));
+        }
+
         $poke = model("Poke")->get($this->request->param("id"));
         if ($poke == null) {
             $this->error(__('Can not find the record'));
         }
-        $poke->name     = $this->request->param("name");
+        $poke->name     = $name;
         $poke->save();
         $this->result($poke, 1);
     }
