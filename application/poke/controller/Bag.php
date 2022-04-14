@@ -21,12 +21,13 @@ class Bag extends Common
         $this->success();
     }
     public function rename() {
+        $id = $this->request->param("id");
         $name = $this->request->param("name");
-        $cnt = model("Pokebag")->where("name", $name)->count();
+        $cnt = model("Pokebag")->where("name", $name)->where("id", "neq", $id)->count();
         if ($cnt > 0) {
             $this->error(__('record exists'));
         }
-        $poke = model("Pokebag")->get($this->request->param("id"));
+        $poke = model("Pokebag")->get($id);
         if ($poke == null) {
             $this->error(__('Can not find the record'));
         }

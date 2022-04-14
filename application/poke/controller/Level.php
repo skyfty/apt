@@ -23,13 +23,14 @@ class Level extends Common
         $this->success();
     }
     public function rename() {
+        $id = $this->request->param("id");
         $name = $this->request->param("name");
-        $cnt = model("Poke")->where("name", $name)->count();
+        $cnt = model("Poke")->where("name", $name)->where("id", "neq", $id)->count();
         if ($cnt > 0) {
             $this->error(__('record exists'));
         }
 
-        $poke = model("Poke")->get($this->request->param("id"));
+        $poke = model("Poke")->get($id);
         if ($poke == null) {
             $this->error(__('Can not find the record'));
         }
