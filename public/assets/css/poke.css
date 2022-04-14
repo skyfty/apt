@@ -181,3 +181,7 @@ div[class*='suit']:after {
 .icon-stage {
     background:url('../img/poke/stage.png') no-repeat center center !important;
 }
+
+.tree-node-selected {
+    color: #0a0a0a;
+}

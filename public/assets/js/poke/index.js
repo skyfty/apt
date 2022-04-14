@@ -97,7 +97,18 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     }
                     return true;
                 },
-
+                onAfterEdit:function(node){
+                    if (node.type === "bag" || node.type === "level") {
+                        let url = node.type + "/rename";
+                        Fast.api.ajax({
+                            url:url,
+                            data: {id:node.id, name: node.text}
+                        }, function (data, ret) {
+                            console.log(ret);
+                            return false;
+                        });
+                    }
+                },
                 selectedLevelId:0,
                 onClick: function(node){
                     $(".panel-inspection").hide();
