@@ -26,7 +26,8 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 }
                 Controller.api.clearCardToolbar();
 
-                let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_underpan);
+                let newCardId = Controller.api.getNewUnderpanId();
+                let ele = $(Template("tmpl-card", {id:newCardId})).appendTo(Controller.panel_underpan);
                 ele.bindUnderpan();
                 ele.addComponent("face", Controller.api.components.face.create(ele));
                 ele.addComponent("hide",Controller.api.components.hide.create(ele));
@@ -46,7 +47,8 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 }
                 Controller.api.clearCardToolbar();
 
-                let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_card);
+                let newCardId = Controller.api.getNewCardId();
+                let ele = $(Template("tmpl-card", {id:newCardId})).appendTo(Controller.panel_card);
                 ele.bindCard();
                 let pos =  {
                     "zindex":10,
@@ -321,11 +323,12 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
                 Controller.panel_card.data("underpans", node.getUnderpan());
                 for(const  i in node.composition.underpans){
-                    const components = node.composition.underpans[i];
-                    let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_underpan);
+                    const underpan = node.composition.underpans[i];
+                    Controller.api.max_underpan_id = Controller.api.maxCardId(Controller.api.max_underpan_id, underpan.id);
+                    let ele = $(Template("tmpl-card", underpan)).appendTo(Controller.panel_underpan);
                     ele.bindUnderpan();
-                    for(const c in components) {
-                        ele.addComponent(c,Controller.api.components[c].create(ele, components[c]));
+                    for(const c in underpan.components) {
+                        ele.addComponent(c,Controller.api.components[c].create(ele, underpan.components[c]));
                     }
                     ele.updateComponent();
                 }
@@ -333,11 +336,12 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 let stage = node.getStage();
                 Controller.panel_card.css({width:stage.params.width, height:stage.params.height}).data("stage", stage);
                 for(const i in node.composition.cards){
-                    const components = node.composition.cards[i];
-                    let ele = $(Template("tmpl-card", {})).appendTo(Controller.panel_card);
+                    const card = node.composition.cards[i];
+                    Controller.api.max_card_id = Controller.api.maxCardId(Controller.api.max_card_id, card.id);
+                    let ele = $(Template("tmpl-card", card)).appendTo(Controller.panel_card);
                     ele.bindCard();
-                    for(const c in components) {
-                        ele.addComponent(c,Controller.api.components[c].create(ele, components[c]));
+                    for(const c in  card.components) {
+                        ele.addComponent(c,Controller.api.components[c].create(ele,  card.components[c]));
                     }
                     ele.updateComponent();
                 }
@@ -530,6 +534,40 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 return this;
             },
 
+
+            max_card_id:"A0",
+            getNewCardId:function() {
+                this.max_card_id = this.getNewId(this.max_card_id);
+                return this.max_card_id;
+            },
+
+            max_underpan_id:"A0",
+            getNewUnderpanId:function() {
+                this.max_underpan_id = this.getNewId(this.max_underpan_id);
+                return this.max_underpan_id;
+            },
+
+            getNewId:function(ids) {
+                let h = ids.charCodeAt(0);
+                let l = parseInt(ids.charAt(1));
+                l+=1;
+                if (l >= 10) {
+                    h += 1;
+                    l = 1;
+                }
+                return String.fromCharCode(h) + l;
+            },
+
+            maxCardId:function(r, l) {
+                let rh = r.charCodeAt(0);
+                let rl = parseInt(r.charAt(1));
+                rh += rl;
+                let lh = l.charCodeAt(0);
+                let ll = parseInt(l.charAt(1));
+                lh += ll;
+                return rh > lh ? r:l;
+            },
+
             push:function() {
                 var node = $('#tree-level').tree('getSelected');
                 if (node == null || node.type === "bag") {
@@ -541,11 +579,21 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
                 let cards = [];
                 $("#panel-card .card").each(function(){
-                    cards.push(Controller.api.collectComponentData.apply(this));
+                    let card_id = $(this).data("id");
+                    let card = {
+                        id:card_id,
+                        components:Controller.api.collectComponentData.apply(this)
+                    };
+                    cards.push(card);
                 });
                 let underpans=[];
                 $("#panel-underpan .card").each(function(){
-                    underpans.push(Controller.api.collectComponentData.apply(this));
+                    let card_id = $(this).data("id");
+                    let card = {
+                        id:card_id,
+                        components:Controller.api.collectComponentData.apply(this)
+                    };
+                    underpans.push(card);
                 });
 
                 let options = {
@@ -1312,6 +1360,78 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         };
                     }
                 },
+                mulch:{
+                    containment: ["card"],
+
+                    create:function(target, def) {
+                        return {
+                            inspection:null,
+                            target:target,
+                            onlyone:false,
+                            mulch: def || "",
+                            repels:[],
+
+                            getInspection:function() {
+                                this.inspection = $(Template("tmpl-component-card-mulch", this));
+                                this.inspection.bindAttrInput(this.onInspectionChanged, this);
+                                return this.inspection;
+                            },
+
+                            enable:function(v) {
+                                $(".attr-input-card", this.inspection).prop('disabled', !v)
+                            },
+
+                            onUpdateInspection:function() {
+                                $("#card-mulch", this.inspection).val(this.mulch.toUpperCase());
+                            },
+
+                            onInspectionChanged: function (input) {
+                                let input_id = $(input).attr("id");
+                                switch (input_id) {
+                                    case "card-mulch": {
+                                        this.mulch = $(input).val().toUpperCase();
+                                        break;
+                                    }
+                                }
+                                this.onUpdate();
+                                this.onSelected(true);
+                                Controller.api.sync(true);
+                            },
+
+                            onUpdate:function() {
+                            },
+
+                            getData:function() {
+                                return this.mulch.toUpperCase();
+                            },
+
+                            setData:function(v) {
+                                this.mulch = v.toUpperCase();
+                            },
+                            onRemove:function() {
+                                this.onSelected(false);
+                                this.inspection.removeInspectionPanel();
+                            },
+
+                            onAttach:function() {
+                            },
+                            update:function() {
+                                this.onUpdate();
+                                this.onUpdateInspection();
+                            },
+
+                            onSelected:function(b) {
+                                $(".card.mulch",Controller.panel_card).removeClass("mulch");
+                                let mulchs = this.mulch.split(",");
+                                if (b) {
+                                    for(var i = 0; i < mulchs.length; ++i) {
+                                        $("[data-id='"+mulchs[i]+"']",Controller.panel_card).addClass("mulch")
+                                    }
+                                }
+                            }
+                        };
+                    }
+                },
             }
         },
         init: function () {
@@ -1391,6 +1511,18 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     return this;
                 },
 
+
+                onSelected:function (b) {
+                    const ele = $(this);
+                    let componentMap = $(this).getComponentMap();
+                    for(const idx in componentMap) {
+                        if (typeof componentMap[idx].onSelected === "function") {
+                            componentMap[idx].onSelected(b);
+                        }
+                    }
+                    return this;
+                },
+
                 updateInspection:function() {
                     Controller.panel_inspection_component.clearInspection();
                     let componentMap = $(this).getComponentMap();
@@ -1406,10 +1538,12 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                 resetInspection:function() {
                     $(".panel-inspection").hide();
                     $("#panel-inspection-card").show();
+                    $(".card-selected").onSelected(false);
                     $(".card.card-shadow.card-selected").removeClass("card-shadow card-selected");
-                    $(this).addClass("card-shadow card-selected").updateInspection();
+                    $(this).addClass("card-shadow card-selected").updateInspection().onSelected(true);
                     return this;
                 },
+
 
                 updateToolbar:function() {
                     let toolbar_card_container = $("<div></div>");

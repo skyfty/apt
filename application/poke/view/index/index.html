@@ -100,6 +100,7 @@
                     <li data-name="rand"><a href="#">随机</a></li>
                     <li data-name="wan"><a href="#">万能</a></li>
                     <li data-name="chromy"><a href="#">同色</a></li>
+                    <li data-name="mulch"><a href="#">压牌</a></li>
                     <li data-name="custom"><a href="#">自定义</a></li>
                 </ul>
             </div>
@@ -179,12 +180,15 @@
 </html>
 
 <script id="tmpl-card" type="text/html">
-    <div class="card ui-widget-content" style="z-index: <%=zindex%>;left:<%=left%>px;top:<%=top%>px" data-panel="<%=panel%>">
+    <div class="card ui-widget-content" style="z-index: <%=zindex%>;left:<%=left%>px;top:<%=top%>px" data-panel="<%=panel%>" data-id="<%=id%>">
         <div class="toolbar-card">
 
         </div>
-        <div>
+        <div class="card-name">
             <p><%=name%></p>
+        </div>
+        <div  class="card-id">
+            <span><%=id%></span>
         </div>
     </div>
 </script>
@@ -224,6 +228,22 @@
                     A-9[suitdiamonds|suithearts|suitclubs|suitdiamonds],4[suitdiamonds|suitdiamonds],6,5-K,2-Q[suitdiamonds|suitdiamonds]  (suitdiamonds♦,suithearts♥,suitclubs♣,suitspades♠)
                 </div>
                 <textarea class="form-control input-sm attr-input-card" id="card-scope" rows="3" placeholder="A-K[dhcs]"></textarea>
+            </fieldset>
+        </div>
+
+    </div>
+</script>
+
+
+
+<script id="tmpl-component-card-mulch" type="text/html">
+    <div title="压牌" class="panel-component">
+        <div class="form-group">
+            <fieldset>
+                <div class="alert alert-info" role="alert" style="margin-bottom: 5px">
+                    A1,A5,A6
+                </div>
+                <textarea class="form-control input-sm attr-input-card" id="card-mulch" rows="3" placeholder="扑克id"></textarea>
             </fieldset>
         </div>
 

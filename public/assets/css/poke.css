@@ -65,6 +65,22 @@
     font: 40px/100px Georgia, Times New Roman, serif;
 }
 
+.card .card-name,.card .card-id {
+    position: absolute;
+    width: 100%;
+}
+
+.card .card-id {
+    text-align: right;
+    padding-top: 13px;
+    padding-right: 5px;
+    color: #ff00e0;
+}
+
+.card.mulch {
+    border: #ed1c1c 2px inset;
+}
+
 #panel-card .card {
     position: absolute;
 
