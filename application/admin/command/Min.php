@@ -45,7 +45,7 @@ class Min extends Command
             throw new Exception('Please input correct resource name');
         }
 
-        $moduleArr = $module == 'all' ? ['customer', 'staff', 'backend', 'poke'] : [$module];
+        $moduleArr = $module == 'all' ? ['customer', 'backend', 'poke'] : [$module];
         $resourceArr = $resource == 'all' ? ['js', 'css'] : [$resource];
 
         $minPath = __DIR__ . DS . 'Min' . DS;

@@ -1441,7 +1441,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                                 $(".card.mulch",Controller.panel_card).removeClass("mulch");
                                 let mulchs = this.mulch.split(",");
                                 if (b) {
-                                    for(var i = 0; i < mulchs.length; ++i) {
+                                    for(let i = 0; i < mulchs.length; ++i) {
                                         $("[data-id='"+mulchs[i]+"']",Controller.panel_card).addClass("mulch")
                                     }
                                 }

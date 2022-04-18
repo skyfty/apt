@@ -11,6 +11,10 @@ require.config({
         'fast',
         'addtabs',
         'form',
+        'mini-map',
+        'dragscroll',
+        'easyui',
+
     ],
     paths: {
         'lang': "empty:",
