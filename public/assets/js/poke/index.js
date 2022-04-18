@@ -1,4 +1,4 @@
-define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, undefined, undefined) {
+define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefined, Poke, undefined, undefined, undefined) {
     const CARD_HEIGHT_SPAN = 50;
     const CARD_WIDTH_SPAN = 35;
 
@@ -181,6 +181,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             $("#btn-card-delete").on("click", function(){
                 Controller.api.clearCardToolbar();
                 $(".card-selected").remove();
+                Controller.panel_card.mgMiniMap("update");
                 Controller.panel_inspection_component.clearInspection(true);
                 Controller.api.sync(true);
             });
@@ -304,7 +305,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
             },
 
             updateStage:function(node) {
-                require(['dragscroll', 'zoomooz'], function () {
+                require(['dragscroll', 'zoomooz', 'ruler'], function () {
                     Controller.contenter_card.dragscroll({
                         autoFadeBars: true,
                         scrollBars: false,
@@ -319,6 +320,10 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
                         }
                     });
+
+
+                    // Controller.contenter_card.ruler();
+
                 });
 
                 Controller.panel_card.data("underpans", node.getUnderpan());
@@ -344,6 +349,13 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         ele.addComponent(c,Controller.api.components[c].create(ele,  card.components[c]));
                     }
                     ele.updateComponent();
+                }
+
+                var h = Controller.panel_card.data("mgMiniMap-instance");
+                if (h) {
+                    Controller.panel_card.mgMiniMap("update");
+                } else {
+                    Controller.panel_card.mgMiniMap({elements: '.card',draggable: true});
                 }
                 return this;
             },
@@ -1216,6 +1228,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                                     "z-index":pos.zindex,
                                 };
                                 this.target.css(style);
+                                Controller.panel_card.mgMiniMap("update");
                             },
 
                             getData:function() {
@@ -1234,7 +1247,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
 
                             onRemove:function() {
                                 this.inspection.removeInspectionPanel();
-
+                                Controller.panel_card.mgMiniMap("update");
                             },
 
                             onAttach:function() {
@@ -1243,6 +1256,10 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                             update:function() {
                                 this.onUpdate();
                                 this.onUpdateInspection();
+                            },
+
+                            onSelected:function(b) {
+                                $(target).data("mg-color", b?"orange":"red");
                             }
                         };
                     }
@@ -1541,6 +1558,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     $(".card-selected").onSelected(false);
                     $(".card.card-shadow.card-selected").removeClass("card-shadow card-selected");
                     $(this).addClass("card-shadow card-selected").updateInspection().onSelected(true);
+                    Controller.panel_card.mgMiniMap("update");
                     return this;
                 },
 
@@ -1589,6 +1607,10 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                     return this;
                 },
 
+                resetMiniMap:function() {
+
+                },
+
                 bindAttrInput:function(callback, component) {
                     $(".attr-input-card", this).on("change", function(){
                         Controller.api.clearCardToolbar();
@@ -1626,6 +1648,7 @@ define(['jquery', 'bootstrap','poke', 'easyui'], function ($, undefined, Poke, u
                         },
                         onStopDrag: function() {
                             $(this).resetToolbar();
+                            Controller.panel_card.mgMiniMap("update");
                             Controller.api.sync(true);
                         }
                     }).on("dblclick", function(){

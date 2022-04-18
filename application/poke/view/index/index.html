@@ -18,9 +18,17 @@
         var pokebags = {$pokebags|json_encode};
 
     </script>
+    <style type="text/css">
+
+        /*#panel-card {*/
+        /*    transform: scale(0.5) translate(200px, 100px);*/
+        /*}*/
+
+    </style>
 </head>
 
 <body class="easyui-layout" onselectstart="return false">
+
 {if condition="$admin == null"}
 <div id="window-login" class="easyui-window" title="登录" style="width:414px;height:291px;display: none;"
      data-options="modal:true,resizable:false,collapsible:false,minimizable:false,maximizable:false,closable:false,inline:false">
@@ -41,6 +49,7 @@
     </form>
 </div>
 {/if}
+
 <div id="window-rest-password" class="easyui-window" title="重置密码" style="width:414px;height:291px;display: none"
      data-options="modal:true,resizable:false,collapsible:false,minimizable:false,maximizable:false,closed:true,inline:false">
     <form id="form-login" method="post">
@@ -80,6 +89,7 @@
         <div>About</div>
     </div>
 </div>
+
 <div class="  panel-stage-wrapper" data-options="region:'east',split:true,minWidth:280" title="检查器" style="width:280px;display: none">
     <div id="panel-inspection-card" class="panel-inspection" >
         <div>
@@ -109,6 +119,7 @@
             <button type="button" id="btn-card-delete" class="btn btn-danger btn-block  btn-sm">删除</button>
         </div>
     </div>
+
     <div id="panel-inspection-bag" class="panel-inspection">
         <div>
             <div>
@@ -117,28 +128,29 @@
         </div>
 
     </div>
+
     <div id="panel-inspection-level" class="panel-inspection">
         <div>
             <div>
 
             </div>
         </div>
-
     </div>
+
     <div id="panel-inspection-stage" class="panel-inspection">
         <div>
             <div>
             </div>
         </div>
-
     </div>
+
     <div id="panel-inspection-underpan" class="panel-inspection">
         <div>
             <div>
             </div>
         </div>
-
     </div>
+
 </div>
 
 <div id="menu-tree-bag" class="easyui-menu" style="width:120px;display: none">
@@ -180,7 +192,7 @@
 </html>
 
 <script id="tmpl-card" type="text/html">
-    <div class="card ui-widget-content" style="z-index: <%=zindex%>;left:<%=left%>px;top:<%=top%>px" data-panel="<%=panel%>" data-id="<%=id%>">
+    <div class="card ui-widget-content" style="z-index: <%=zindex%>;left:<%=left%>px;top:<%=top%>px" data-panel="<%=panel%>" data-id="<%=id%>" data-mg-color="red">
         <div class="toolbar-card">
 
         </div>

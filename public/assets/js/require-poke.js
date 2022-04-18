@@ -47,6 +47,7 @@ require.config({
         'dragscroll': '../libs/jquery.dragscroll/src/jquery.dragscroll',
         'ruler': '../libs/jqueryui-ruler/js/jquery.ui.ruler',
         'zoomooz': '../libs/jaukia-zoomooz/jquery.zoomooz',
+        'mini-map': '../libs/mgMiniMap/mgMiniMap-1.3.0.min',
     },
     // shim依赖配置
     shim: {
