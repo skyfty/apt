@@ -16,9 +16,8 @@ return [
         '*'      => 'index',
         'apt'      => 'admin',
         'bi'      => 'bi',
-        'oss'      => 'oss',
-        'poke'      => 'poke',
-
+        'dev.oss'      => 'oss',
+        'dev.poke'      => 'poke',
     ],
     '__alias__'   => [
     ],

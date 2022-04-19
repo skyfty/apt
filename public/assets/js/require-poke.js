@@ -17,7 +17,7 @@ require.config({
 
     ],
     paths: {
-        'lang': "empty:",
+        // 'lang': "empty:",
         'form': 'require-form',
         'upload': 'require-upload',
         'validator': 'require-validator',
@@ -122,7 +122,7 @@ require(['jquery','jquery-ui', 'bootstrap'], function ($, undefined) {
     // 配置语言包的路径
     var paths = {};
     // 避免目录冲突
-    paths['lang'] = Config.moduleurl + '/ajax/lang?callback=define&controllername=' + Config.controllername;
+    // paths['lang'] = Config.moduleurl + '/ajax/lang?callback=define&controllername=' + Config.controllername;
     paths['poke/'] = 'poke/';
     require.config({paths: paths});
 
