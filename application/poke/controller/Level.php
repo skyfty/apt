@@ -14,6 +14,8 @@ class Level extends Common
         if ($cnt > 0) {
             $_POST['name'] = $_POST['name'] ."(".($cnt).")";
         }
+        $_POST["site"] = $this->request->host();
+
         $poke = model("Poke")->create($_POST);
         $this->result($poke, 1);
     }
@@ -25,7 +27,11 @@ class Level extends Common
     public function rename() {
         $id = $this->request->param("id");
         $name = $this->request->param("name");
-        $cnt = model("Poke")->where("name", $name)->where("id", "neq", $id)->count();
+        $where = [
+            "name"=> $name,
+            "site"=> $this->request->host()
+        ];
+        $cnt = model("Poke")->where($where)->where("id", "neq", $id)->count();
         if ($cnt > 0) {
             $this->error(__('名称重复'));
         }

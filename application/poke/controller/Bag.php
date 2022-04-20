@@ -8,10 +8,12 @@ use app\poke\model\Pokebag;
 class Bag extends Common
 {
     public function add() {
-        $cnt = model("Pokebag")->count();
+        $cnt = model("Pokebag")->where("site", $this->request->host())->count();
         if ($cnt > 0) {
             $_POST['name'] = $_POST['name'] ."(".($cnt).")";
         }
+        $_POST["site"] = $this->request->host();
+
         $poke = model("Pokebag")->create($_POST);
         $this->result($poke, 1);
     }
@@ -23,7 +25,11 @@ class Bag extends Common
     public function rename() {
         $id = $this->request->param("id");
         $name = $this->request->param("name");
-        $cnt = model("Pokebag")->where("name", $name)->where("id", "neq", $id)->count();
+        $where = [
+            "name"=> $name,
+            "site"=> $this->request->host()
+        ];
+        $cnt = model("Pokebag")->where($where)->where("id", "neq", $id)->count();
         if ($cnt > 0) {
             $this->error(__('名称重复'));
         }

@@ -1,6 +1,7 @@
 define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefined, Poke, undefined, undefined, undefined) {
     const CARD_HEIGHT_SPAN = 50;
     const CARD_WIDTH_SPAN = 35;
+    const VERSION = 1;
 
     var Controller = {
         index: function () {
@@ -106,7 +107,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                             url:url,
                             data: {id:node.id, name: node.text}
                         }, function (data, ret) {
-                            console.log(ret);
+
                             return false;
                         });
                     }
@@ -472,6 +473,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                     data: {
                         pokebag_model_id:bag.id,
                         name: "新关卡",
+                        version:VERSION,
                         composition:composition,
                         params:defparams,stage:defstageparams,underpan:defparams,
                     }
@@ -1710,7 +1712,11 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                     const params = JSON.stringify({});
                     Fast.api.ajax({
                         url: "bag/add",
-                        data: {name: "新关卡包", params:params}
+                        data: {
+                            name: "新关卡包",
+                            version:VERSION,
+                            params:params
+                        }
                     }, function (data) {
                         var newNode = Controller.api.getNewBagTree(data.id, data.name, JSON.parse(data.params));
                         $("#tree-level").tree('append', {
