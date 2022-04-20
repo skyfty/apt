@@ -15,6 +15,8 @@ class Index extends Common
             if (!$this->auth->isSuperAdmin()) {
                 $where['creator_model_id'] = $this->auth->id;
             }
+            $where['site'] = $this->request->host();
+
             $pokebags = model("Pokebag")->where($where)->select();
             foreach($pokebags as $k=>$v) {
                 $list = model("Poke")->where("pokebag_model_id", $v['id'])->where($where)->select();
