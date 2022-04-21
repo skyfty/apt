@@ -104,10 +104,14 @@ class Index extends Api
         if (!$poke_id) {
             $this->error(__('error'));
         }
+        $poke = model("pokepass")->get($poke_id);
+        if (!$poke) {
+            $this->error(__('error'));
+        }
         $pokepass = model("pokepass");
         $pokepass->data([
             'creator_model_id'=>$user['id'],
-            'poke_model_id'=>$poke_id,
+            'poke_model_id'=>$poke['id'],
             'user_id'=>$user['id'],
         ]);
         $pokepass->save();
@@ -117,11 +121,11 @@ class Index extends Api
             $oss = new Oss;
         }
         $data['user_id'] = $user['id'];
-        $data['last_level'] = $poke_id;
-        if (!isset($data['levels'])) {
-            $data['levels'] = [];
+        $data['last_poke'] = $poke_id;
+        if (!isset($data['pokes'])) {
+            $data['pokes'] = [];
         }
-        $data['levels'][] = $poke_id;
+        $data['pokes'][] = $poke_id;
         $oss->save($data);
         $this->success(__('success'));
     }
