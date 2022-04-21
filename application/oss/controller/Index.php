@@ -14,7 +14,7 @@ use think\Validate;
 class Index extends Api
 {
     protected $noNeedLogin = ['login'];
-    protected $noNeedRight = ['login', 'set', 'get', 'logout'];
+    protected $noNeedRight = ['login', 'set', 'get', 'logout', 'pass'];
 
     /**
      * 首页
@@ -92,6 +92,37 @@ class Index extends Api
 
     public function logout() {
         $this->auth->logout();
+        $this->success(__('success'));
+    }
+
+    public function pass() {
+        $user = $this->auth->getUser();
+        if (!$user) {
+            $this->error(__('error'));
+        }
+        $poke_id = $this->request->param('poke_id');
+        if (!$poke_id) {
+            $this->error(__('error'));
+        }
+        $pokepass = model("pokepass");
+        $pokepass->data([
+            'creator_model_id'=>$user['id'],
+            'poke_model_id'=>$poke_id,
+            'user_id'=>$user['id'],
+        ]);
+        $pokepass->save();
+
+        $oss = Oss::get($user['id']);
+        if (!$oss) {
+            $oss = new Oss;
+        }
+        $data['user_id'] = $user['id'];
+        $data['last_level'] = $poke_id;
+        if (!isset($data['levels'])) {
+            $data['levels'] = [];
+        }
+        $data['levels'][] = $poke_id;
+        $oss->save($data);
         $this->success(__('success'));
     }
 
