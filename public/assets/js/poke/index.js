@@ -1388,7 +1388,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                             target:target,
                             onlyone:false,
                             mulch: def || "",
-                            repels:[],
+                            repels:['warp'],
 
                             getInspection:function() {
                                 this.inspection = $(Template("tmpl-component-card-mulch", this));
@@ -1432,7 +1432,11 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                                 this.inspection.removeInspectionPanel();
                             },
 
+
                             onAttach:function() {
+                                for(const i in this.repels) {
+                                    $(this.target).removeComponent(this.repels[i]);
+                                }
                             },
                             update:function() {
                                 this.onUpdate();
@@ -1445,6 +1449,154 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                                 if (b) {
                                     for(let i = 0; i < mulchs.length; ++i) {
                                         $("[data-id='"+mulchs[i]+"']",Controller.panel_card).addClass("mulch")
+                                    }
+                                }
+                            }
+                        };
+                    }
+                },
+
+                variety:{
+                    containment: ["card"],
+
+                    create:function(target, def) {
+                        return {
+                            inspection:null,
+                            target:target,
+                            onlyone:true,
+                            variety: def || "plus",
+                            repels:[],
+
+                            getInspection:function() {
+                                this.inspection = $(Template("tmpl-component-card-variety", this));
+                                this.inspection.bindAttrInput(this.onInspectionChanged, this);
+                                return this.inspection;
+                            },
+
+                            enable:function(v) {
+                                $(".attr-input-card", this.inspection).prop('disabled', !v)
+                            },
+
+                            onUpdateInspection:function() {
+                                $("#card-variety", this.inspection).val(this.variety);
+                            },
+
+                            onInspectionChanged: function (input) {
+                                let input_id = $(input).attr("id");
+                                switch (input_id) {
+                                    case "card-variety": {
+                                        this.variety = $(input).val();
+                                        break;
+                                    }
+                                }
+                                this.onUpdate();
+                                Controller.api.sync(true);
+                            },
+
+                            onUpdate:function() {
+                            },
+
+                            getData:function() {
+                                return this.variety;
+                            },
+
+                            setData:function(v) {
+                                this.variety = v;
+                            },
+                            onRemove:function() {
+                                this.inspection.removeInspectionPanel();
+                            },
+
+                            onAttach:function() {
+                                for(const i in this.repels) {
+                                    $(this.target).removeComponent(this.repels[i]);
+                                }
+                            },
+                            update:function() {
+                                this.onUpdate();
+                                this.onUpdateInspection();
+                            }
+                        };
+                    }
+                },
+
+                warp:{
+                    containment: ["card"],
+
+                    create:function(target, def) {
+                        return {
+                            inspection:null,
+                            target:target,
+                            onlyone:false,
+                            data: $.extend({
+                                pokes:"",
+                                cnt:0,
+                            }, def),
+                            repels:['mulch'],
+
+                            getInspection:function() {
+                                this.inspection = $(Template("tmpl-component-card-warp", this));
+                                this.inspection.bindAttrInput(this.onInspectionChanged, this);
+                                return this.inspection;
+                            },
+
+                            enable:function(v) {
+                                $(".attr-input-card", this.inspection).prop('disabled', !v)
+                            },
+
+                            onUpdateInspection:function() {
+                                $("#card-warp", this.inspection).val(this.data.warp.toUpperCase());
+                                $("#card-warp-cnt", this.inspection).val(this.data.cnt);
+                            },
+
+                            onInspectionChanged: function (input) {
+                                let input_id = $(input).attr("id");
+                                switch (input_id) {
+                                    case "card-warp": {
+                                        this.data.warp = $(input).val().toUpperCase();
+                                        break;
+                                    }
+                                    case "card-warp-cnt": {
+                                        this.data.cnt = $(input).val();
+                                        break;
+                                    }
+                                }
+                                this.onUpdate();
+                                this.onSelected(true);
+                                Controller.api.sync(true);
+                            },
+
+                            onUpdate:function() {
+                            },
+
+                            getData:function() {
+                                return this.data;
+                            },
+
+                            setData:function(v) {
+                                this.data = v;
+                            },
+                            onRemove:function() {
+                                this.onSelected(false);
+                                this.inspection.removeInspectionPanel();
+                            },
+
+                            onAttach:function() {
+                                for(const i in this.repels) {
+                                    $(this.target).removeComponent(this.repels[i]);
+                                }
+                            },
+                            update:function() {
+                                this.onUpdate();
+                                this.onUpdateInspection();
+                            },
+
+                            onSelected:function(b) {
+                                $(".card.warp",Controller.panel_card).removeClass("warp");
+                                let warps = this.data.warp.split(",");
+                                if (b) {
+                                    for(let i = 0; i < warps.length; ++i) {
+                                        $("[data-id='"+warps[i]+"']",Controller.panel_card).addClass("warp")
                                     }
                                 }
                             }

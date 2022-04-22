@@ -79,7 +79,7 @@
     color: #ff00e0;
 }
 
-.card.mulch {
+.card.mulch,.card.warp {
     border: #ed1c1c 2px inset;
 }
 
