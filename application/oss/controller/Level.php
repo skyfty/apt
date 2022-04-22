@@ -36,6 +36,7 @@ class Level extends Api
         }
         $data = [];
         $data['name'] = $poke['name'];
+        $data['id'] = $poke['id'];
         $data['level'] = $this->formatLevel($poke);
         $this->result('success', $data, 1, "json");
     }
