@@ -104,6 +104,7 @@
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dLabel">
+                    <li data-name="display"><a href="#">展现</a></li>
                     <li  data-name="position"><a href="#">位置</a></li>
                     <li  data-name="direction"><a href="#">方向</a></li>
                     <li data-name="face"><a href="#">牌面</a></li>
@@ -276,6 +277,19 @@
     </div>
 </script>
 
+<script id="tmpl-component-card-display" type="text/html">
+    <div title="变数卡" class="panel-component">
+        <div class="form-group">
+            <div class="form-group">
+                <select class="form-control input-sm attr-input-card" id="card-display" value="<%=display%>">
+                    <option value="show">显示</option>
+                    <option value="hide">隐藏</option>
+                </select>
+            </div>
+        </div>
+
+    </div>
+</script>
 
 <script id="tmpl-component-card-warp" type="text/html">
     <div title="卡包" class="panel-component">

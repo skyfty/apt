@@ -1519,7 +1519,69 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                         };
                     }
                 },
+                display:{
+                    containment: ["card","underpan"],
 
+                    create:function(target, def) {
+                        return {
+                            inspection:null,
+                            target:target,
+                            onlyone:true,
+                            display: def || "show",
+                            repels:[],
+
+                            getInspection:function() {
+                                this.inspection = $(Template("tmpl-component-card-display", this));
+                                this.inspection.bindAttrInput(this.onInspectionChanged, this);
+                                return this.inspection;
+                            },
+
+                            enable:function(v) {
+                                $(".attr-input-card", this.inspection).prop('disabled', !v)
+                            },
+
+                            onUpdateInspection:function() {
+                                $("#card-display", this.inspection).val(this.display);
+                            },
+
+                            onInspectionChanged: function (input) {
+                                let input_id = $(input).attr("id");
+                                switch (input_id) {
+                                    case "card-display": {
+                                        this.display = $(input).val();
+                                        break;
+                                    }
+                                }
+                                this.onUpdate();
+                                Controller.api.sync(true);
+                            },
+
+                            onUpdate:function() {
+                            },
+
+                            getData:function() {
+                                return this.display;
+                            },
+
+                            setData:function(v) {
+                                this.display = v;
+                            },
+                            onRemove:function() {
+                                this.inspection.removeInspectionPanel();
+                            },
+
+                            onAttach:function() {
+                                for(const i in this.repels) {
+                                    $(this.target).removeComponent(this.repels[i]);
+                                }
+                            },
+                            update:function() {
+                                this.onUpdate();
+                                this.onUpdateInspection();
+                            }
+                        };
+                    }
+                },
                 warp:{
                     containment: ["card"],
 
