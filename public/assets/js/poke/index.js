@@ -1582,7 +1582,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                         };
                     }
                 },
-                warp:{
+                pack:{
                     containment: ["card"],
 
                     create:function(target, def) {
@@ -1597,7 +1597,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                             repels:['mulch'],
 
                             getInspection:function() {
-                                this.inspection = $(Template("tmpl-component-card-warp", this));
+                                this.inspection = $(Template("tmpl-component-card-pack", this));
                                 this.inspection.bindAttrInput(this.onInspectionChanged, this);
                                 return this.inspection;
                             },
@@ -1607,18 +1607,18 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                             },
 
                             onUpdateInspection:function() {
-                                $("#card-warp", this.inspection).val(this.data.warp.toUpperCase());
-                                $("#card-warp-cnt", this.inspection).val(this.data.cnt);
+                                $("#card-pack-pokes", this.inspection).val(this.data.pokes.toUpperCase());
+                                $("#card-pack-cnt", this.inspection).val(this.data.cnt);
                             },
 
                             onInspectionChanged: function (input) {
                                 let input_id = $(input).attr("id");
                                 switch (input_id) {
-                                    case "card-warp": {
-                                        this.data.warp = $(input).val().toUpperCase();
+                                    case "card-pack-pokes": {
+                                        this.data.pokes = $(input).val().toUpperCase();
                                         break;
                                     }
-                                    case "card-warp-cnt": {
+                                    case "card-pack-cnt": {
                                         this.data.cnt = $(input).val();
                                         break;
                                     }
@@ -1654,11 +1654,11 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                             },
 
                             onSelected:function(b) {
-                                $(".card.warp",Controller.panel_card).removeClass("warp");
-                                let warps = this.data.warp.split(",");
+                                $(".card.pack",Controller.panel_card).removeClass("pack");
+                                let warps = this.data.pokes.split(",");
                                 if (b) {
                                     for(let i = 0; i < warps.length; ++i) {
-                                        $("[data-id='"+warps[i]+"']",Controller.panel_card).addClass("warp")
+                                        $("[data-id='"+warps[i]+"']",Controller.panel_card).addClass("pack")
                                     }
                                 }
                             }
