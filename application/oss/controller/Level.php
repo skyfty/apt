@@ -18,17 +18,20 @@ class Level extends Api
     }
 
     public function get() {
+        $site = $this->request->host() == "oss.touchmagic.cn"?"poke.touchmagic.cn":"dev.poke.touchmagic.cn";
         $name=explode(".", $this->request->param("name"));
         if (count($name) == 2) {
-            $pokebag = model("pokebag")->where("id|idcode|name", $name[0])->find();
+            $pokebag = model("pokebag")->where("id|idcode|name", $name[0])->where("site", $site)->find();
             if ($pokebag == null) {
                 $this->result("not exist", [],-1,"json");
             }
+
             $where["pokebag_model_id"] = $pokebag['id'];
             $where["id|idcode|name"] = $name[1];
         } else {
             $where = ["id|idcode|name"=>$name[0]];
         }
+        $where['site'] = $site;
 
         $poke = model("Poke")->where($where)->find();
         if ($poke == null) {
