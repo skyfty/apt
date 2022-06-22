@@ -26,8 +26,14 @@ class Level extends Common
     }
     public function rename() {
         $id = $this->request->param("id");
+        $poke = model("Poke")->get($id);
+        if ($poke == null) {
+            $this->error(__('Can not find the record'));
+        }
+
         $name = $this->request->param("name");
         $where = [
+            "pokebag_model_id"=> $poke->pokebag_model_id,
             "name"=> $name,
             "site"=> $this->request->host()
         ];
@@ -36,10 +42,6 @@ class Level extends Common
             $this->error(__('名称重复'));
         }
 
-        $poke = model("Poke")->get($id);
-        if ($poke == null) {
-            $this->error(__('Can not find the record'));
-        }
         $poke->name     = $name;
         $poke->save();
         $this->result($poke, 1);
