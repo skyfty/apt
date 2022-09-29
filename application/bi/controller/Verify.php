@@ -23,6 +23,6 @@ class Verify extends Api
         if ($verify == null || $verify['status'] == "disallow") {
             $this->error("disallow");
         }
-        $this->success();
+        $this->success("allow");
     }
 }

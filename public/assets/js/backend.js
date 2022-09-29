@@ -31,7 +31,7 @@ define(['fast', 'template', 'moment'], function (Fast, Template, Moment) {
             addtabs: function (url, title, icon) {
                 var dom = "a[url='{url}']"
                 var leftlink = top.window.$(dom.replace(/\{url\}/, url));
-                if (leftlink.size() > 0) {
+                if (leftlink.length > 0) {
                     leftlink.trigger("click");
                 } else {
                     url = Fast.api.fixurl(url);
