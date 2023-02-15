@@ -5,7 +5,7 @@
     <div class="panel-body">
         <div class="widget-body no-padding  table-cosmetic">
             <div id="toolbar-storehouse" class="toolbar">
-                {:build_toolbar('refresh,add,del',['add'=>[url('storehouse/add',['promotion_model_id'=>$row['id']]), 'btn btn-default btn-dialog', 'fa fa-plus',  __(''), __('添加资源')]])}
+                {:build_toolbar('refresh,add,del',['add'=>[url('storehouse/add',['promotion_model_id'=>$row['id']]), 'btn btn-default btn-dialog', 'fa fa-plus',  __(''), __('添加资源')]],"storehouse")}
             </div>
             <table id="table-storehouse"  ui-formidable="fields"
                    data-fields='fields'

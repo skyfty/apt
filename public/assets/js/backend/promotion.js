@@ -58,6 +58,14 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                 };
 
                 Table.api.init({
+                    extend: {
+                        index_url: 'compilation/index',
+                        add_url: 'compilation/add',
+                        del_url: 'compilation/del',
+                        multi_url: 'compilation/multi',
+                        summation_url: 'compilation/summation',
+                        table: 'compilation',
+                    },
                     buttons : [
                         {
                             name: 'view',
@@ -84,6 +92,14 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                 };
 
                 Table.api.init({
+                    extend: {
+                        index_url: 'trap/index',
+                        add_url: 'trap/add',
+                        del_url: 'trap/del',
+                        multi_url: 'trap/multi',
+                        summation_url: 'trap/summation',
+                        table: 'trap',
+                    },
                     buttons : [
                         {
                             name: 'view',
@@ -122,6 +138,14 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                 };
 
                 Table.api.init({
+                    extend: {
+                        index_url: 'cause/index',
+                        add_url: 'cause/add',
+                        del_url: 'cause/del',
+                        multi_url: 'cause/multi',
+                        summation_url: 'cause/summation',
+                        table: 'cause',
+                    },
                     buttons : [
                         {
                             name: 'view',
@@ -198,6 +222,14 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
 
 
                 Table.api.init({
+                    extend: {
+                        index_url: 'storehouse/index',
+                        add_url: 'storehouse/add',
+                        del_url: 'storehouse/del',
+                        multi_url: 'storehouse/multi',
+                        summation_url: 'storehouse/summation',
+                        table: 'storehouse',
+                    },
                     buttons : [
                         {
                             name: 'view',
@@ -225,6 +257,14 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
 
 
                 Table.api.init({
+                    extend: {
+                        index_url: 'stuff/index',
+                        add_url: 'stuff/add',
+                        del_url: 'stuff/del',
+                        multi_url: 'stuff/multi',
+                        summation_url: 'stuff/summation',
+                        table: 'stuff',
+                    },
                     buttons : [
                         {
                             name: 'view',
