@@ -21,7 +21,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                     Controller.api.sync(true);
                 }
             }).on("dblclick", function(){
-                var node = $("#tree-level").tree('getSelected');
+                let node = $("#tree-level").tree('getSelected');
                 if (node == null || node.type === "bag") {
                     return;
                 }
@@ -32,7 +32,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                 ele.bindUnderpan();
                 ele.addComponent("face", Controller.api.components.face.create(ele));
                 ele.addComponent("hide",Controller.api.components.hide.create(ele));
-                if (Controller.panel_underpan.children().length == 1) {
+                if (Controller.panel_underpan.children().length === 1) {
                     ele.addComponent("current",Controller.api.components.current.create(ele));
                 }
                 ele.updateComponent();
@@ -41,7 +41,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
             });
 
             Controller.contenter_card.on("dblclick", function(evt){
-                var node = $("#tree-level").tree('getSelected');
+                let node = $("#tree-level").tree('getSelected');
                 if (node == null || node.type === "bag") {
                     $.messager.alert('error','没有选中关卡');
                     return;
@@ -139,31 +139,31 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
             });
 
             $("#menu-tree-level #edit-level-tree,#edit-bag-tree").on("click", function(){
-                var node = $("#tree-level").tree('getSelected');
+                let node = $("#tree-level").tree('getSelected');
                 $("#tree-level").tree('beginEdit',node.target);
             });
             $("#menu-tree-level #download-bag-tree").on("click", function(){
-                var node = $("#tree-level").tree('getSelected');
+                let node = $("#tree-level").tree('getSelected');
                 if (node != null && node.type === "bag") {
                     Controller.api.download([node.id], "bag/download");
                 }
             });
             $("#menu-tree-level #download-level-tree").on("click", function(){
-                var node = $("#tree-level").tree('getSelected');
+                let node = $("#tree-level").tree('getSelected');
                 if (node != null && node.type === "level") {
                     Controller.api.download([node.id], "level/download");
                 }
             });
 
             $("#menu-tree-level #remove-level-tree").on("click", function(){
-                var node = $("#tree-level").tree('getSelected');
+                let node = $("#tree-level").tree('getSelected');
                 if (node != null && node.type === "level") {
                     Controller.api.clearCardToolbar();
                     Controller.api.deleteTreeNode(node, "level/del");
                 }
             });
             $("#menu-tree-bag #new-level-bag-tree").on("click", function(){
-                var node = $("#tree-level").tree('getSelected');
+                let node = $("#tree-level").tree('getSelected');
                 if (node != null && node.type === "bag") {
                     Controller.api.clearCardToolbar();
                     Controller.api.addLevel(node);
@@ -171,13 +171,27 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
             });
 
             $("#menu-tree-bag #remove-bag-tree").on("click", function(){
-                var node = $("#tree-level").tree('getSelected');
+                let node = $("#tree-level").tree('getSelected');
                 if (node != null && node.type === "bag") {
                     Controller.api.clearCardToolbar();
                     Controller.api.deleteTreeNode(node, "bag/del");
                 }
             });
 
+
+            $("#menu-tree-level #random-stage").on("click", function(){
+                let node = $("#tree-level").tree('getSelected');
+                if (node != null && node.type === "stage") {
+                    Controller.api.randomStage(node);
+                }
+            });
+
+            $("#menu-tree-underpan #random-underpan").on("click", function(){
+                let node = $("#tree-level").tree('getSelected');
+                if (node != null && node.type === "underpan") {
+                    Controller.api.randomUnderpan(node);
+                }
+            });
 
             $("#btn-card-delete").on("click", function(){
                 Controller.api.clearCardToolbar();
@@ -241,7 +255,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
             });
 
             $(document).on("keyup",function(event){
-                var key = event.keyCode;
+                let key = event.keyCode;
                 let ele = $(".card.card-shadow.card-selected");
                 if (ele.length > 0) {
                     ele.onChar(key);
@@ -297,8 +311,20 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                 return this;
             },
 
+            randomUnderpan:function(node) {
+
+                return this;
+            },
+
+            randomStage:function(node) {
+                let stage = node.getStage();
+                const card_number = Math.random();
+                Controller.panel_card.css({width:stage.params.width, height:stage.params.height}).data("stage", stage);
+                return this;
+            },
+
             updateLevelInspection:function(node) {
-                var html = $(Template("tmpl-inspection-" + node.type, node.params || {}));
+                let html = $(Template("tmpl-inspection-" + node.type, node.params || {}));
                 $("#btn-save", html).on("click", function(){
                     node.onInspectionChanged(this);
                 });
@@ -352,7 +378,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                     ele.updateComponent();
                 }
 
-                var h = Controller.panel_card.data("mgMiniMap-instance");
+                let h = Controller.panel_card.data("mgMiniMap-instance");
                 if (h) {
                     Controller.panel_card.mgMiniMap("update");
                 } else {
@@ -426,7 +452,6 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                         return this.children[1];
                     }
                 };
-                return this;
             },
             getNewBagTree:function(id, name, state, params) {
                 return {
@@ -450,7 +475,6 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                         });
                     }
                 };
-                return this;
             },
             loadLevels: function (url, custom) {
                 let deferred = $.Deferred();
@@ -520,7 +544,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                 return this;
             },
             deleteLevels:function() {
-                var nodes = $("#tree-level").tree('getChecked');	// get checked nodes
+                let nodes = $("#tree-level").tree('getChecked');	// get checked nodes
                 const ids = $.map(nodes, function(n, i){
                     return n.id;
                 });
@@ -583,7 +607,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
             },
 
             push:function() {
-                var node = $('#tree-level').tree('getSelected');
+                let node = $('#tree-level').tree('getSelected');
                 if (node == null || node.type === "bag") {
                     return;
                 }

@@ -72,10 +72,12 @@
 
 <div data-options="region:'north',split:true,border:false,minHeight:50,maxHeight:50" style="display: none">
     <div class="easyui-panel" style="padding:5px;">
-        <a href="#" class="easyui-menubutton" data-options="menu:'#mm1',iconCls:'icon-man'">{$admin.nickname ?? "未登录"}</a>
-        <a href="#" class="easyui-menubutton" data-options="menu:'#mm2',iconCls:'icon-help'">帮助</a>
+        <a href="#" class="easyui-menubutton" data-options="menu:'#mm-login',iconCls:'icon-man'">{$admin.nickname ?? "未登录"}</a>
+    <a href="#" class="easyui-menubutton" data-options="menu:'#mm-tool',iconCls:'icon-sum'">工具</a>
+
+    <a href="#" class="easyui-menubutton" data-options="menu:'#mm-help',iconCls:'icon-help'">帮助</a>
     </div>
-    <div id="mm1" style="width:150px;">
+    <div id="mm-login" style="width:150px;">
         <div data-options="" id="menu-reset-password" onclick="$('#window-rest-password').window('open')">
             重置密码
         </div>
@@ -83,7 +85,12 @@
 
         <div data-options="" id="menu-logout">退出</div>
     </div>
-    <div id="mm2" style="width:100px;">
+    <div id="mm-tool" style="width:100px;">
+        <div>Help</div>
+        <div>Update</div>
+        <div>About</div>
+    </div>
+    <div id="mm-help" style="width:100px;">
         <div>Help</div>
         <div>Update</div>
         <div>About</div>
@@ -167,6 +174,17 @@
     <div id="edit-level-tree" data-options="iconCls:'icon-edit'">编辑</div>
     <div id="remove-level-tree" data-options="iconCls:'icon-remove'">删除</div>
     <div id="download-level-tree" data-options="iconCls:'icon-save'">下载</div>
+
+</div>
+
+
+<div id="menu-tree-stage" class="easyui-menu" style="width:120px;display: none">
+    <div id="random-stage" data-options="iconCls:'icon-sum'">随机生成</div>
+
+</div>
+
+<div id="menu-tree-underpan" class="easyui-menu" style="width:120px;display: none">
+    <div id="random-underpan" data-options="iconCls:'icon-sum'">随机生成</div>
 
 </div>
 <div title="关卡" style="width:200px;display: none" data-options="
