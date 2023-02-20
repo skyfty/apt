@@ -18,6 +18,8 @@ return [
         'bi'      => 'bi',
         'dev.oss'      => 'oss',
         'dev.poke'      => 'poke',
+        'madcap'      => 'madcap',
+
     ],
     '__alias__'   => [
     ],

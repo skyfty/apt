@@ -520,7 +520,7 @@ function build_where_param($sym,$k,$v,$relationSearch=null) {
             $v = str_replace(' - ', ',', $v);
             $arr = array_slice(explode(',', $v), 0, 2);
             if (stripos($v, ',') === false || !array_filter($arr))
-                continue;
+                break;
             //当出现一边为空时改变操作符
             if ($arr[0] === '') {
                 $sym = $sym == 'BETWEEN' ? '<=' : '>';
@@ -536,7 +536,7 @@ function build_where_param($sym,$k,$v,$relationSearch=null) {
             $v = str_replace(' - ', ',', $v);
             $arr = array_slice(explode(',', $v), 0, 2);
             if (stripos($v, ',') === false || !array_filter($arr))
-                continue;
+                break;
             //当出现一边为空时改变操作符
             if ($arr[0] === '') {
                 $sym = $sym == 'RANGE' ? '<=' : '>';

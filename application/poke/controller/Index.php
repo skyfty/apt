@@ -6,7 +6,7 @@ use app\poke\model\Admin;
 
 class Index extends Common
 {
-    protected $noNeedLogin = ['index', 'login'];
+    protected $noNeedLogin = ['index', 'login','index2'];
 
     public function index()
     {
@@ -27,6 +27,11 @@ class Index extends Common
             $this->assign("pokebags", []);
 
         }
+        return $this->view->fetch();
+    }
+    public function index2()
+    {
+
         return $this->view->fetch();
     }
 
