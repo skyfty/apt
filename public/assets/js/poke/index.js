@@ -1,7 +1,14 @@
 define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefined, Poke, undefined, undefined, undefined) {
     const CARD_HEIGHT_SPAN = 50;
     const CARD_WIDTH_SPAN = 35;
+    const CARD_WIDTH = 70;
+    const CARD_HEIGHT = 100;
+
     const VERSION = 1;
+
+    const CARD_NAME = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+    const CARD_COLOR = ["suitdiamonds", "suithearts", "suitclubs", "suitspades"];
+    const CARD_DIRECTION = ["back", "front"];
 
     var Controller = {
         index: function () {
@@ -27,15 +34,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                 }
                 Controller.api.clearCardToolbar();
 
-                let newCardId = Controller.api.getNewUnderpanId();
-                let ele = $(Template("tmpl-card", {id:newCardId})).appendTo(Controller.panel_underpan);
-                ele.bindUnderpan();
-                ele.addComponent("face", Controller.api.components.face.create(ele));
-                ele.addComponent("hide",Controller.api.components.hide.create(ele));
-                if (Controller.panel_underpan.children().length === 1) {
-                    ele.addComponent("current",Controller.api.components.current.create(ele));
-                }
-                ele.updateComponent();
+                let ele = Controller.api.createUnderpanElement();
                 ele.click();
                 Controller.api.sync(true);
             });
@@ -48,20 +47,12 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                 }
                 Controller.api.clearCardToolbar();
 
-                let newCardId = Controller.api.getNewCardId();
-                let ele = $(Template("tmpl-card", {id:newCardId})).appendTo(Controller.panel_card);
-                ele.bindCard();
-                let pos =  {
+                let pos = Controller.panel_card.screenToWorldPoint({
                     "zindex":10,
                     "left":Math.max(0, evt.offsetX),
                     "top":Math.max(0, evt.offsetY)
-                };
-                pos = Controller.panel_card.screenToWorldPoint(pos);
-                ele.addComponent("position",Controller.api.components.position.create(ele, pos));
-                ele.addComponent("face",Controller.api.components.face.create(ele));
-                ele.addComponent("direction",Controller.api.components.direction.create(ele));
-                ele.updateComponent();
-                ele.click();
+                });
+                Controller.api.createCardElement(pos).click();
                 Controller.api.sync(true);
             });
 
@@ -90,7 +81,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                     return source.type === "level" && (point === "top" || point === "bottom");
                 },
                 onBeforeEdit:function(node){
-                    if (node.text.length == 0) {
+                    if (node.text.length === 0) {
                         setTimeout(function() {
                             var zTree = $.fn.zTree.getZTreeObj("treeDemo");
                             zTree.cancelEditName();
@@ -139,7 +130,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
             });
 
             $("#menu-tree-level #edit-level-tree,#edit-bag-tree").on("click", function(){
-                let node = $("#tree-level").tree('getSelected');
+                const node = $("#tree-level").tree('getSelected');
                 $("#tree-level").tree('beginEdit',node.target);
             });
             $("#menu-tree-level #download-bag-tree").on("click", function(){
@@ -179,17 +170,29 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
             });
 
 
-            $("#menu-tree-level #random-stage").on("click", function(){
+            $("#btn-number-ok").on("click", function(){
+                const number_card = $("#number-card").val();
+                if (number_card <= 0 || number_card > 200) {
+                    Toastr.error("数字范围超限");
+                    return;
+                }
                 let node = $("#tree-level").tree('getSelected');
-                if (node != null && node.type === "stage") {
-                    Controller.api.randomStage(node);
+                if (node == null) {
+                    return;
+                }
+                $("#window-number").window("close");
+
+                if (node.type === "stage") {
+                    Controller.api.randomStage(node, number_card);
+                } else {
+                    Controller.api.randomUnderpan(node, number_card);
                 }
             });
 
-            $("#menu-tree-underpan #random-underpan").on("click", function(){
-                let node = $("#tree-level").tree('getSelected');
-                if (node != null && node.type === "underpan") {
-                    Controller.api.randomUnderpan(node);
+            $(".menu-random-card").on("click", function(){
+                const node = $("#tree-level").tree('getSelected');
+                if (node != null && (node.type === "stage" || node.type === "underpan")) {
+                    $('#window-number').window('open');
                 }
             });
 
@@ -218,8 +221,8 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
             });
 
             $("#btn-login").on("click", function(){
-                let username = $("#username").val();
-                let password = $("#password").val();
+                const username = $("#username").val();
+                const password = $("#password").val();
                 Fast.api.ajax({
                     url: "/index/login",
                     data: {username: username,password: password}
@@ -239,8 +242,8 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
             });
 
             $("#btn-rest-password").on("click", function(){
-                let password = $("#password").val();
-                let reppassword = $("#reppassword").val();
+                const password = $("#password").val();
+                const reppassword = $("#reppassword").val();
                 if (password === "" || password !== reppassword) {
                     $.messager.alert('error','密码参数输入错误');
                     return;
@@ -255,7 +258,7 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
             });
 
             $(document).on("keyup",function(event){
-                let key = event.keyCode;
+                const key = event.keyCode;
                 let ele = $(".card.card-shadow.card-selected");
                 if (ele.length > 0) {
                     ele.onChar(key);
@@ -311,20 +314,76 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                 return this;
             },
 
-            randomUnderpan:function(node) {
+            createCardElement:function(pos, face, direction) {
+                const newCardId = Controller.api.getNewCardId();
+                let ele = $(Template("tmpl-card", {id:newCardId})).appendTo(Controller.panel_card);
+                ele.bindCard();
+                ele.addComponent("position",Controller.api.components.position.create(ele, pos));
+                ele.addComponent("face",Controller.api.components.face.create(ele, face));
+                ele.addComponent("direction",Controller.api.components.direction.create(ele, direction));
+                ele.updateComponent();
+                return ele;
+            },
 
+
+            createUnderpanElement:function(face, hide) {
+                const newCardId = Controller.api.getNewUnderpanId();
+                let ele = $(Template("tmpl-card", {id:newCardId})).appendTo(Controller.panel_underpan);
+                ele.bindUnderpan();
+                ele.addComponent("face", Controller.api.components.face.create(ele,face));
+                if (hide) {
+                    ele.addComponent("hide",Controller.api.components.hide.create(ele));
+                }
+                if (Controller.panel_underpan.children().length === 1) {
+                    ele.addComponent("current",Controller.api.components.current.create(ele));
+                }
+                ele.updateComponent();
+                return ele;
+            },
+
+            randomCardName:function() {
+                const card_name_def = {
+                    name:CARD_NAME[Controller.api.getRandomInt(0, CARD_NAME.length - 1)],
+                    color:CARD_COLOR[Controller.api.getRandomInt(0, CARD_COLOR.length - 1)],
+                }
+                return card_name_def;
+            },
+
+            randomUnderpan:function(node, number_card) {
+                Controller.api.clearCardToolbar();
+                Controller.panel_underpan.html("");
+
+                const is_hide = [true, false];
+                for(let i = 0; i < number_card; i++) {
+                    const card_name_def = Controller.api.randomCardName();
+                    Controller.api.createUnderpanElement(card_name_def, is_hide[Controller.api.getRandomInt(0, is_hide.length - 1)]);
+                }
+                Controller.api.sync(true);
                 return this;
             },
 
-            randomStage:function(node) {
-                let stage = node.getStage();
-                const card_number = Math.random();
-                Controller.panel_card.css({width:stage.params.width, height:stage.params.height}).data("stage", stage);
+            randomStage:function(node, number_card) {
+                Controller.api.clearCardToolbar();
+                Controller.panel_card.html("");
+                Controller.panel_inspection_component.clearInspection(true);
+
+                for(let i = 0; i < number_card; i++) {
+                    const rx = Controller.api.getRandomInt(CARD_WIDTH, node.params.width - CARD_WIDTH);
+                    const ry = Controller.api.getRandomInt(CARD_HEIGHT, node.params.height - CARD_HEIGHT);
+                    const pos = Controller.panel_card.screenToWorldPoint({
+                        "zindex":10,
+                        "left":rx,
+                        "top":ry
+                    });
+                    const card_name_def = Controller.api.randomCardName();
+                    Controller.api.createCardElement(pos, card_name_def, CARD_DIRECTION[Controller.api.getRandomInt(0, CARD_DIRECTION.length - 1)]);
+                }
+                Controller.api.sync(true);
                 return this;
             },
 
             updateLevelInspection:function(node) {
-                let html = $(Template("tmpl-inspection-" + node.type, node.params || {}));
+                const html = $(Template("tmpl-inspection-" + node.type, node.params || {}));
                 $("#btn-save", html).on("click", function(){
                     node.onInspectionChanged(this);
                 });
@@ -347,10 +406,6 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
 
                         }
                     });
-
-
-                    // Controller.contenter_card.ruler();
-
                 });
 
                 Controller.panel_card.data("underpans", node.getUnderpan());

@@ -1,3 +1,4 @@
+
 require.config({
     packages: [{
         name: 'moment',
@@ -46,7 +47,6 @@ require.config({
         'dragsort': '../libs/fastadmin-dragsort/jquery.dragsort',
         'easyui': '../libs/jquery-easyui/jquery.easyui.min',
         'dragscroll': '../libs/jquery.dragscroll/src/jquery.dragscroll',
-        'threejs': '../libs/three/build/three',
 
     },
     // shim依赖配置

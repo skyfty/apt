@@ -1,4 +1,4 @@
-define(['jquery', 'bootstrap','madcap', 'easyui', 'threejs'], function ($, undefined, Madcap, undefined, THREE) {
+define(['jquery', 'bootstrap','madcap', 'easyui'], function ($, undefined, Madcap, undefined) {
     const CARD_HEIGHT_SPAN = 50;
     const CARD_WIDTH_SPAN = 35;
     const VERSION = 1;
@@ -6,125 +6,35 @@ define(['jquery', 'bootstrap','madcap', 'easyui', 'threejs'], function ($, undef
     var Controller = {
         index: function () {
 
-            let container;
-            let camera, scene, renderer;
-            let controls, group;
-            let enableSelection = false;
-
-            const objects = [];
-
-            const mouse = new THREE.Vector2(), raycaster = new THREE.Raycaster();
-
-            init();
-
-            function init() {
-
-                container = document.getElementById( 'panel-card' );
-
-                scene = new THREE.Scene();
-                scene.background = new THREE.Color( 0xffffff );
-
-                camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
-                camera.position.set( 0, 250, 1000 );
-                scene.add( camera );
-
-                scene.add( new THREE.AmbientLight( 0xf0f0f0 ) );
-                const light = new THREE.SpotLight( 0xffffff, 1.5 );
-                light.position.set( 0, 1500, 200 );
-                light.angle = Math.PI * 0.2;
-                light.castShadow = true;
-                light.shadow.camera.near = 200;
-                light.shadow.camera.far = 2000;
-                light.shadow.bias = - 0.000222;
-                light.shadow.mapSize.width = 1024;
-                light.shadow.mapSize.height = 1024;
-                scene.add( light );
-
-
-                group = new THREE.Group();
-                scene.add( group );
-
-                const geometry = new THREE.BoxGeometry( 40, 40, 40 );
-
-                for ( let i = 0; i < 200; i ++ ) {
-
-                    const object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
-
-                    object.position.x = Math.random() * 1000 - 500;
-                    object.position.y = Math.random() * 600 - 300;
-                    object.position.z = Math.random() * 800 - 400;
-
-                    object.rotation.x = Math.random() * 2 * Math.PI;
-                    object.rotation.y = Math.random() * 2 * Math.PI;
-                    object.rotation.z = Math.random() * 2 * Math.PI;
-
-                    object.scale.x = Math.random() * 2 + 1;
-                    object.scale.y = Math.random() * 2 + 1;
-                    object.scale.z = Math.random() * 2 + 1;
-
-                    object.castShadow = true;
-                    object.receiveShadow = true;
-
-                    scene.add( object );
-
-                    objects.push( object );
-
-                }
-
-
-                renderer = new THREE.WebGLRenderer( { antialias: true } );
-                renderer.setPixelRatio( window.devicePixelRatio );
-                renderer.setSize( window.innerWidth, window.innerHeight );
-                renderer.shadowMap.enabled = true;
-                container.appendChild( renderer.domElement );
-
-                controls = new THREE.DragControls( [ ... objects ], camera, renderer.domElement );
-                controls.addEventListener( 'drag', render );
-
-                render();
-
-            }
-
-
-
-
-            function render() {
-
-                renderer.render( scene, camera );
-
-            }
-
-
-
             Controller.panel_card = $( "#panel-card" );
             Controller.panel_inspection_component = $( "#panel-inspection-component" );
             Controller.contenter_card = $("#contenter-card");
 
 
-            Controller.contenter_card.on("dblclick", function(evt){
-                let node = $("#tree-level").tree('getSelected');
-                if (node == null || node.type === "bag") {
-                    $.messager.alert('error','没有选中关卡');
-                    return;
-                }
-                Controller.api.clearCardToolbar();
-
-                let newCardId = Controller.api.getNewCardId();
-                let ele = $(Template("tmpl-card", {id:newCardId})).appendTo(Controller.panel_card);
-                ele.bindCard();
-                let pos =  {
-                    "zindex":10,
-                    "left":Math.max(0, evt.offsetX),
-                    "top":Math.max(0, evt.offsetY)
-                };
-                pos = Controller.panel_card.screenToWorldPoint(pos);
-                ele.addComponent("position",Controller.api.components.position.create(ele, pos));
-                ele.addComponent("face",Controller.api.components.face.create(ele));
-                ele.addComponent("direction",Controller.api.components.direction.create(ele));
-                ele.updateComponent();
-                ele.click();
-                Controller.api.sync(true);
-            });
+            // Controller.contenter_card.on("dblclick", function(evt){
+            //     let node = $("#tree-level").tree('getSelected');
+            //     if (node == null || node.type === "bag") {
+            //         $.messager.alert('error','没有选中关卡');
+            //         return;
+            //     }
+            //     Controller.api.clearCardToolbar();
+            //
+            //     let newCardId = Controller.api.getNewCardId();
+            //     let ele = $(Template("tmpl-card", {id:newCardId})).appendTo(Controller.panel_card);
+            //     ele.bindCard();
+            //     let pos =  {
+            //         "zindex":10,
+            //         "left":Math.max(0, evt.offsetX),
+            //         "top":Math.max(0, evt.offsetY)
+            //     };
+            //     pos = Controller.panel_card.screenToWorldPoint(pos);
+            //     ele.addComponent("position",Controller.api.components.position.create(ele, pos));
+            //     ele.addComponent("face",Controller.api.components.face.create(ele));
+            //     ele.addComponent("direction",Controller.api.components.direction.create(ele));
+            //     ele.updateComponent();
+            //     ele.click();
+            //     Controller.api.sync(true);
+            // });
 
             $("#tree-level").tree({
                 data:[],
@@ -322,6 +232,11 @@ define(['jquery', 'bootstrap','madcap', 'easyui', 'threejs'], function ($, undef
             initLevelTree:function() {
                 let nodes = [];
                 $("#tree-level").tree("loadData", nodes);
+
+                let g = new PanelCard("panel-card");
+                // g.ggg(null);
+                // window.initPanelCard("panel-card");
+
                 return this;
             },
 

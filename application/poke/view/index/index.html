@@ -50,6 +50,19 @@
 </div>
 {/if}
 
+
+<div id="window-number" class="easyui-dialog" title="数量"  style="width:400px;height:200px;padding:10px;display:none"
+     data-options="modal:true,resizable:false,collapsible:false,minimizable:false,maximizable:false,closed:true,inline:false">
+    <div style="margin-bottom:20px">
+        <input class="easyui-textbox" type="number"  id="number-card" prompt="数量"  max="100" min="5" style="width:100%;height:34px;">
+    </div>
+    <div>
+        <a   id="btn-number-ok"  href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" style="padding:5px 0px;width:100%;">
+            <span style="font-size:14px;">确认</span>
+        </a>
+    </div>
+</div>
+
 <div id="window-rest-password" class="easyui-window" title="重置密码" style="width:414px;height:291px;display: none"
      data-options="modal:true,resizable:false,collapsible:false,minimizable:false,maximizable:false,closed:true,inline:false">
     <form id="form-login" method="post">
@@ -179,12 +192,12 @@
 
 
 <div id="menu-tree-stage" class="easyui-menu" style="width:120px;display: none">
-    <div id="random-stage" data-options="iconCls:'icon-sum'">随机生成</div>
+    <div class="menu-random-card" data-options="iconCls:'icon-sum'">随机生成</div>
 
 </div>
 
 <div id="menu-tree-underpan" class="easyui-menu" style="width:120px;display: none">
-    <div id="random-underpan" data-options="iconCls:'icon-sum'">随机生成</div>
+    <div class="menu-random-card" data-options="iconCls:'icon-sum'">随机生成</div>
 
 </div>
 <div title="关卡" style="width:200px;display: none" data-options="

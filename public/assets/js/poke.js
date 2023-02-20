@@ -16,7 +16,12 @@ define(['template', 'moment', 'fast'], function (Template, Moment, Fast) {
                     }
                 });
                 return deferred.promise();
-            }
+            },
+
+            getRandomInt:function (min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            },
+
         },
         init: function () {
             $("#form").data("validator-options", {

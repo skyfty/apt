@@ -29,12 +29,6 @@ class Index extends Common
         }
         return $this->view->fetch();
     }
-    public function index2()
-    {
-
-        return $this->view->fetch();
-    }
-
 
     /**
      * 管理员登录

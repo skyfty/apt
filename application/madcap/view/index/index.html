@@ -17,13 +17,16 @@
         };
 
     </script>
-    <style type="text/css">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "/assets/libs/three/build/three.module.js",
+                "three/addons/": "/assets/libs/three/examples/jsm/"
+            }
+        }
+    </script>
+    <script src="__CDN__/assets/js/madcap/main.js" type="module"></script>
 
-        /*#panel-card {*/
-        /*    transform: scale(0.5) translate(200px, 100px);*/
-        /*}*/
-
-    </style>
 </head>
 
 <body class="easyui-layout" onselectstart="return false">
@@ -138,7 +141,7 @@
 
 
 <div id="menu-tree-stage" class="easyui-menu" style="width:120px;display: none">
-    <div id="random-stage" data-options="iconCls:'icon-sum'">随机生成</div>
+    <div id="random-stage" data-options="iconCls:'icon-sum'" >随机生成</div>
 
 </div>
 
