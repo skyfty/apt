@@ -51,13 +51,28 @@
 {/if}
 
 
-<div id="window-number" class="easyui-dialog" title="数量"  style="width:400px;height:200px;padding:10px;display:none"
+<div id="window-number" class="easyui-dialog" title="随机参数"  style="width:420px;height:370px;padding:20px;display:none"
      data-options="modal:true,resizable:false,collapsible:false,minimizable:false,maximizable:false,closed:true,inline:false">
     <div style="margin-bottom:20px">
-        <input class="easyui-textbox" type="number"  id="number-card" prompt="数量"  max="100" min="5" style="width:100%;height:34px;">
+        <div style="margin-bottom:20px">
+            <label for="exampleInputEmail1">数量</label>
+            <input class="easyui-numberbox" data-options="min:10,max:200" value="100"   id="number-card" style="width:100%;height:32px">
+        </div>
+        <div style="margin-bottom:20px">
+            <label for="exampleInputEmail1">特殊牌</label>
+            <select class="easyui-combobox" id="special-card" data-options="multiple:true,editable:false" style="width:100%;height:32px">
+                <option value="wan">万能牌</option>
+                <option value="chromy">同色牌</option>
+                <option value="rand">随机牌</option>
+            </select>
+        </div>
+        <div style="margin-bottom:20px">
+            <label for="exampleInputEmail1" style="margin-bottom: 15px">比例</label>
+            <input class="easyui-slider" id="special-ratio-card" value="10" style="width:100%" data-options="showTip:true,rule: [0,'|',25,'|',50,'|',75,'|',100]">
+        </div>
     </div>
     <div>
-        <a   id="btn-number-ok"  href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" style="padding:5px 0px;width:100%;">
+        <a   id="btn-number-ok"  href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" style="margin:15px 0px;width:100%;">
             <span style="font-size:14px;">确认</span>
         </a>
     </div>

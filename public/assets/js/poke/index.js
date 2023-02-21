@@ -1,3 +1,5 @@
+/* jshint esversion: 6 */
+
 define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefined, Poke, undefined, undefined, undefined) {
     const CARD_HEIGHT_SPAN = 50;
     const CARD_WIDTH_SPAN = 35;
@@ -35,24 +37,27 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                 Controller.api.clearCardToolbar();
 
                 let ele = Controller.api.createUnderpanElement();
+                ele.updateComponent();
                 ele.click();
                 Controller.api.sync(true);
             });
 
             Controller.contenter_card.on("dblclick", function(evt){
-                let node = $("#tree-level").tree('getSelected');
+                const node = $("#tree-level").tree('getSelected');
                 if (node == null || node.type === "bag") {
                     $.messager.alert('error','没有选中关卡');
                     return;
                 }
                 Controller.api.clearCardToolbar();
 
-                let pos = Controller.panel_card.screenToWorldPoint({
+                const pos = Controller.panel_card.screenToWorldPoint({
                     "zindex":10,
                     "left":Math.max(0, evt.offsetX),
                     "top":Math.max(0, evt.offsetY)
                 });
-                Controller.api.createCardElement(pos).click();
+                let ele = Controller.api.createCardElement(pos);
+                ele.updateComponent();
+                ele.click();
                 Controller.api.sync(true);
             });
 
@@ -182,11 +187,16 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                 }
                 $("#window-number").window("close");
 
+                let special_card = $("#special-card").combobox('getValues');
+                special_card = special_card.filter(name=>typeof Controller.api.components[name] !== "undefined");
+
+                const special_ratio_card = $("#special-ratio-card").val();
                 if (node.type === "stage") {
-                    Controller.api.randomStage(node, number_card);
+                    Controller.api.randomStage(node, number_card, special_card, special_ratio_card);
                 } else {
-                    Controller.api.randomUnderpan(node, number_card);
+                    Controller.api.randomUnderpan(node, number_card, special_card, special_ratio_card);
                 }
+                Controller.api.sync(true);
             });
 
             $(".menu-random-card").on("click", function(){
@@ -321,10 +331,8 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                 ele.addComponent("position",Controller.api.components.position.create(ele, pos));
                 ele.addComponent("face",Controller.api.components.face.create(ele, face));
                 ele.addComponent("direction",Controller.api.components.direction.create(ele, direction));
-                ele.updateComponent();
                 return ele;
             },
-
 
             createUnderpanElement:function(face, hide) {
                 const newCardId = Controller.api.getNewUnderpanId();
@@ -337,7 +345,6 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                 if (Controller.panel_underpan.children().length === 1) {
                     ele.addComponent("current",Controller.api.components.current.create(ele));
                 }
-                ele.updateComponent();
                 return ele;
             },
 
@@ -349,24 +356,30 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                 return card_name_def;
             },
 
-            randomUnderpan:function(node, number_card) {
+            randomUnderpan:function(node, number_card, special_name_arr, special_ratio_card) {
                 Controller.api.clearCardToolbar();
                 Controller.panel_underpan.html("");
 
+                let cards = [];
                 const is_hide = [true, false];
                 for(let i = 0; i < number_card; i++) {
                     const card_name_def = Controller.api.randomCardName();
-                    Controller.api.createUnderpanElement(card_name_def, is_hide[Controller.api.getRandomInt(0, is_hide.length - 1)]);
+                    let ele = Controller.api.createUnderpanElement(card_name_def, is_hide[Controller.api.getRandomInt(0, is_hide.length - 1)]);
+                    cards.push(ele);
                 }
-                Controller.api.sync(true);
+                cards.sort(()=>{return Math.random() > 0.5 ? -1 : 1;});
+                const special_cards = cards.slice(0, cards.length * special_ratio_card / 100);
+                Controller.api.randomSpecialCard(special_cards, special_name_arr);
+                cards.forEach(ele=>ele.updateComponent());
                 return this;
             },
 
-            randomStage:function(node, number_card) {
+            randomStage:function(node, number_card, special_name_arr, special_ratio_card) {
                 Controller.api.clearCardToolbar();
                 Controller.panel_card.html("");
                 Controller.panel_inspection_component.clearInspection(true);
 
+                let cards = [];
                 for(let i = 0; i < number_card; i++) {
                     const rx = Controller.api.getRandomInt(CARD_WIDTH, node.params.width - CARD_WIDTH);
                     const ry = Controller.api.getRandomInt(CARD_HEIGHT, node.params.height - CARD_HEIGHT);
@@ -376,9 +389,33 @@ define(['jquery', 'bootstrap','poke', 'easyui', 'mini-map'], function ($, undefi
                         "top":ry
                     });
                     const card_name_def = Controller.api.randomCardName();
-                    Controller.api.createCardElement(pos, card_name_def, CARD_DIRECTION[Controller.api.getRandomInt(0, CARD_DIRECTION.length - 1)]);
+                    let ele = Controller.api.createCardElement(pos, card_name_def, CARD_DIRECTION[Controller.api.getRandomInt(0, CARD_DIRECTION.length - 1)]);
+                    cards.push(ele);
                 }
-                Controller.api.sync(true);
+                cards.sort(()=>{return Math.random() > 0.5 ? -1 : 1;});
+                const special_cards = cards.slice(0, cards.length * special_ratio_card / 100);
+                Controller.api.randomSpecialCard(special_cards, special_name_arr);
+                cards.forEach(ele=>ele.updateComponent());
+                return this;
+            },
+
+            randomSpecialCard:function(card_special_ele, special_name_arr) {
+                if (special_name_arr === null || special_name_arr.length === 0) {
+                    return this;
+                }
+                let j = 0;
+                for(let i = 0; i < card_special_ele.length; ++i) {
+                    if (j === special_name_arr.length){
+                        j = 0;
+                    }
+                    const special_card_name =  special_name_arr[j++];
+
+                    let def = undefined;
+                    if (special_card_name === "chromy") {
+                        def = CARD_COLOR[Controller.api.getRandomInt(0, CARD_COLOR.length - 1)]
+                    }
+                    card_special_ele[i].addComponent(special_card_name,Controller.api.components[special_card_name].create(card_special_ele[i], def));
+                }
                 return this;
             },
 
