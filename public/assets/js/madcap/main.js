@@ -1,118 +1,186 @@
+/* jshint esversion: 6 */
 import * as THREE from 'three';
 
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
-
-import { TransformControls } from 'three/addons/controls/TransformControls.js';
-import { DragControls } from 'three/addons/controls/DragControls.js';
-let container;
 let camera, scene, renderer;
-let controls, group;
-let enableSelection = false;
+let plane;
+let pointer, raycaster, isShiftDown = false;
+
+let rollOverMesh, rollOverMaterial;
+let cubeGeo, cubeMaterial;
 
 const objects = [];
 
-const mouse = new THREE.Vector2(), raycaster = new THREE.Raycaster();
 
 export default class PanelCard {
 
     constructor(name) {
-        container = document.getElementById(name);
+        let container = document.getElementById(name);
 
+
+        camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+        camera.position.set( 500, 800, 1300 );
+        camera.lookAt( 0, 0, 0 );
 
         scene = new THREE.Scene();
-        scene.background = new THREE.Color( 0xffffff );
+        scene.background = new THREE.Color( 0xf0f0f0 );
 
+        // roll-over helpers
 
-        const aspectRatio =  window.innerWidth / window.innerHeight
-        camera = new THREE.OrthographicCamera(-1 * aspectRatio, 1 * aspectRatio, 1, -1, 1, 100)
-        camera.position.set(2, 2, 2);
-        scene.add( camera );
+        const rollOverGeo = new THREE.BoxGeometry( 50, 50, 50 );
+        rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } );
+        rollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
+        scene.add( rollOverMesh );
 
+        // cubes
 
-        scene.add( new THREE.AmbientLight( 0x505050 ) );
+        cubeGeo = new THREE.BoxGeometry( 50, 50, 50 );
+        cubeMaterial = new THREE.MeshLambertMaterial( { color: 0xfeb74c, map: new THREE.TextureLoader().load( 'textures/square-outline-textured.png' ) } );
 
-        const light = new THREE.SpotLight( 0xffffff, 1.5 );
-        light.position.set( 0, 500, 2000 );
-        light.angle = Math.PI / 9;
+        // grid
 
-        light.castShadow = true;
-        light.shadow.camera.near = 1000;
-        light.shadow.camera.far = 4000;
-        light.shadow.mapSize.width = 1024;
-        light.shadow.mapSize.height = 1024;
+        const gridHelper = new THREE.GridHelper( 1000, 20 );
+        scene.add( gridHelper );
 
-        scene.add( light );
+        //
 
-        group = new THREE.Group();
-        scene.add( group );
+        raycaster = new THREE.Raycaster();
+        pointer = new THREE.Vector2();
 
-        const geometry = new THREE.BoxGeometry( 40, 40, 40 );
+        const geometry = new THREE.PlaneGeometry( 1000, 1000 );
+        geometry.rotateX( - Math.PI / 2 );
 
-        for ( let i = 0; i < 10; i ++ ) {
+        plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
+        scene.add( plane );
 
-            const object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+        objects.push( plane );
 
-            object.position.x = Math.random() * 1000 - 500;
-            object.position.y = Math.random() * 600 - 300;
-            object.position.z = Math.random() * 800 - 400;
+        // lights
 
-            object.rotation.x = Math.random() * 2 * Math.PI;
-            object.rotation.y = Math.random() * 2 * Math.PI;
-            object.rotation.z = Math.random() * 2 * Math.PI;
+        const ambientLight = new THREE.AmbientLight( 0x606060 );
+        scene.add( ambientLight );
 
-            object.scale.x = Math.random() * 2 + 1;
-            object.scale.y = Math.random() * 2 + 1;
-            object.scale.z = Math.random() * 2 + 1;
-
-            object.castShadow = true;
-            object.receiveShadow = true;
-
-            scene.add( object );
-
-            objects.push( object );
-
-        }
+        const directionalLight = new THREE.DirectionalLight( 0xffffff );
+        directionalLight.position.set( 1, 0.75, 0.5 ).normalize();
+        scene.add( directionalLight );
 
         renderer = new THREE.WebGLRenderer( { antialias: true } );
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
-
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFShadowMap;
-
         container.appendChild( renderer.domElement );
 
-        controls = new DragControls( [ ... objects ], camera, renderer.domElement );
-        controls.addEventListener( 'drag', this.render );
+
+        function onWindowResize() {
+
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+
+            renderer.setSize( window.innerWidth, window.innerHeight );
+
+            render();
+
+        }
+
+        function onPointerMove( event ) {
+
+            pointer.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+
+            raycaster.setFromCamera( pointer, camera );
+
+            const intersects = raycaster.intersectObjects( objects, false );
+
+            if ( intersects.length > 0 ) {
+
+                const intersect = intersects[ 0 ];
+
+                rollOverMesh.position.copy( intersect.point ).add( intersect.face.normal );
+                rollOverMesh.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+
+                render();
+
+            }
+
+        }
+
+        function onPointerDown( event ) {
+
+            pointer.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+
+            raycaster.setFromCamera( pointer, camera );
+
+            const intersects = raycaster.intersectObjects( objects, false );
+
+            if ( intersects.length > 0 ) {
+
+                const intersect = intersects[ 0 ];
+
+                // delete cube
+
+                if ( isShiftDown ) {
+
+                    if ( intersect.object !== plane ) {
+
+                        scene.remove( intersect.object );
+
+                        objects.splice( objects.indexOf( intersect.object ), 1 );
+
+                    }
+
+                    // create cube
+
+                } else {
+
+                    const voxel = new THREE.Mesh( cubeGeo, cubeMaterial );
+                    voxel.position.copy( intersect.point ).add( intersect.face.normal );
+                    voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+                    scene.add( voxel );
+
+                    objects.push( voxel );
+
+                }
+
+                render();
+
+            }
+
+        }
+
+        function onDocumentKeyDown( event ) {
+
+            switch ( event.keyCode ) {
+
+                case 16: isShiftDown = true; break;
+
+            }
+
+        }
+
+        function onDocumentKeyUp( event ) {
+
+            switch ( event.keyCode ) {
+
+                case 16: isShiftDown = false; break;
+
+            }
+
+        }
+
+        function render() {
+
+            renderer.render( scene, camera );
+
+        }
+
+
+        document.addEventListener( 'pointermove', onPointerMove );
+        document.addEventListener( 'pointerdown', onPointerDown );
+        document.addEventListener( 'keydown', onDocumentKeyDown );
+        document.addEventListener( 'keyup', onDocumentKeyUp );
 
         //
 
-        window.addEventListener( 'resize', this.onWindowResize );
+        window.addEventListener( 'resize', onWindowResize );
 
-        // document.addEventListener( 'click', onClick );
-        // window.addEventListener( 'keydown', onKeyDown );
-        // window.addEventListener( 'keyup', onKeyUp );
-
-        this.render();
-
-    }
-
-    onWindowResize() {
-        //
-        // camera.aspect = window.innerWidth / window.innerHeight;
-        // camera.updateProjectionMatrix();
-
-        renderer.setSize(window.innerWidth, window.innerHeight);
-
-        this.render();
-    }
-
-
-
-
-    render() {
-
-        renderer.render(scene, camera);
+        render();
 
     }
 
