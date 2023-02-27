@@ -35,6 +35,5 @@
     "fastadmin-addtabs": "~1.0.3",
     "fastadmin-selectpage": "~1.0.0",
     "fastadmin-layer": "~3.1.2",
-    "three": "*"
   }
 }

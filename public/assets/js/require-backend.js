@@ -36,7 +36,7 @@ require.config({
         'bootstrap-table-template': 'bootstrap-table-template',
         //
         // 以下的包从bower的libs目录加载
-        'jquery': '../libs/jquery/dist/jquery.min',
+        'jquery': '../libs/jquery-backend/dist/jquery.min',
         'bootstrap': '../libs/bootstrap/dist/js/bootstrap.min',
         'bootstrap-datetimepicker': '../libs/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min',
         'bootstrap-daterangepicker': '../libs/bootstrap-daterangepicker/daterangepicker',
