@@ -23,18 +23,11 @@ export default class PanelCard {
         const height = container.offsetHeight; //高度
 
         camera = new THREE.PerspectiveCamera(30, width / height, 1, 3000);
-        camera.position.set( 4.25, 1.4, - 4.5 );
+         camera.position.set( 4.25, 1.4, - 4.5 );
 
 
         scene = new THREE.Scene();
         scene.background = new THREE.Color( 0x333333 );
-        scene.fog = new THREE.Fog( 0x333333, 10, 15 );
-
-        const ambient = new THREE.AmbientLight(0xffffff, 0.4);
-        scene.add(ambient);
-        const directionalLight = new THREE.DirectionalLight( 0xffffff );
-        directionalLight.position.set( 1, 0.75, 0.5 ).normalize();
-        scene.add( directionalLight );
 
         renderer = new THREE.WebGLRenderer( { antialias: true } );
         renderer.setPixelRatio( window.devicePixelRatio );
@@ -44,11 +37,6 @@ export default class PanelCard {
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 0.85;
         container.appendChild( renderer.domElement );
-
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.addEventListener('change', function () {
-            renderer.render(scene, camera); //执行渲染操作
-        });//监听鼠标、键盘事件
 
 
         const geometry = new THREE.BoxGeometry( 1, 1, 1 );
@@ -60,33 +48,15 @@ export default class PanelCard {
         const cube = new THREE.Mesh( geometry, material );
         scene.add( cube );
 
-        const gui = new GUI();
 
-        const obj = {
-            x: 30,
-            y: 60,
-            z: 300,
-        };
-// gui界面上增加交互界面，改变obj对应属性
-        gui.add(cube.position, 'x', {
-            left: -100,
-            center: 0,
-            right: 100
-            // 左: -100,//可以用中文
-            // 中: 0,
-            // 右: 100
-        }).name('环境光强度').step(0.01).onChange(function(value){
-            cube.position.x = value;
-            // 你可以写任何你想跟着obj.x同步变化的代码
-            // 比如mesh.position.y = value;
-        });
-        gui.add(cube.position, 'y', 0, 50);
-        gui.add(cube.position, 'z', 0, 60);
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.addEventListener('change', function () {
+            renderer.render(scene, camera); //执行渲染操作
+        });//监听鼠标、键盘事件
 
         function onWindowResize() {
-            gui.domElement.style.right = '0px';
-            gui.domElement.style.width = '300px';
-
+            const width = container.offsetWidth; //宽度
+            const height = container.offsetHeight; //高度
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
 

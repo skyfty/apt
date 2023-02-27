@@ -36,20 +36,20 @@ define(['fast', 'template', 'moment'], function (Fast, Template, Moment) {
                 } else {
                     url = Fast.api.fixurl(url);
                     leftlink = top.window.$(dom.replace(/\{url\}/, url));
-                    if (leftlink.size() > 0) {
+                    if (leftlink.length > 0) {
                         var event = leftlink.parent().hasClass("active") ? "dblclick" : "click";
                         leftlink.trigger(event);
                     } else {
                         var baseurl = url.substr(0, url.indexOf("?") > -1 ? url.indexOf("?") : url.length);
                         leftlink = top.window.$(dom.replace(/\{url\}/, baseurl));
                         //能找到相对地址
-                        if (leftlink.size() > 0) {
+                        if (leftlink.length > 0) {
                             icon = typeof icon !== 'undefined' ? icon : leftlink.find("i").attr("class");
                             title = typeof title !== 'undefined' ? title : leftlink.find("span:first").text();
                             leftlink.trigger("fa.event.toggleitem");
                         }
                         var navnode = top.window.$(".nav-tabs ul li a[node-url='" + url + "']");
-                        if (navnode.size() > 0) {
+                        if (navnode.length > 0) {
                             navnode.trigger("click");
                         } else {
                             //追加新的tab
@@ -70,20 +70,20 @@ define(['fast', 'template', 'moment'], function (Fast, Template, Moment) {
                 } else {
                     var dom = "a[url='{url}']"
                     var navlink = top.window.$(dom.replace(/\{url\}/, url));
-                    if (navlink.size() === 0) {
+                    if (navlink.length === 0) {
                         url = Fast.api.fixurl(url);
                         navlink = top.window.$(dom.replace(/\{url\}/, url));
-                        if (navlink.size() === 0) {
+                        if (navlink.length === 0) {
                         } else {
                             var baseurl = url.substr(0, url.indexOf("?") > -1 ? url.indexOf("?") : url.length);
                             navlink = top.window.$(dom.replace(/\{url\}/, baseurl));
                             //能找到相对地址
-                            if (navlink.size() === 0) {
+                            if (navlink.length === 0) {
                                 navlink = top.window.$(".nav-tabs ul li a[node-url='" + url + "']");
                             }
                         }
                     }
-                    if (navlink.size() > 0 && navlink.attr('addtabs')) {
+                    if (navlink.length > 0 && navlink.attr('addtabs')) {
                         top.window.$("ul.nav-addtabs li#tab_" + navlink.attr('addtabs') + " .close-tab").trigger("click");
                     }
                 }
