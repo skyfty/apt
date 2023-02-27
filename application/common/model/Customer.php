@@ -87,6 +87,9 @@ class Customer extends Cosmetic
             if (isset($row['avatar'])) {
                 $params['avatar'] = $row['avatar'];
             }
+            if (isset($row['auth_id'])) {
+                $params['auth_id'] = $row['auth_id'];
+            }
             if (isset($row['telephone'])) {
                 $params['telephone'] = $params['username'] = $row['telephone'];
             }
@@ -108,9 +111,20 @@ class Customer extends Cosmetic
             if (isset($row['telephone'])) {
                 $params['telephone'] = $params['username'] = $row['telephone'];
             }
+
+            if (isset($row['name'])) {
+                $params['nickname'] = $row['name'];
+            }
             if (isset($row['avatar'])) {
                 $params['avatar'] = $row['avatar'];
             }
+            if (isset($row['channel_model_id'])) {
+                $params['auth_channel_id'] = $row['channel_model_id'];
+            }
+            if (isset($row['auth_id'])) {
+                $params['auth_id'] = $row['auth_id'];
+            }
+
             $params['salt'] = Random::alnum();
             $params['status'] = "normal";
             $params['jointime'] = $row['createtime'];
@@ -143,6 +157,10 @@ class Customer extends Cosmetic
 
     public function branch() {
         return $this->hasOne('branch','id','branch_model_id')->joinType("LEFT")->setEagerlyType(0);
+    }
+
+    public function channel() {
+        return $this->hasOne('channel','id','channel_model_id')->joinType("LEFT")->setEagerlyType(0);
     }
 
 

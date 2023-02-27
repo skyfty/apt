@@ -60,6 +60,7 @@ class Index extends Api
             return;
         }
         $data = $this->request->param('data', '');
+        $uid = $this->request->param('uid');
 
         $row = model("cause")->create([
             "promotion_model_id"=>$promotion['id'],
@@ -69,6 +70,7 @@ class Index extends Api
             "report_time"=>time(),
             "content"=>$data,
             "act"=>$act,
+            "uid"=>$uid,
             "ip_address"=>$this->request->ip(),
             "user_agent"=>$this->request->header('user-agent')
         ]);

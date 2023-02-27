@@ -230,6 +230,26 @@ class Auth
         return TRUE;
     }
 
+    public function authlogin($account)
+    {
+        $user = model("user")->hasWhere('customer',['auth_id'=>$account])->find();
+
+        if (!$user)
+        {
+            $this->setError('Account is incorrect');
+            return false;
+        }
+
+        if ($user->status != 'normal') {
+            $this->setError('Account is locked');
+            return false;
+        }
+        //直接登录会员
+        $this->direct($user->id);
+
+        return TRUE;
+    }
+
     public function wxlogin($openid)
     {
         $user = model("user")->hasWhere('customer',['wxopenid|wxapp_openid'=>$openid])->find();

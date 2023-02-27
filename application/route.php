@@ -16,6 +16,7 @@ return [
         '*'      => 'index',
         'apt'      => 'admin',
         'bi'      => 'bi',
+        'oss'      => 'oss',
         'dev.oss'      => 'oss',
         'dev.poke'      => 'poke',
         'madcap'      => 'madcap',
