@@ -16,22 +16,9 @@ class Auth extends Api
      *
      */
     public function index() {
-        $game = $this->request->param('game');
-        if ($game == null) {
-            $this->error("game id error");
-            return;
-        }
-        $promotion = model("promotion")->where("idcode|id", $game)->find();
-        if (!$promotion) {
-            $this->error("game is not found");
-            return;
-        }
         $channelId = $this->request->param('channel');
-
-        $compilation = model("compilation")->where("channel_model_id","eq", function($query)use($channelId) {
-            $query->table("__CHANNEL__")->where("english_name|name|idcode|id", $channelId)->field("id");
-        })->where("promotion_model_id", $promotion['id'])->find();
-        if (!$compilation) {
+        $channel = model("channel")->where("english_name|name|idcode|id", $channelId)->find();
+        if (!$channel) {
             $this->error("channel is not found");
             return;
         }
@@ -45,7 +32,7 @@ class Auth extends Api
         $user = model("user")->where("auth_id", $auth_id)->find();
         if ($user == null) {
             model("customer")->allowField(true)->create([
-                "channel_model_id"=>$channelId,
+                "channel_model_id"=>$channel['id'],
                 "anonymous"=>1,
                 "auth_id"=>$auth_id,
                 "name"=>$nickname]);
@@ -61,6 +48,4 @@ class Auth extends Api
             $this->error($msg);
         }
     }
-
-
 }
