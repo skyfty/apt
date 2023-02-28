@@ -22,6 +22,9 @@ class Cause extends Cosmetic
         self::beforeInsert($beforeupdate);self::beforeUpdate($beforeupdate);
     }
 
+    public function customer() {
+        return $this->hasOne('customer','id','customer_model_id')->joinType("LEFT")->setEagerlyType(0);
+    }
     public function promotion() {
         return $this->hasOne('promotion','id','promotion_model_id')->joinType("LEFT")->setEagerlyType(0);
     }
