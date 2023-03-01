@@ -54,13 +54,19 @@ class Index extends Api
         }
 
         $trap = $this->request->param('trap');
-        $trap = model("trap")->where("identifying|name|idcode|id", $trap)->where("promotion_model_id", $promotion['id'])->find();
+        $trap = model("trap")->where("name|idcode|id", $trap)->where("promotion_model_id", $promotion['id'])->find();
         if (!$trap) {
             $this->error("trap is not found");
             return;
         }
+        $customer_model_id = $this->request->param('uid');
+        if ($customer_model_id) {
+            $user = model("user")->get($customer_model_id);
+            if ($user) {
+                $customer_model_id = $user['customer_model_id'];
+            }
+        }
         $data = $this->request->param('data', '');
-        $uid = $this->request->param('uid');
 
         $row = model("cause")->create([
             "promotion_model_id"=>$promotion['id'],
@@ -70,7 +76,7 @@ class Index extends Api
             "report_time"=>time(),
             "content"=>$data,
             "act"=>$act,
-            "uid"=>$uid,
+            "customer_model_id"=>$customer_model_id,
             "ip_address"=>$this->request->ip(),
             "user_agent"=>$this->request->header('user-agent')
         ]);

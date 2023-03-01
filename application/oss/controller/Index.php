@@ -54,11 +54,12 @@ class Index extends Api
             $this->error(__('error'));
         }
         $oss = Oss::get($user['id']);
+
         if ($oss) {
             $data = $oss->getData();
             unset($data["user_id"], $data["_id"]);
         } else {
-            $data = [];
+            $data = ['id'=>$user['id'],'name'=>$user['nickname']];
         }
         $this->success(__('success'), $data);
     }

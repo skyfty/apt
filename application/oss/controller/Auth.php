@@ -36,7 +36,6 @@ class Auth extends Api
                 "anonymous"=>1,
                 "auth_id"=>$auth_id,
                 "name"=>$nickname]);
-
         }
         $result = $this->auth->authlogin($auth_id);
 
