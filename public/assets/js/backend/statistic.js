@@ -6,7 +6,6 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
 
                 $scope.filter = function() {
                     console.log("lskdjf");
-                    Controller.api.open
                 };
 
                 $scope.searchFieldsParams = function(param) {

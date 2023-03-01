@@ -47,7 +47,7 @@ class Statistic extends Cosmetic
             }
             return json(array("total" => $total, "rows" => collection($list)->toArray()));
         }
-        $this->assignScenery($cosmeticModel->id, ['index']);
+        $this->assignScenery($cosmeticModel->id, ['statistic']);
         return $this->view->fetch("index");
     }
 }
