@@ -1,0 +1,51 @@
+<div class="panel panel-default panel-intro" ng-controller="customer"  ng-init="sceneryInit()">
+    <div class="panel-heading">
+
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-aqua">
+                    <div class="inner">
+                        <h3>{{stat.quantity.value}}</h3>
+                        <p>玩家总数</p>
+                    </div>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <h3>{{stat.quantity.value}}</h3>
+                        <p>玩家新增(7日平均)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <h3>{{stat.quantity.value}}</h3>
+                        <p>活跃用户(7日平均)</p>
+                    </div>
+                </div>
+            </div>
+            <!-- ./col -->
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div>
+                    <ul class="nav nav-pills" id="nav-customer-echart">
+                        <li role="presentation" class="active" data-url="customer/graph/type/increased"><a href="#">玩家新增</a></li>
+                        <li role="presentation"  data-url="customer/graph/type/active"><a href="#">活跃用户</a></li>
+                        <li role="presentation" data-url="customer/graph/type/keep"><a href="#">新增用户次日留存率</a></li>
+                    </ul>
+                </div>
+                <ui-echarts id="c-echarts" data-url="graph();"  data-type="line" />
+            </div>
+        </div>
+    </div>
+</div>
+{include file="common/tmpl" /}

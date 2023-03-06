@@ -121,6 +121,7 @@ class Cosmetic extends Backend
             $v['fields'] = Sight::with('fields')->cache(!App::$debug)->where($where)->order("weigh", "asc")->select();
             $sceneryList[$v['pos']][] = $v;
         }
+        $this->assignconfig('sceneryList', $sceneryList);
 
         $allfields = [];
         foreach (Fields::where(array("model_id"=>$model_id))->cache(!App::$debug)->field('createtime,updatetime',true)->order("id", "ASC")->select() as $k=>$v) {
@@ -128,7 +129,6 @@ class Cosmetic extends Backend
         }
 
         $this->assignconfig('allFields', $allfields);
-        $this->assignconfig('sceneryList', $sceneryList);
     }
 
     public function statistic() {

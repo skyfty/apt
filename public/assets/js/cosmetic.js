@@ -67,9 +67,24 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                 showHtml = showHtml.join(",");
                 return showHtml;
             },
+
+            getCondition:function(type) {
+                var condition = "LIKE %...%";
+                if(type==="datetime" || type === "date" || type==="time") {
+                    condition = "between time";
+                }else if(type==="checkbox"||type==="radio"||type==="select"||type==="selects"){
+                    condition = "IN(...)";
+                }else if(type==="number") {
+                    condition = "=";
+                }else if(type==="model") {
+                    condition = "QJSON";
+                }
+                return condition;
+            },
+
             formatter:function(field, data, row) {
                 var self = this;
-                if (field.type == 'radio' || field.type == 'checkbox' || field.type == 'select' || field.type == 'selects') {
+                if (field.type === 'radio' || field.type == 'checkbox' || field.type == 'select' || field.type == 'selects') {
                     if (field.extend == "member" && field.content) {
                         data = row[field.content];
                     } else {
@@ -250,14 +265,14 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
             });
 
             angular.forEach(Config.sceneryList['index'], function(scenery){
-                AngularApp.controller("landscape-" + scenery.name, function($scope, $compile,$timeout) {
+                AngularApp.controller("landscape-" + scenery.name, function($scope, $compile,$timeout,$parse) {
                     $scope.sceneryInit = function(idx) {
                         $scope.scenery = $scope.scenerys[idx];
                         $scope.fields = $scope.scenery.fields;
 
                         $scope.$on('shownTab', function(event,data) {
                             if (typeof self['lands'][$scope.scenery.name] == "function") {
-                                self['lands'][$scope.scenery.name]($scope, $compile,$timeout, data);
+                                self['lands'][$scope.scenery.name]($scope, $compile,$timeout, data,$parse);
                             }
                             $scope.$broadcast("shownTable");
                         });
@@ -546,12 +561,12 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
             link: function($scope, $element, $attrs) {
                 $element.data("e-selected", function(data){
                     $scope.$apply(function(){
-                        $parse($attrs.model).assign($scope.$parent, data.id);
+                        $parse($attrs.model).assign($attrs.parentScope?$scope.$parent:$scope, data);
                     });
                 });
                 $element.data("e-clear", function(data){
                     $scope.$apply(function(){
-                        $parse($attrs.model).assign($scope.$parent,null);
+                        $parse($attrs.model).assign($attrs.parentScope?$scope.$parent:$scope,null);
                     });
                 });
             }
@@ -684,17 +699,17 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                 var fieldFormatter = $parse("fieldFormatter")($scope);
 
                 var fieldName  = "row." + field.name;
-                if (field.type == "model" || field.type == "mztree") {
+                if (field.type === "model" || field.type === "mztree") {
                     fieldName += "_model_id";
-                }else if (field.type == "cascader") {
+                }else if (field.type === "cascader") {
                     fieldName += "_cascader_id";
                 }
                 $scope.$watch(fieldName, function(){
                     var row = $parse($attrs.model)($scope);
-                    if (field.type == "model" || field.type == "cascader") {
+                    if (field.type === "model" || field.type === "cascader") {
                         var data = row;
                     } else {
-                        if (field.relevance != "") {
+                        if (field.relevance !== "") {
                             var data = row[field.relevance][field.name];
                         } else {
                             var data = row[field.name];
@@ -721,9 +736,9 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                     if (field) {
                         var html = Template("spotcircus-tmpl",{f:field, d:$attrs.fieldModel});
                         var form = $compile(html)($scope);
-                        if(field.type=="datetime" || field.type == "date" || field.type=="time") {
+                        if(field.type==="datetime" || field.type === "date" || field.type==="time") {
                             Form.events.daterangepicker(form);
-                        }else if(field.type=="checkbox"||field.type=="radio"||field.type=="select"||field.type=="selects"){
+                        }else if(field.type==="checkbox"||field.type==="radio"||field.type==="select"||field.type==="selects"){
                             Form.events.selectpicker(form);
                         }
                         $element.html(form);
@@ -744,16 +759,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                         var field = $parse($attrs.ngModel + ".field")($scope);
                         $scope.$apply(function(){
                             $parse($attrs.ngModel + ".value").assign($scope, "");
-                            var condition = "LIKE %...%";
-                            if(field.type=="datetime" || field.type == "date" || field.type=="time") {
-                                condition = "between time";
-                            }else if(field.type=="checkbox"||field.type=="radio"||field.type=="select"||field.type=="selects"){
-                                condition = "IN(...)";
-                            }else if(field.type=="number") {
-                                condition = "=";
-                            }else if(field.type=="model") {
-                                condition = "QJSON";
-                            }
+                            var condition = Cosmetic.api.getCondition(field.type);
                             $parse($attrs.ngModel + ".condition").assign($scope, condition);
                         });
                     },0);
@@ -912,7 +918,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
         return function (collection, state) {
             var newCollection = [];
             angular.forEach(collection, function(f){
-                if ((state=="edit"?f.editstatus:f.newstatus) != "disabled") {
+                if ((state=="edit"?f.editstatus:f.newstatus) !== "disabled") {
                     newCollection.push(f);
                 }
             });
@@ -922,13 +928,13 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
 
     window.AngularApp.filter('visibleField', function () {
         return function (field, state) {
-            return (state=="edit"?field.editstatus:field.newstatus) != "hidden";
+            return (state=="edit"?field.editstatus:field.newstatus) !== "hidden";
         };
     });
 
     window.AngularApp.filter('selectOption', function () {
         return function (field, state) {
-            return (state=="edit"?field.editstatus:field.newstatus) != "hidden";
+            return (state=="edit"?field.editstatus:field.newstatus) !== "hidden";
         };
     });
 
@@ -955,7 +961,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                 });
 
                 scope.$on('butterbarEvent', function(event, args) {
-                    if (args.show == true) {
+                    if (args.show === true) {
                         $anchorScroll();
                         el.removeClass('hide').addClass('active');
                     } else {
@@ -971,9 +977,9 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
             controller: function($scope,$element,$attrs,$parse, $timeout){
                 var field = $parse($attrs.validatorObserve)($scope);
                 var rate = function(ishide) {
-                    if (field.type == "model" || field.type == "mztree") {
+                    if (field.type === "model" || field.type === "mztree") {
                         var ele = $('input[name="row['+field.name+'_model_id]"]', $element);
-                    }else if (field.type == "cascader"){
+                    }else if (field.type === "cascader"){
                         var ele = $('input[name="row['+field.name+'_cascader_id]"]', $element);
                     } else {
                         var ele = $('.form-field-'+field.name, $element);
@@ -1008,7 +1014,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                 });
                 $scope.$on("cleanSearch", function($event, data) {
                     var selec = $element.selectpicker('val');
-                    if (selec == null || selec.length == 0) {
+                    if (selec == null || selec.length === 0) {
                         $timeout(function() {
                             angular.element("#" + $attrs.filterCondition).scope().$broadcast('refurbish');
                         }, 100);
@@ -1033,7 +1039,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                     var data = $parse($attrs.ngModel)($scope);
                     var lat,lng;
                     var locationData = data.split(",");
-                    if (locationData && locationData.length == 3) {
+                    if (locationData && locationData.length === 3) {
                         lat = locationData[1];
                         lng = locationData[2];
                     }
@@ -1079,12 +1085,12 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
 
                     var setting = {
                         edit: {
-                            enable: ($attr.editable?($attr.editable == "true"):false),
+                            enable: ($attr.editable?($attr.editable === "true"):false),
                             showRemoveBtn: ($attr.showRemove?$attr.showRemove:false),
                             showRenameBtn: ($attr.showRename?$attr.showRename:false),
                             drag:{
-                                isCopy: ($attr.editDragCopy?($attr.editDragCopy == "true"):false),
-                                isMove: ($attr.editDragMove?($attr.editDragMove == "true"):false),
+                                isCopy: ($attr.editDragCopy?($attr.editDragCopy === "true"):false),
+                                isMove: ($attr.editDragMove?($attr.editDragMove === "true"):false),
                                 autoExpandTrigger: true,
                                 prev: function(treeId, nodes, targetNode) {
                                     var pNode = targetNode.getParentNode();
@@ -1228,7 +1234,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                     }
 
                     setting['check'] = {};
-                    if ($attr.check == "check") {
+                    if ($attr.check === "check") {
                         setting['check']['enable'] = true;
                         setting['check']['autoCheckTrigger'] = true;
 
@@ -1457,7 +1463,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                 var searchFields = $parse($attrs.searchFields)($scope);
                 $scope.searchFields = [];
                 angular.forEach(searchFields, function(f){
-                    if ($.inArray(f.type, ['image','images','file','files']) == -1) {
+                    if ($.inArray(f.type, ['image','images','file','files']) === -1) {
                         $scope.searchFields.push(f);
                     }
                 });
@@ -1536,7 +1542,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                         columns.push(data);
                     });
 
-                    if ($attrs['nooperate'] != "true") {
+                    if ($attrs['nooperate'] !== "true") {
                         var operateFormatter = $parse($attrs.operateFormatter)($scope);
 
                         //追加操作字段
@@ -1647,7 +1653,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
 
                     if ($scope.groupSearchCondition != null) {
                         var content = $scope.groupSearchCondition.content?$scope.groupSearchCondition.content:[];
-                        if ($scope.groupSearchCondition.type == "cond") {
+                        if ($scope.groupSearchCondition.type === "cond") {
                             $.each(content, function(k,v){
                                 v.field = $scope.allFields[v.field];
                                 complexSearchCondition.push(v);
@@ -1686,7 +1692,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                                 fieldName = $scope.complexAllFields($scope.fields);;
                             }
                             if (co.field.type === "model" || co.field.type === "mztree") {
-                                fieldName = fieldName + "_model_keyword";
+                                fieldName = fieldName + "_model_id";
                             }
                             if (co.field.type === "cascader") {
                                 fieldName = fieldName + "_cascader_keyword";
@@ -1703,14 +1709,14 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                     params.op = $.extend({},params.op?JSON.parse(params.op):{}, op);
                     if (params.sort) {
                         $.each(fields, function (i, j) {
-                            if(j.name == params.sort){
-                                if (j.type=="model"|| j.type === "mztree") {
+                            if(j.name === params.sort){
+                                if (j.type==="model"|| j.type === "mztree") {
                                     params.sort = params.sort + "_model_id";
                                 }
-                                if (j.type=="cascader") {
+                                if (j.type==="cascader") {
                                     params.sort = params.sort + "_cascader_id";
                                 }
-                                if (j.relevance != "") {
+                                if (j.relevance !== "") {
                                     params.sort = j.relevance+"."+params.sort;
                                 }
                                 return false;
@@ -1784,9 +1790,9 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                         if (f.relevance) {
                             fieldName = f.relevance+"."+fieldName;
                         }
-                        if (f.type == "model") {
+                        if (f.type === "model") {
                             fieldArr.push(fieldName + "_model_keyword")
-                        } else if ($.inArray(f.type, ["text", "string"]) != -1) {
+                        } else if ($.inArray(f.type, ["text", "string"]) !== -1) {
                             fieldArr.push(fieldName)
                         }
                     });
@@ -1800,13 +1806,19 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
 
     window.AngularApp.directive("uiEcharts", function() {
         return {
-            controller: function($scope,$element,$attrs, $compile,$timeout) {
-                var html = Template('echarts-tmpl', {});
+            controller: function($scope,$element,$attrs, $compile,$parse,$timeout) {
+                let template = $attrs.template;
+                if (typeof  template !== "string") {
+                    template = 'echarts-tmpl';
+                }
+                var html = Template(template, {});
+
+
                 $element.html($compile(html)($scope));
                 require(['echarts','echarts-theme'], function (Echarts,undefined) {
                     var echartdiv = $(".echarts", $element);
                     var myChart = Echarts.init(echartdiv[0], 'walden');
-                    var magicType = ($attrs.type == "line"?['line', 'bar']:['pie', 'funnel']);
+                    var magicType = ($attrs.type === "line"?['line', 'bar']:['pie', 'funnel']);
 
                     // 指定图表的配置项和数据
                     var option = {
@@ -1861,7 +1873,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                             bottom: 30
                         }]
                     };
-                    if ($attrs.type == "line") {
+                    if ($attrs.type === "line") {
                         option['tooltip'] = {
                             trigger: 'axis',
                         };
@@ -1881,9 +1893,16 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
 
                     var datetimerange = $(".datetimerange", $element);
                     datetimerange.on("blur", function () {
+                        let url = $parse($attrs.url)($scope);
+                        if (typeof url == "function") {
+                            url = url();
+                        } else if (typeof  url != "string") {
+                            url = $attrs.url;
+                        }
                         var date = $(this).val();
                         Fast.api.ajax({
-                            url: $attrs.url, type: 'GET',
+                            url: url,
+                            type: 'GET',
                             data: {
                                 scope: date
                             }
@@ -1891,6 +1910,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                             myChart.setOption(data);
                             return false;
                         });
+
                     });
                     $(".btn-refresh", $element).on("click", function () {
                         datetimerange.trigger("blur");
@@ -1903,6 +1923,10 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                         obj.endDate = dates[1];
                         obj.clickApply();
                     },1000);
+
+                    $scope.refresh = function(){
+                        datetimerange.trigger("blur");
+                    };
                 });
             }
         };

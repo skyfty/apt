@@ -2,7 +2,10 @@
 
 namespace app\admin\controller;
 
+use app\admin\model\Fields;
 use app\admin\model\Modelx;
+use app\admin\model\Scenery;
+use app\admin\model\Sight;
 use app\common\controller\Backend;
 use think\App;
 
@@ -47,7 +50,77 @@ class Statistic extends Cosmetic
             }
             return json(array("total" => $total, "rows" => collection($list)->toArray()));
         }
-        $this->assignScenery($cosmeticModel->id, ['statistic']);
+        $this->assignScenery($cosmeticModel->id, ['index']);
         return $this->view->fetch("index");
+    }
+
+
+    public function customer() {
+        $this->request->filter(['strip_tags']);
+
+        return $this->view->fetch("customer");
+    }
+
+    public function channel() {
+        $this->request->filter(['strip_tags']);
+        if ($this->request->isAjax()) {
+
+        }
+        return $this->view->fetch("channel");
+    }
+
+
+    public function graph() {
+        $data=[];
+
+        $type = $this->request->param("type", "increased");
+        $scope = $this->request->get("scope", '');
+        if (!$scope) {
+            return [];
+        }
+        $scope = explode(" - ", $scope);
+        $scope[0] = strtotime($scope[0]);$scope[1] = strtotime($scope[1]);
+
+        $xAxis = [
+            "type"=>"category",
+            "boundaryGap"=>false,
+        ];
+        for($stepscope = $scope[0];$stepscope<=$scope[1];) {
+            $stepend = strtotime('+1 day',$stepscope);
+            $xAxis['data'][] = date('m-d',$stepscope);
+            $stepscope = $stepend;
+        }
+        $data['xAxis'][] = $xAxis;
+
+        $legend = [];
+        $cheque = [['name'=>'新增']];
+        foreach($cheque as $ck=>$cv) {
+            $legend[] = $cv['name'];
+            $series=[
+                "type"=>'line',
+                "name"=>$cv['name'],
+                "data"=>[],
+            ];
+            for($stepscope = $scope[0]; $stepscope<=$scope[1];) {
+                $stepend = strtotime('+1 day',$stepscope);
+                $this->model->where("createtime", "BETWEEN", [$stepscope, $stepend]);
+                switch ($type) {
+                    case "increased": {
+                        $series['data'][] = $this->model->count();
+                        break;
+                    }
+                    case "sum": {
+                        $field = $this->request->param("field", "amount");
+                        $series['data'][] = $this->model->sum($field);
+                        break;
+                    }
+                }
+                $stepscope = $stepend;
+            }
+            $data['series'][] = $series;
+        }
+        $data['legend']['data'] = $legend;
+
+        $this->result($data,1);
     }
 }

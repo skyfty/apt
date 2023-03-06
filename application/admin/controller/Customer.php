@@ -12,7 +12,7 @@ use app\admin\model\Sight;
 
 class Customer extends Cosmetic
 {
-    protected $selectpageFields = ['name', 'idcode', 'slug', 'id', 'status'];
+    protected $selectpageFields = ['name', 'idcode', 'slug', 'id'];
     protected $searchFields = ['name', 'idcode', 'slug'];
     protected $selectpageShowFields = ['name', 'idcode'];
 
@@ -50,5 +50,60 @@ class Customer extends Cosmetic
         $model->where("customer.branch_model_id", $branch_model_id);
 
         return $model;
+    }
+
+
+    public function graph() {
+        $data=[];
+
+        $type = $this->request->param("type", "increased");
+        $scope = $this->request->get("scope", '');
+        if (!$scope) {
+            return [];
+        }
+        $scope = explode(" - ", $scope);
+        $scope[0] = strtotime($scope[0]);$scope[1] = strtotime($scope[1]);
+
+        $xAxis = [
+            "type"=>"category",
+            "boundaryGap"=>false,
+        ];
+        for($stepscope = $scope[0];$stepscope<=$scope[1];) {
+            $stepend = strtotime('+1 day',$stepscope);
+            $xAxis['data'][] = date('m-d',$stepscope);
+            $stepscope = $stepend;
+        }
+        $data['xAxis'][] = $xAxis;
+
+        $legend = [];
+        $cheque = [['name'=>'新增']];
+        foreach($cheque as $ck=>$cv) {
+            $legend[] = $cv['name'];
+            $series=[
+                "type"=>'line',
+                "name"=>$cv['name'],
+                "data"=>[],
+            ];
+            for($stepscope = $scope[0]; $stepscope<=$scope[1];) {
+                $stepend = strtotime('+1 day',$stepscope);
+                $this->model->where("createtime", "BETWEEN", [$stepscope, $stepend]);
+                switch ($type) {
+                    case "increased": {
+                        $series['data'][] = $this->model->count();
+                        break;
+                    }
+                    case "sum": {
+                        $field = $this->request->param("field", "amount");
+                        $series['data'][] = $this->model->sum($field);
+                        break;
+                    }
+                }
+                $stepscope = $stepend;
+            }
+            $data['series'][] = $series;
+        }
+        $data['legend']['data'] = $legend;
+
+        $this->result($data,1);
     }
 }

@@ -13,14 +13,76 @@
         <div  class="tab-content">
             <div class="tab-pane fade in" id="tab-index" ng-controller="landscape-index" ng-init="sceneryInit('index')">
                 <div class="widget-body no-padding  table-cosmetic">
+                    <div class="filter-toolbar">
+                        <div class="commonsearch-table">
+                            <form class="form-horizontal form-commonsearch" method="post" action="">
+                                <div class="row">
+
+                                    <div class="form-group col-xs-4 ">
+                                        <label for="create_time" class="control-label col-xs-2">游戏</label>
+                                        <div class="col-xs-10">
+                                            <input id="search-promotion" selectpage style="width: 100%;" data-name="cause.promotion"  data-type="model" parent-scope="false"  data-relevance=""  class="form-control selectpage" placeholder="请选择游戏" model="search.cause.promotion"  data-source="promotion/index"  data-primary-key="id" data-multiple="true" type="text" value="">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-xs-4 ">
+                                        <label for="create_time" class="control-label col-xs-2">玩家</label>
+                                        <div class="col-xs-10">
+                                            <input id="search-customer" selectpage style="width: 100%;" data-name="cause.customer"  data-type="model" parent-scope="false"  data-relevance=""  class="form-control selectpage" placeholder="请选择项目" model="search.cause.customer"  data-source="customer/index"  data-primary-key="id" data-multiple="true" type="text" value="">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-xs-4 ">
+                                        <label for="create_time" class="control-label col-xs-2">渠道</label>
+                                        <div class="col-xs-10">
+                                            <input id="search-channel" selectpage style="width: 100%;" data-name="cause.channel"  data-type="model" parent-scope="false"  data-relevance=""  class="form-control selectpage" placeholder="请选择项目" model="search.cause.channel"  data-source="channel/index"  data-primary-key="id" data-multiple="true" type="text" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-4">
+                                        <label for="create_time" class="control-label col-xs-2">创建时间</label>
+                                        <div class="col-xs-10">
+                                            <div class="input-group" style="position: relative;">
+                                                <input type="text" class="form-control input-inline datetimerange" datetimerange ng-model="search.cause.createtime" data-name="cause.createtime" data-type="datetime"  data-relevance=""/>
+                                                <a href="javascript:void(0);" title="清除内容"  class="input-group-addon" ng-click="search.cause.createtime = '';searchTable();">
+                                                    <span class="fa fa-calendar"></span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-xs-4 ">
+                                        <label for="create_time" class="control-label col-xs-2">统计项目</label>
+                                        <div class="col-xs-10">
+                                            <input id="search-trap" selectpage style="width: 100%;" data-name="cause.trap"  data-type="model" parent-scope="false"  data-relevance=""  class="form-control selectpage" placeholder="请选择项目" model="search.cause.trap"  data-source="trap/index"  data-primary-key="id" data-multiple="true" type="text" value="">
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-xs-4 ">
+                                        <label for="create_time" class="control-label col-xs-2">统计行为</label>
+                                        <div class="col-xs-10">
+                                            {:build_field_select("type","trap",[],["ng-model"=>"search.cause.type",  "data-relevance"=>"trap"])}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 ">
+                                        <button type="button" class="btn btn-success" formnovalidate="" ng-click="filter();">提交</button>
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                     <div id="toolbar-index" class="toolbar">
-                        {:build_toolbar(['refresh'],[], 'cause')}
+                        {:build_toolbar(['refresh'],[], 'statistic')}
                         <a href="javascript:;" class="btn btn-default btn-filter" ng-click="filter();" title="添加" ><i class="fa fa-filter"></i> </a>
 
                     </div>
                     <table id="table-index" ui-formidable="fields"
                            data-fields="fields"
-                           data-url="cause/index"
+                           data-url="statistic/index"
                            data-search-fields="allFields"
                            data-toolbar="toolbar-index"
                            data-query-params="searchFieldsParams"

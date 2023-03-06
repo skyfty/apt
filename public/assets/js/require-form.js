@@ -112,6 +112,7 @@ define(['jquery', 'bootstrap', 'upload', 'validator', 'moment'], function ($, un
                     require(['selectpage'], function () {
                         $(".selectpage", form).each(function () {
                             var self = this;
+                            let self_id = self.id;
                             var autoSelectFirst = $(this).data("auto-select-first");
                             autoSelectFirst = autoSelectFirst ? autoSelectFirst : false;
 
@@ -121,12 +122,20 @@ define(['jquery', 'bootstrap', 'upload', 'validator', 'moment'], function ($, un
                                     data.totalRow = typeof data.total !== 'undefined' ? data.total : (typeof data.totalRow !== 'undefined' ? data.totalRow : data.list.length);
                                     return data;
                                 },
-                                eSelect:function(data) {
-                                    var selected = $(self).data("e-selected");
-                                    if (selected) {
-                                        selected.call(self, data);
-                                    }
-                                },
+                                // eSelect:function(data, cc) {
+                                //     var selected = $(self).data("e-selected");
+                                //     if (selected) {
+                                //         selected.call(self, data, cc);
+                                //     }
+                                // },
+                                // eTagRemove:function(datas, cc) {
+                                //     if(datas && datas.length){
+                                //         var remove = $(self).data("e-remove");
+                                //         if (remove) {
+                                //             remove.call(self, datas, cc);
+                                //         }
+                                //     }
+                                // },
                                 autoSelectFirst:autoSelectFirst
                             };
                             var formatItem  = $(this).data('format-item');
@@ -141,6 +150,14 @@ define(['jquery', 'bootstrap', 'upload', 'validator', 'moment'], function ($, un
                                 options.params = params;
                             }
                             $(this).selectPage(options);
+
+                            $("#" + self_id).on("change", function(){
+                                let val = $(this).val();
+                                var selected = $(self).data("e-selected");
+                                if (selected) {
+                                    selected.call(self, val);
+                                }
+                            });
                         });
 
                         //给隐藏的元素添加上validate验证触发事件

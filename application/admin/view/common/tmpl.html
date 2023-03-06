@@ -234,19 +234,23 @@
 </div>
 </script>
 
+
+<script id="datetimerange-tmpl" type="text/html">
+    <div class="input-group"  style="width:100%;">
+        <span class="input-group-addon" style="width: 20px;">
+            <a href="javascript:;" class="btn-refresh">
+                <i class="fa fa-calendar"></i>
+            </a>
+        </span>
+        <input type="text" class="form-control input-inline datetimerange" placeholder="指定日期"/>
+    </div>
+</script>
+
 <script id="echarts-tmpl" type="text/html">
     <div>
         <div style="margin: 10px 0;">
             <form action="" role="form" novalidate class="form-inline">
-
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <a href="javascript:;" class="btn-refresh">
-                            <i class="fa fa-calendar"></i>
-                        </a>
-                    </span>
-                    <input type="text" class="form-control input-inline datetimerange" placeholder="指定日期" style="width:270px;"/>
-                </div>
+                <%include('datetimerange-tmpl')%>
             </form>
         </div>
         <div class="echarts" style="height:400px;width:100%;"></div>

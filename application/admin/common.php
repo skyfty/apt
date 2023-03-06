@@ -264,6 +264,30 @@ if (!function_exists('build_branch_select')) {
     }
 }
 
+if (!function_exists('build_field_select')) {
+
+    /**
+     * 生成下拉列表
+     * @param string $name
+     * @param mixed $options
+     * @param mixed $selected
+     * @param mixed $attr
+     * @return string
+     */
+    function build_field_select($name, $model, $selected = [], $attr = [])
+    {
+        $fielddata = listfield($model, $name);
+
+        $attr = array_merge([
+            'id' => "c-{$name}",
+            'class' => 'form-control selectpicker',
+            'live-search'=>'true',
+        ],$attr);
+        $selected = is_array($selected) ? $selected : explode(',', $selected);
+        return Form::selects($name, $fielddata, $selected, $attr);
+    }
+}
+
 function formatPresetParams($params) {
     $detail = [];
     foreach(['primary','second','third','entire'] as $mv){
