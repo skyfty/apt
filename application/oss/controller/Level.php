@@ -18,7 +18,7 @@ class Level extends Api
             array_splice($name,0,1);
         }
         if ($name_length == 2) {
-            $pokebag = model("pokebag")->where("id|idcode|name", $name[0])->where("site", $site)->find();
+            $pokebag = model("pokebag")->where("id|idcode|name", $name[0])->where("site", $site)->where("game", $game_table)->find();
             if ($pokebag == null) {
                 $this->result("not exist", [],-1,"json");
             }
