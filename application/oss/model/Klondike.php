@@ -16,8 +16,17 @@ class Klondike extends   \app\common\model\Cosmetic
 
     }
     public function formatLevel() {
+        $json = json_decode($this['game'], true);
+        $json['piles'] = $json['tableau piles'];
+        unset($json['tableau piles']);
+        $piles = [];
+        foreach ($json['piles'] as $k=>$v) {
+            array_push($piles, ["cards"=>$v]);
+        }
+        $json['piles'] = $piles;
+
         return  [
-            'game'=>json_decode($this['game'], true),
+            'composition'=>$json,
             'moves'=>$this['moves']
         ];
     }
