@@ -55,8 +55,65 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                 Form.api.bindevent($("div[ng-controller='index']"));
             },
         },
+        trap: function () {
+            AngularApp.controller("trap", function($scope, $compile,$timeout) {
+                var table = $("#table-trap");
+
+                $scope.$watch("search.promotion", function($new){
+                    if ($new) {
+                        table.bootstrapTable('refresh', {});
+                    }
+                });
+
+                // 初始化表格参数配置
+                Table.api.init({
+                    extend: {
+                        add_url: '',
+                        index_url: 'statistic/trap',
+                        del_url: '',
+                        table: 'statistic',
+                    }
+                });
+
+                var tableOptions = {
+                    toolbar: "#toolbar-trap",
+                    url: $.fn.bootstrapTable.defaults.extend.index_url,
+                    pk: 'id',
+                    columns: [
+                        [
+                            {field: 'title', title: '事件名称', align: 'left',sortable:true},
+                            {field: 'increased', title: '昨日消息数', align: 'left',sortable:true},
+                            {field: 'active', title: '今日消息数', align: 'left',sortable:true},
+                            {
+                                field: 'id',
+                                title: __('Operate'),
+                                align: 'center',
+                                table: table,
+                                formatter: Controller.api.formatter.operate,
+                            }
+                        ]
+                    ],
+                    queryParams: function (params) {
+                        if ($scope.search && $scope.search.promotion) {
+                            params.custom = {'promotion_model_id':$scope.search.promotion};
+                        }
+                        return params;
+                    },
+                    search: false, //是否启用快速搜索
+                    commonSearch: false, //是否启用通用搜索
+                    showExport: false,
+                    showToggle: false,
+
+                };
+                table.bootstrapTable(tableOptions);
+                Table.api.bindevent(table);
+                Form.api.bindevent($("div[ng-controller='trap']"));
+            });
+        },
         customer: function () {
             AngularApp.controller("customer", function($scope, $compile,$timeout) {
+                var table = $("#table-customer");
+
                 $scope.graph = function(){
                     let url = $("#nav-customer-echart [role='presentation'].active").data("url");
                     return url;
@@ -66,7 +123,46 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                     $("#nav-customer-echart [role='presentation']").removeClass("active");
                     $(this).addClass("active");
                     angular.element("#c-echarts").scope().refresh();
+                    table.bootstrapTable('refresh', {});
                 });
+
+                // 初始化表格参数配置
+                Table.api.init({
+                    extend: {
+                        add_url: '',
+                        index_url: 'statistic/customer',
+                        del_url: '',
+                        table: 'statistic',
+                    }
+                });
+
+                var tableOptions = {
+                    toolbar: "#toolbar-customer",
+                    url: $.fn.bootstrapTable.defaults.extend.index_url,
+                    pk: 'id',
+                    columns: [
+                        [
+                            {field: 'title', title: '渠道名称', align: 'left',sortable:true},
+                            {field: 'increased', title: '新增用户', align: 'left',sortable:true},
+                            {field: 'active', title: '活跃用户', align: 'left',sortable:true},
+                            {field: 'total', title: '累计用户', align: 'left',sortable:true},
+
+                        ]
+                    ],
+                    queryParams: function (params) {
+
+                        return params;
+                    },
+                    search: false, //是否启用快速搜索
+                    commonSearch: false, //是否启用通用搜索
+                    showExport: false,
+                    showToggle: false,
+
+                };
+                // 初始化表格
+                table.bootstrapTable(tableOptions);
+                // 为表格绑定事件
+                Table.api.bindevent(table);
             });
         },
 
@@ -110,11 +206,10 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                     pk: 'id',
                     columns: [
                         [
-                            {checkbox: true},
-                            {field: 'title', title: '渠道名称', align: 'left'},
-                            {field: 'title', title: '新增用户', align: 'left'},
-                            {field: 'title', title: '活跃用户', align: 'left'},
-                            {field: 'title', title: '累计用户', align: 'left'},
+                            {field: 'title', title: '渠道名称', align: 'left',sortable:true},
+                            {field: 'increased', title: '新增用户', align: 'left',sortable:true},
+                            {field: 'active', title: '活跃用户', align: 'left',sortable:true},
+                            {field: 'total', title: '累计用户', align: 'left',sortable:true},
 
                         ]
                     ],
@@ -125,6 +220,8 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                     search: false, //是否启用快速搜索
                     commonSearch: false, //是否启用通用搜索
                     showExport: false,
+                    showToggle: false,
+
                 };
                 // 初始化表格
                 table.bootstrapTable(tableOptions);

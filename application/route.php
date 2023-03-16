@@ -20,6 +20,7 @@ return [
         'dev.oss'      => 'oss',
         'dev.poke'      => 'poke',
         'madcap'      => 'madcap',
+        'poke'      => 'poke',
 
     ],
     '__alias__'   => [

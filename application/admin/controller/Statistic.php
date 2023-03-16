@@ -54,16 +54,49 @@ class Statistic extends Cosmetic
         return $this->view->fetch("index");
     }
 
+    public function trap() {
+        $this->request->filter(['strip_tags']);
+        if ($this->request->isAjax()) {
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            $list = [];
+            $channels = model("channel")->order($sort, $order)->limit($offset, $limit)->select();
+            foreach ($channels as $k=>$v) {
+                array_push($list, ['title'=>$v['name'],'id'=>$v['id']]);
+            }
+            $total = count($channels);
+            return json(array("total" => $total, "rows" => collection($list)->toArray()));
+
+        }
+        return $this->view->fetch("trap");
+    }
 
     public function customer() {
         $this->request->filter(['strip_tags']);
+        if ($this->request->isAjax()) {
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            $list = [];
+            $channels = model("channel")->order($sort, $order)->limit($offset, $limit)->select();
+            foreach ($channels as $k=>$v) {
+                array_push($list, ['title'=>$v['name']]);
+            }
+            $total = count($channels);
+            return json(array("total" => $total, "rows" => collection($list)->toArray()));
 
+        }
         return $this->view->fetch("customer");
     }
 
     public function channel() {
         $this->request->filter(['strip_tags']);
         if ($this->request->isAjax()) {
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            $list = [];
+            $channels = model("channel")->order($sort, $order)->limit($offset, $limit)->select();
+            foreach ($channels as $k=>$v) {
+                array_push($list, ['title'=>$v['name']]);
+            }
+            $total = count($channels);
+            return json(array("total" => $total, "rows" => collection($list)->toArray()));
 
         }
         return $this->view->fetch("channel");

@@ -1,0 +1,37 @@
+<div ng-controller="trap">
+    <div class="row">
+        <div class="form-group col-xs-12">
+            <div class="input-group"  style="width:100%;">
+                <span class="input-group-addon" style="width: 20px;">
+                    <a href="javascript:;">
+                        <i class="fa fa-gamepad"></i>
+                    </a>
+                </span>
+                <input id="search-promotion" selectpage class="form-control selectpage" model="search.promotion"  placeholder="选择游戏" data-source="promotion/index"  data-primary-key="id" type="text" value="">
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default panel-intro">
+        <div class="panel-heading">
+            <div class="panel-lead"><em>明细数据</em></div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div id="toolbar-trap" class="toolbar">
+                        <div class="row">
+                            <div class="col-md-2">
+                                {:build_toolbar(['refresh'],[])}
+                            </div>
+                        </div>
+                    </div>
+                    <table id="table-trap" class="table table-striped table-bordered table-hover text-nowrap" width="100%">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{include file="common/tmpl" /}

@@ -12,5 +12,13 @@ class Poke extends   \app\common\model\Poke
     {
 
     }
+    public function formatLevel() {
+        return  [
+            'composition'=>json_decode($this['composition'], true),
+            'params'=>json_decode($this['params'], true),
+            'stage'=>json_decode($this['stage'], true),
+            'underpan'=>json_decode($this['underpan'], true),
+        ];
+    }
 
 }
