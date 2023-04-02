@@ -186,6 +186,24 @@ define(['validator-core', 'validator-lang'], function (Validator, undefined) {
                 }
                 return isValid || "请填写正确的公司简称";
             },
+            // 公司简称
+            crystal: function(element) {
+                var value = element.value,
+                    isValid = true,
+                    rFormat = /^[A-Za-z\d]+$/;
+                if (!value) {
+                    return isValid;
+                }
+
+                if (value.length > 100) {
+                    return "名称长度错误";
+                }
+
+                if (!rFormat.test(value)) {
+                    isValid = false;
+                }
+                return isValid || "请填写名称";
+            },
         }
     });
     return Validator;
