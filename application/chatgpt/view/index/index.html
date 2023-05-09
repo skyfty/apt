@@ -9,502 +9,120 @@
 
     <link rel="shortcut icon" href="__CDN__/assets/img/favicon.ico" />
     <!-- Loading Bootstrap -->
-    <link href="__CDN__/assets/css/poke.css?v={$site.version}" rel="stylesheet">
+    <link href="__CDN__/assets/css/chatgpt.css?v={$site.version}" rel="stylesheet">
+    <script src="__CDN__/assets/libs/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="__CDN__/assets/libs/angular/angular.min.js"></script>
 
     <script type="text/javascript">
         var require = {
             config:  {$config|json_encode},
         };
-        var pokebags = {$pokebags|json_encode};
-
     </script>
-    <style type="text/css">
-
-        /*#panel-card {*/
-        /*    transform: scale(0.5) translate(200px, 100px);*/
-        /*}*/
-
-    </style>
 </head>
 
-<body class="easyui-layout" onselectstart="return false">
+<body class="default-theme" onselectstart="return false">
 
 {if condition="$admin == null"}
-<div id="window-login" class="easyui-window" title="登录" style="width:414px;height:291px;display: none;"
-     data-options="modal:true,resizable:false,collapsible:false,minimizable:false,maximizable:false,closable:false,inline:false">
-    <form id="form-login" method="post">
-        <div class="easyui-panel" style="width:400px;padding:50px 60px">
+<div id="window-login" title="登录" style="width:414px;height:291px;">
+    <form id="form-login" method="post" action="/index/login">
+        <div style="width:400px;padding:50px 60px">
             <div style="margin-bottom:20px">
-                <input class="easyui-textbox" id="username" prompt="登录名" iconWidth="28" style="width:100%;height:34px;padding:10px;">
+                <input name="username" style="width:100%;height:34px;padding:10px;">
             </div>
             <div style="margin-bottom:20px">
-                <input class="easyui-passwordbox" id="password" prompt="密码" iconWidth="28" style="width:100%;height:34px;padding:10px">
+                <input  type="password" name="password" style="width:100%;height:34px;padding:10px">
             </div>
             <div>
-                <a  id="btn-login"  href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" style="padding:5px 0px;width:100%;">
+                <button  type="submit" style="padding:5px 0px;width:100%;">
                     <span style="font-size:14px;">登录</span>
-                </a>
-            </div>
-        </div>
-    </form>
-</div>
-{/if}
-
-
-<div id="window-number" class="easyui-dialog" title="随机参数"  style="width:420px;height:370px;padding:20px;display:none"
-     data-options="modal:true,resizable:false,collapsible:false,minimizable:false,maximizable:false,closed:true,inline:false">
-    <div style="margin-bottom:20px">
-        <div style="margin-bottom:20px">
-            <label for="exampleInputEmail1">数量</label>
-            <input class="easyui-numberbox" data-options="min:10,max:200" value="100"   id="number-card" style="width:100%;height:32px">
-        </div>
-        <div style="margin-bottom:20px">
-            <label for="exampleInputEmail1">特殊牌</label>
-            <select class="easyui-combobox" id="special-card" data-options="multiple:true,editable:false" style="width:100%;height:32px">
-                <option value="wan">万能牌</option>
-                <option value="chromy">同色牌</option>
-                <option value="rand">随机牌</option>
-            </select>
-        </div>
-        <div style="margin-bottom:20px">
-            <label for="exampleInputEmail1" style="margin-bottom: 15px">比例</label>
-            <input class="easyui-slider" id="special-ratio-card" value="10" style="width:100%" data-options="showTip:true,rule: [0,'|',25,'|',50,'|',75,'|',100]">
-        </div>
-    </div>
-    <div>
-        <a   id="btn-number-ok"  href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" style="margin:15px 0px;width:100%;">
-            <span style="font-size:14px;">确认</span>
-        </a>
-    </div>
-</div>
-
-<div id="window-rest-password" class="easyui-window" title="重置密码" style="width:414px;height:291px;display: none"
-     data-options="modal:true,resizable:false,collapsible:false,minimizable:false,maximizable:false,closed:true,inline:false">
-    <form id="form-login" method="post">
-        <div class="easyui-panel" style="width:400px;padding:50px 60px">
-            <div style="margin-bottom:20px">
-                <input class="easyui-passwordbox" id="password" prompt="新密码" iconWidth="28" style="width:100%;height:34px;padding:10px">
-            </div>
-            <div style="margin-bottom:20px">
-                <input class="easyui-passwordbox" id="reppassword" prompt="重复新密码" iconWidth="28" style="width:100%;height:34px;padding:10px">
-            </div>
-            <div>
-                <a   id="btn-rest-password"  href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" style="padding:5px 0px;width:100%;">
-                    <span style="font-size:14px;">确认</span>
-                </a>
-            </div>
-        </div>
-    </form>
-    <div id="viewer"></div>
-</div>
-
-<div data-options="region:'north',split:true,border:false,minHeight:50,maxHeight:50" style="display: none">
-<div class="easyui-panel" style="padding:5px;">
-<a href="#" class="easyui-menubutton" data-options="menu:'#mm-login',iconCls:'icon-man'">{$admin.nickname ?? "未登录"}</a>
-    <a href="#" class="easyui-menubutton" data-options="menu:'#mm-tool',iconCls:'icon-sum'">工具</a>
-
-    <a href="#" class="easyui-menubutton" data-options="menu:'#mm-help',iconCls:'icon-help'">帮助</a>
-</div>
-    <div id="mm-login" style="width:150px;">
-        <div data-options="" id="menu-reset-password" onclick="$('#window-rest-password').window('open')">
-            重置密码
-        </div>
-        <div class="menu-sep"></div>
-
-        <div data-options="" id="menu-logout">退出</div>
-    </div>
-    <div id="mm-tool" style="width:100px;">
-        <div>Help</div>
-        <div>Update</div>
-        <div>About</div>
-    </div>
-    <div id="mm-help" style="width:100px;">
-        <div>Help</div>
-        <div>Update</div>
-        <div>About</div>
-    </div>
-</div>
-
-<div class="  panel-stage-wrapper" data-options="region:'east',split:true,minWidth:280" title="检查器" style="width:280px;display: none">
-    <div id="panel-inspection-card" class="panel-inspection" >
-        <div>
-            <div id="panel-inspection-component" class="easyui-accordion">
-
-            </div>
-        </div>
-        <div class="panel-inspection-button">
-            <div class="dropdown"  id="btn-component-add">
-                <button class="btn btn-primary btn-block  btn-sm" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    增加组件
-                    <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu" aria-labelledby="dLabel">
-                    <li data-name="display"><a href="#">展现</a></li>
-                    <li  data-name="position"><a href="#">位置</a></li>
-                    <li  data-name="direction"><a href="#">方向</a></li>
-                    <li data-name="face"><a href="#">牌面</a></li>
-                    <li data-name="rand"><a href="#">随机</a></li>
-                    <li data-name="wan"><a href="#">万能</a></li>
-                    <li data-name="chromy"><a href="#">同色</a></li>
-                    <li data-name="mulch"><a href="#">压牌</a></li>
-                    <li data-name="warp"><a href="#">卡包</a></li>
-                    <li data-name="variety"><a href="#">变数</a></li>
-                    <li data-name="custom"><a href="#">自定义</a></li>
-                </ul>
             </div>
         </div>
-        <div class="panel-inspection-button">
-            <button type="button" id="btn-card-delete" class="btn btn-danger btn-block  btn-sm">删除</button>
-        </div>
-    </div>
+    </form>
+</div>
+{else/}
+<div class="preloader"></div>
 
-    <div id="panel-inspection-bag" class="panel-inspection">
-        <div>
-            <div>
+<div class="main-wrapper"  ng-app="app" ng-controller="chat">
+    <div class="chatapp">
 
+        <!-- main content start -->
+        <div class="chatapp__content">
+            <div class="chatapp__messagetab">
+                <!-- conversations start -->
+                <div class="chatapp__conversations">
+                    <!-- conversation wrapper start -->
+                    <div class="conversation-wrapper">
+                        <div class="conversation-panel">
+                            <div class="conversation-panel__head">
+
+                                <div class="conversation-panel__avatar info-panel-opener">
+                                    <div class="user-avatar user-avatar-rounded">
+                                        <img src="__CDN__/assets/img/chatgpt/chatgpt.png" alt="">
+                                    </div>
+                                    <div class="conversation__name">
+                                        <div class="conversation__name--title">ChatGPT</div>
+                                        <div class="conversation__time" ><span   ng-hide="postting">I'm a robot</span><span  ng-show="postting">Cogitating...</span></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <a href="/index/logout">退出</a>
+                                </div>
+                            </div>
+
+                            <div class="conversation-panel__body" >
+                                <div class="custom-scrollbar2">
+                                    <div class="container">
+                                        <ul class="chat-style-2">
+                                            <div  ng-repeat="msg in messages">
+                                                <li class="message sent"   ng-if="msg.role == 'user'">
+                                                    <div class="message__text">{{ msg.content }}
+                                                        <div class="metadata">
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="message received"   ng-if="msg.role == 'assistant'">
+                                                    <div class="message__text">{{ msg.content }}
+                                                        <div class="metadata">
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </div>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="conversation-panel__footer">
+                                <div class="composer">
+                                    <div class="composer__middle">
+                                        <textarea class="form-control" rows="1" placeholder="Type a message..."  ng-model="content"></textarea>
+                                    </div>
+                                    <div class="composer__right">
+                                        <div class="composer__right--send"  ng-click="sendMessage();">
+                                            <i class="mdi mdi-send"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- conversation panel end -->
+                </div>
+                <!-- conversations end -->
             </div>
         </div>
-
-    </div>
-
-    <div id="panel-inspection-level" class="panel-inspection">
-        <div>
-            <div>
-
-            </div>
-        </div>
-    </div>
-
-    <div id="panel-inspection-stage" class="panel-inspection">
-        <div>
-            <div>
-            </div>
-        </div>
-    </div>
-
-    <div id="panel-inspection-underpan" class="panel-inspection">
-        <div>
-            <div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<div id="menu-tree-bag" class="easyui-menu" style="width:120px;display: none">
-    <div id="new-level-bag-tree" data-options="iconCls:'icon-edit'">新关卡</div>
-    <div id="edit-bag-tree" data-options="iconCls:'icon-edit'">编辑</div>
-    <div id="remove-bag-tree" data-options="iconCls:'icon-remove'">删除</div>
-    <div id="download-bag-tree" data-options="iconCls:'icon-save'">下载</div>
-
-</div>
-<div id="menu-tree-level" class="easyui-menu" style="width:120px;display: none">
-    <div id="edit-level-tree" data-options="iconCls:'icon-edit'">编辑</div>
-    <div id="remove-level-tree" data-options="iconCls:'icon-remove'">删除</div>
-    <div id="download-level-tree" data-options="iconCls:'icon-save'">下载</div>
-
-</div>
-
-
-<div id="menu-tree-stage" class="easyui-menu" style="width:120px;display: none">
-    <div class="menu-random-card" data-options="iconCls:'icon-sum'">随机生成</div>
-
-</div>
-
-<div id="menu-tree-underpan" class="easyui-menu" style="width:120px;display: none">
-    <div class="menu-random-card" data-options="iconCls:'icon-sum'">随机生成</div>
-
-</div>
-        <div title="关卡" style="width:200px;display: none" data-options="
-
-
-
-
-
-
-">
-    <ul class="easyui-tree" id="tree-level"> </ul>
-</div>
-<div data-options="region:'center'" style="display: none">
-    <div class="easyui-layout" data-options="fit:true">
-        <div data-options="region:'center'"  title="牌桌(双击新建)" class="panel-stage-wrapper" id="contenter-card">
-            <div id="panel-card" data-panel="card" class="panel-grid-line" style="width: 2340px; height: 1080px;">
-            </div>
-        </div>
-        <div  id="panel-underpan"  title="底牌(双击新建)" data-panel="underpan" data-options="region:'south',split:true" style="height:140px;">
-        </div>
+        <!-- main content end -->
     </div>
 </div>
+
+{/if}
 
 </body>
 
-</html>
-
-<script id="tmpl-card" type="text/html">
-    <div class="card ui-widget-content" style="z-index: <%=zindex%>;left:<%=left%>px;top:<%=top%>px" data-panel="<%=panel%>" data-id="<%=id%>" data-mg-color="red">
-        <div class="toolbar-card">
-
-        </div>
-        <div class="card-name">
-            <p><%=name%></p>
-        </div>
-        <div  class="card-id">
-            <span><%=id%></span>
-        </div>
-    </div>
-</script>
-
-<script id="tmpl-component-card-direction" type="text/html">
-    <div  title="正反面" class="panel-component">
-        <div class="form-group">
-            <fieldset>
-                <select class="form-control input-sm attr-input-card" id="card-direction">
-                    <option value="front">正面</option>
-                    <option value="back">反面</option>
-                </select>
-            </fieldset>
-        </div>
-    </div>
-</script>
-<script id="tmpl-toolbar-card-direction" type="text/html">
-    <div style="float: right">
-        <a href="#" data-direction="<%=direction%>"  id="card-toolbar-direction"><%=icon%></a>
-    </div>
-</script>
-
-<script id="tmpl-toolbar-card-current" type="text/html">
-    <div style="float: right">
-        <a href="#">当前牌</a>
-    </div>
-</script>
-
-
-<script id="tmpl-component-card-rand" type="text/html">
-    <div title="随机" class="panel-component">
-
-        <div class="form-group">
-
-            <fieldset>
-                <div class="alert alert-info" role="alert" style="margin-bottom: 5px">
-                    A-9[suitdiamonds|suithearts|suitclubs|suitdiamonds],4[suitdiamonds|suitdiamonds],6,5-K,2-Q[suitdiamonds|suitdiamonds]  (suitdiamonds♦,suithearts♥,suitclubs♣,suitspades♠)
-                </div>
-                <textarea class="form-control input-sm attr-input-card" id="card-scope" rows="3" placeholder="A-K[dhcs]"></textarea>
-            </fieldset>
-        </div>
-
-    </div>
-</script>
-
-<script id="tmpl-component-card-mulch" type="text/html">
-    <div title="压牌" class="panel-component">
-        <div class="form-group">
-            <fieldset>
-                <div class="alert alert-info" role="alert" style="margin-bottom: 5px">
-                    A1,A5,A6
-                </div>
-                <textarea class="form-control input-sm attr-input-card" id="card-mulch" rows="3" placeholder="扑克id"></textarea>
-            </fieldset>
-        </div>
-
-    </div>
-</script>
-
-<script id="tmpl-component-card-variety" type="text/html">
-    <div title="变数卡" class="panel-component">
-        <div class="form-group">
-            <div class="form-group">
-                <select class="form-control input-sm attr-input-card" id="card-variety" value="<%=variety%>">
-                    <option value="plus">加数</option>
-                    <option value="minus">减数</option>
-                </select>
-            </div>
-        </div>
-
-    </div>
-</script>
-
-<script id="tmpl-component-card-display" type="text/html">
-    <div title="展现" class="panel-component">
-        <div class="form-group">
-            <div class="form-group">
-                <select class="form-control input-sm attr-input-card" id="card-display" value="<%=display%>">
-                    <option value="show">显示</option>
-                    <option value="hide">隐藏</option>
-                </select>
-            </div>
-        </div>
-
-    </div>
-</script>
-
-<script id="tmpl-component-card-pack" type="text/html">
-    <div title="卡包" class="panel-component">
-        <div class="form-group">
-            <label for="card-pack-pokes">扑克id: </label>
-            <fieldset>
-                <div class="alert alert-info" role="alert" style="margin-bottom: 5px">
-                    A1,A5,A6
-                </div>
-                <textarea class="form-control input-sm attr-input-card" id="card-pack-pokes" rows="3" placeholder="扑克id"></textarea>
-            </fieldset>
-        </div>
-        <div class="form-group">
-            <label for="card-pack-cnt">计数: </label>
-            <fieldset>
-                <input type="number" class="form-control input-sm attr-input-card" id="card-pack-cnt" placeholder="计数"/>
-            </fieldset>
-        </div>
-    </div>
-</script>
-
-<script id="tmpl-component-card-current" type="text/html">
-    <div title="当前牌" class="panel-component">
-        <div>
-            不可拖动位置
-        </div>
-    </div>
-</script>
-<script id="tmpl-component-card-hide" type="text/html">
-    <div title="隐藏" class="panel-component">
-        <div>
-            没有可编辑属性
-        </div>
-    </div>
-</script>
-
-<script id="tmpl-component-card-wan" type="text/html">
-    <div title="万能" class="panel-component">
-        <div>
-            没有可编辑属性
-        </div>
-    </div>
-</script>
-
-
-<script id="tmpl-component-card-chromy" type="text/html">
-    <div title="同色" class="panel-component">
-        <div class="form-inline">
-            <div class="form-group">
-                <label for="email">花色: </label>
-                <select class="form-control input-sm attr-input-card" id="card-color" value="<%=color%>">
-                    <option value="suitdiamonds">♦</option>
-                    <option value="suithearts">♥</option>
-                    <option value="suitclubs">♣</option>
-                    <option value="suitspades">♠</option>
-                    <option value="suitwan">W</option>
-
-                </select>
-            </div>
-        </div>
-    </div>
-</script>
-
-<script id="tmpl-component-card-position" type="text/html">
-    <div  title="位置" class="panel-component">
-        <div class="form-inline">
-            <div class="form-group">
-                <label for="card-left">X: </label><input type="number" class="form-control input-sm attr-input-card" style="width: 70px" id="card-left"/>
-            </div>
-            <div class="form-group">
-                <label for="card-top">Y: </label><input type="number" class="form-control input-sm attr-input-card"  style="width: 70px" id="card-top"/>
-            </div>
-
-            <div class="form-group">
-                <label for="card-zindex">Z: </label><input type="number" class="form-control input-sm attr-input-card" style="width: 70px" id="card-zindex"/>
-            </div>
-
-        </div>
-    </div>
-</script>
-
-<script id="tmpl-component-card-face" type="text/html">
-    <div title="牌面" style="padding:10px;" class="panel-component">
-        <div class="form-inline">
-            <div class="form-group">
-                <label for="name">数字: </label>
-                <select class="form-control input-sm attr-input-card" id="card-name" value="<%=name%>">
-                    <option value="A">A</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="J">J</option>
-                    <option value="Q">Q</option>
-                    <option value="K">K</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="email">花色: </label>
-                <select class="form-control input-sm attr-input-card" id="card-color" value="<%=color%>">
-                    <option value="suitdiamonds">♦</option>
-                    <option value="suithearts">♥</option>
-                    <option value="suitclubs">♣</option>
-                    <option value="suitspades">♠</option>
-                </select>
-            </div>
-        </div>
-    </div>
-</script>
-
-<script id="tmpl-toolbar-card-face" type="text/html">
-    <div style="float: right">
-        <a href="#" class="easyui-linkbutton" id="card-name" data-name="<%=name%>"><%=name%></a>
-        <a href="#" class="easyui-linkbutton toolbar-icon-<%=color%>" id="card-color" data-color="<%=color%>"><%=icon%></a>
-    </div>
-
-</script>
-
-<script id="tmpl-inspection-bag" type="text/html">
-    <div title="牌面" style="padding:10px;" class="panel-component">
-
-    </div>
-</script>
-<script id="tmpl-inspection-level" type="text/html">
-
-</script>
-<script id="tmpl-inspection-stage" type="text/html">
-    <div  title="牌桌大小"  style="padding:10px;" class="panel-component">
-        <div class="form-inline">
-            <div class="form-group">
-                <label for="level-width">牌桌宽度: </label><input type="number" class="form-control input-sm attr-input-card" value="<%=width%>" id="level-width"/>
-            </div>
-            <div class="form-group">
-                <label for="level-height">牌桌高度: </label><input type="number" class="form-control input-sm attr-input-card" value="<%=height%>" id="level-height"/>
-            </div>
-        </div>
-    </div>
-    <div class="panel-inspection-button">
-        <button type="button" id="btn-save" class="btn btn-primary btn-block  btn-sm">保存</button>
-    </div>
-</script>
-<script id="tmpl-inspection-underpan" type="text/html">
-    <div title="牌面" style="padding:10px;" class="panel-component">
-
-    </div>
-</script>
-
-<script id="tmpl-toolbar-list-name" type="text/html">
-    <div>
-        <% for (var i = 0; i < items.length; i++) { %>
-        <a  href="#" data-value="<%= items[i].value %>"><%= items[i].text %></a>
-        <% } %>
-    </div>
-
-</script>
-
-<script id="tmpl-toolbar-list-color" type="text/html">
-    <div>
-        <% for (var i = 0; i < items.length; i++) { %>
-        <a  href="#" data-value="<%= items[i].value %>" class="toolbar-icon-<%= items[i].value %>"><%= items[i].text %></a>
-        <% } %>
-    </div>
-
-</script>
-
-
-        <script src="__CDN__/assets/js/require{$Think.config.app_debug?'':'.min'}.js" data-main="__CDN__/assets/js/require-poke{$Think.config.app_debug?'':'.min'}.js?v={$site.version}"></script>
+<script src="__CDN__/assets/libs/jquery/dist/jquery.min.js"></script>
+<script src="__CDN__/assets/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="__CDN__/assets/libs/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+{if condition="$admin != null"}
+<script src="__CDN__/assets/js/chatgpt.js"></script>
+{/if}

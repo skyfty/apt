@@ -2,31 +2,12 @@
 
 namespace app\chatgpt\controller;
 
-use app\poke\model\Admin;
-
 class Index extends Common
 {
-    protected $noNeedLogin = ['index', 'login','index2'];
+    protected $noNeedLogin = ['index', 'login'];
 
     public function index()
     {
-        if ($this->auth->isLogin()) {
-            $where = [];
-            if (!$this->auth->isSuperAdmin()) {
-                $where['creator_model_id'] = $this->auth->id;
-            }
-            $where['site'] = $this->request->host();
-
-            $pokebags = model("Pokebag")->where($where)->select();
-            foreach($pokebags as $k=>$v) {
-                $list = model("Poke")->where("pokebag_model_id", $v['id'])->where($where)->select();
-                $pokebags[$k]['levels'] = $list;
-            }
-            $this->assign("pokebags", $pokebags);
-        } else {
-            $this->assign("pokebags", []);
-
-        }
         return $this->view->fetch();
     }
 

@@ -1,48 +1,49 @@
-define(['template', 'moment', 'fast'], function (Template, Moment, Fast) {
-    var Poke = {
-        api: {
-            loadlist: function (url, custom, offset,limit) {
-                var self = this;
-                var deferred = $.Deferred();
-                $.extend(custom, {
-                    'offset': offset,
-                    'limit': limit,
-                });
-                $.ajax({type: "GET", url:url,
-                    data: custom
-                }).then(function(ret){
-                    if (ret && ret.rows && ret.rows.length > 0) {
-                        deferred.resolve(ret);
-                    }
-                });
-                return deferred.promise();
-            },
+angular.module('app', []).controller('chat', function($scope, $http, $timeout) {
 
-            getRandomInt:function (min, max) {
-                return Math.floor(Math.random() * (max - min + 1)) + min;
-            },
+    function hideLoader() {
+        $('.preloader').hide();
+    }
+    $(window).ready(hideLoader);
+    setTimeout(hideLoader, 20 * 1000);
 
-        },
-        init: function () {
-            $("#form").data("validator-options", {
-                invalid: function (form, errors) {
-                    $.each(errors, function (i, j) {
-                        Toastr.error(j);
-                    });
-                },
-                target: '#errtips'
-            });
-        },
+    const custom_scrollbar = document.querySelector('.custom-scrollbar2');
 
-    };
-    //将Template渲染至全局,以便于在子框架中调用
-    window.Template = Template;
-    //将Moment渲染至全局,以便于在子框架中调用
-    window.Moment = Moment;
-    //将Staff渲染至全局,以便于在子框架中调用
-    window.Poke = Poke;
+    const ps = new PerfectScrollbar(custom_scrollbar,{
+        suppressScrollX: true,
+        wheelPropagation :false,
+        wheelSpeed: 2,
+        minScrollbarLength: 20
+    });
+    ps.isRtl = false;
+    ps.update();
+    $scope.updateScrollbar = function() {
+        $timeout(function(){
+            ps.update();
+            custom_scrollbar.scrollTop = custom_scrollbar.scrollHeight;
+        });
+    }
 
-    Poke.init();
+    $scope.messages = [
+    ];
+    $scope.content= "";
+    $scope.postting= false;
 
-    return Poke;
+    $scope.sendMessage = function() {
+        $scope.messages.push({
+            "role":"user",
+            "content":$scope.content
+        });
+        $scope.updateScrollbar();
+
+        $scope.content = "";
+        $scope.postting = true;
+
+        $http.post("http://18.119.97.59:8180/message", {"messages":$scope.messages}).then(response=> {
+            $scope.messages.push(response.data);
+            $scope.postting = false;
+            $scope.updateScrollbar();
+        });
+    }
 });
+
+

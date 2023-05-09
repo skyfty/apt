@@ -82,7 +82,7 @@ class Common extends Controller
             'modulename'     => $modulename,
             'controllername' => $controllername,
             'actionname'     => $actionname,
-            'jsname'         => 'poke/' . str_replace('.', '/', $controllername),
+            'jsname'         => 'chatgpt/' . str_replace('.', '/', $controllername),
             'moduleurl'      => rtrim(url("/{$modulename}", '', false), '/'),
             'language'       => $lang
         ];
