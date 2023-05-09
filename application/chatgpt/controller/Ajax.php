@@ -1,6 +1,6 @@
 <?php
 
-namespace app\poke\controller;
+namespace app\chatgpt\controller;
 
 use think\Lang;
 

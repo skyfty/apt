@@ -10,13 +10,11 @@
     <link rel="shortcut icon" href="__CDN__/assets/img/favicon.ico" />
     <!-- Loading Bootstrap -->
     <link href="__CDN__/assets/css/poke.css?v={$site.version}" rel="stylesheet">
-    <link rel="stylesheet" href="__CDN__/assets/libs/bootstrap/dist/css/bootstrap.min.css">
 
     <link rel="stylesheet" type="text/css" href="__CDN__/assets/css/chatgpt/materialdesignicons.min.css">
     <link rel="stylesheet" type="text/css" href="__CDN__/assets/libs/perfect-scrollbar/perfect-scrollbar.css">
     <link rel="stylesheet" type="text/css" href="__CDN__/assets/css/chatgpt/app.css">
     <link rel="stylesheet" type="text/css" href="__CDN__/assets/css/chatgpt/theme/default-theme.min.css">
-    <link rel="stylesheet" type="text/css" href="__CDN__/assets/css/chatgpt/chat.css">
     <script src="__CDN__/assets/libs/angular/angular.min.js"></script>
 
 </head>
@@ -27,74 +25,111 @@
     </script>
 </head>
 
-<body class="easyui-layout" onselectstart="return false">
+<body class="easyui-layout default-theme" onselectstart="return false">
 
 {if condition="$admin == null"}
-<div id="window-login" class="easyui-window" title="登录" style="width:414px;height:291px;display: none;"
+<div id="window-login" class="easyui-window" title="登录" style="width:414px;height:291px;"
      data-options="modal:true,resizable:false,collapsible:false,minimizable:false,maximizable:false,closable:false,inline:false">
-    <form id="form-login" method="post">
+    <form id="form-login" method="post" action="/index/login">
         <div class="easyui-panel" style="width:400px;padding:50px 60px">
             <div style="margin-bottom:20px">
-                <input class="easyui-textbox" id="username" prompt="登录名" iconWidth="28" style="width:100%;height:34px;padding:10px;">
+                <input class="easyui-textbox" name="username" prompt="登录名" iconWidth="28" style="width:100%;height:34px;padding:10px;">
             </div>
             <div style="margin-bottom:20px">
-                <input class="easyui-passwordbox" id="password" prompt="密码" iconWidth="28" style="width:100%;height:34px;padding:10px">
+                <input type="password" class="easyui-passwordbox" name="password" prompt="密码" iconWidth="28" style="width:100%;height:34px;padding:10px">
             </div>
             <div>
-                <a  id="btn-login"  href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" style="padding:5px 0px;width:100%;">
+                <button  id="btn-login" type="submit" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" style="padding:5px 0px;width:100%;">
                     <span style="font-size:14px;">登录</span>
-                </a>
+                </button>
             </div>
         </div>
     </form>
 </div>
+{else/}
+
+<div class="preloader"></div>
+
+<div class="main-wrapper"   ng-app="app" ng-controller="chat">
+    <div class="chatapp">
+        <!-- main content start -->
+        <div class="chatapp__content">
+            <div class="chatapp__messagetab">
+                <!-- conversations start -->
+                <div class="chatapp__conversations">
+                    <!-- conversation wrapper start -->
+                    <div class="conversation-wrapper">
+                        <div class="conversation-panel">
+                            <div class="conversation-panel__head">
+                                <div class="conversation-panel__avatar info-panel-opener">
+                                    <div class="user-avatar user-avatar-rounded">
+                                        <img src="__CDN__/assets/img/chatgpt/chatgpt.png" alt="">
+                                    </div>
+                                    <div class="conversation__name">
+                                        <div class="conversation__name--title">ChatGPT</div>
+                                        <div class="conversation__time" ><span   ng-hide="postting">I'm a robot</span><span  ng-show="postting">Cogitating...</span></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <a href="/index/logout">退出</a>
+                                </div>
+                            </div>
+
+                            <div class="conversation-panel__body" >
+                                <div class="custom-scrollbar2">
+                                    <div class="container">
+                                        <ul class="chat-style-2">
+                                            <div  ng-repeat="msg in messages">
+                                                <li class="message sent"   ng-if="msg.role == 'user'">
+                                                    <div class="message__text">{{ msg.content }}
+                                                        <div class="metadata">
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="message received"   ng-if="msg.role == 'assistant'">
+                                                    <div class="message__text">{{ msg.content }}
+                                                        <div class="metadata">
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </div>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="conversation-panel__footer">
+                                <div class="composer">
+                                    <div class="composer__middle">
+                                        <textarea class="form-control" rows="1" placeholder="Type a message..."  ng-model="content"></textarea>
+                                    </div>
+                                    <div class="composer__right">
+                                        <div class="composer__right--send"  ng-click="sendMessage();">
+                                            <i class="mdi mdi-send"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- conversation panel end -->
+                </div>
+                <!-- conversations end -->
+            </div>
+        </div>
+        <!-- main content end -->
+    </div>
+</div>
+
 {/if}
-<div id="app" class="app"  ng-app="app" ng-controller="chat">
-<section id="main-right" class="main-right">
-    <!-- header -->
-    <div id="header-right" class="header-right">
-        <!-- profile pict -->
-        <div id="header-img" class="profile header-img">
-            <img src="__CDN__/assets/images/chatgptimages/chatgpt.png" alt="">
-        </div>
-        <!-- name -->
-        <h4 class="name friend-name">OpenAI</h4>
-        <h4 class="name friend-name" ng-show="postting">Cogitating...</h4>
-
-    </div>
-
-    <!-- chat area -->
-<div id="chat-area" class="chat-area">
-<div  ng-repeat="msg in messages">
-    <div  class="friends-chat"  ng-if="msg.role == 'assistant'">
-        <div class="profile friends-chat-photo">
-            <img src="__CDN__/assets/images/chatgpt/chatgpt.png" alt="">
-        </div>
-        <div class="friends-chat-content">
-            <p class="friends-chat-name">OpenAI</p>
-            <p class="friends-chat-balloon">{{ msg.content }}</p>
-        </div>
-    </div>
-    <!-- YOUR CHAT TEMPLATE -->
-<div  class="your-chat"   ng-if="msg.role == 'user'">
-<p class="your-chat-balloon">{{ msg.content }}</p>
-
-</div>
-</div>
-</div>
-
-    <!-- typing area -->
-    <div id="typing-area" class="typing-area">
-        <!-- input form -->
-        <input id="type-area" class="type-area" placeholder="Type something..." ng-model="content">
-        <span class="glyphicon glyphicon-send send-btn" ng-click="sendMessage();"></span>
-    </div>
-</section>
-</div>
 
 </body>
 </html>
 
 <script src="__CDN__/assets/libs/jquery/dist/jquery.min.js"></script>
 <script src="__CDN__/assets/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+{if condition="$admin != null"}
+
+<script src="__CDN__/assets/libs/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 <script src="__CDN__/assets/js/chatgpt/index.js"></script>
+{/if}
