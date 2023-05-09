@@ -21,7 +21,7 @@ return [
         'dev.poke'      => 'poke',
         'madcap'      => 'madcap',
         'poke'      => 'poke',
-
+        'chatgpt'      => 'chatgpt',
     ],
     '__alias__'   => [
     ],
