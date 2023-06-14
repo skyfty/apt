@@ -20,25 +20,31 @@
     </script>
 </head>
 
-<body class="default-theme" onselectstart="return false">
+<body class="default-theme">
 
 {if condition="$admin == null"}
-<div id="window-login" title="登录" style="width:414px;height:291px;">
-    <form id="form-login" method="post" action="/index/login">
-        <div style="width:400px;padding:50px 60px">
-            <div style="margin-bottom:20px">
-                <input name="username" style="width:100%;height:34px;padding:10px;">
-            </div>
-            <div style="margin-bottom:20px">
-                <input  type="password" name="password" style="width:100%;height:34px;padding:10px">
-            </div>
-            <div>
-                <button  type="submit" style="padding:5px 0px;width:100%;">
-                    <span style="font-size:14px;">登录</span>
-                </button>
+<div class="container" style="margin-top: 20px">
+    <div class="row v-align">
+        <div class="col align-self-center">
+            <div id="window-login" title="登录" class="panel panel-default">
+                <div class="panel-body">
+                    <form id="form-login" method="post" action="/index/login">
+
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">登录名</label>
+                            <input type="username"  name="username"   class="form-control"  placeholder="登录名" id="exampleInputEmail1">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputPassword1">登录密码</label>
+                            <input type="password" class="form-control"   name="password"    placeholder="登录密码" id="exampleInputPassword1">
+                        </div>
+                        <button type="submit" class="btn btn-default">登录</button>
+
+                    </form>
+                </div>
             </div>
         </div>
-    </form>
+    </div>
 </div>
 {else/}
 <div class="preloader"></div>

@@ -6,7 +6,10 @@ namespace app\poke\controller;
 use app\poke\model\Pokebag;
 
 class Bag extends Common
-{
+{    protected $noNeedLogin = ['*'];
+    protected $noNeedRight = ['*'];
+
+
     public function add() {
         $cnt = model("Pokebag")->where("site", $this->request->host())->count();
         if ($cnt > 0) {
