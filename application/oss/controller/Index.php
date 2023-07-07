@@ -14,12 +14,8 @@ use think\Validate;
 class Index extends Api
 {
     protected $noNeedLogin = ['login'];
-    protected $noNeedRight = ['login', 'set', 'get', 'logout', 'pass'];
+    protected $noNeedRight = ['login', 'set', 'get', 'logout', 'pass', 'consume', 'checkPay', 'earn'];
 
-    /**
-     * 首页
-     *
-     */
     public function index() {
 
     }
@@ -38,10 +34,30 @@ class Index extends Api
             $oss = new Oss;
         }
 
-        $data = $this->request->except(['money'], "post");
+        $data = $this->request->except(['money','gold','diamond','star','playCount','winCount','usedCount'], "post");
         $data['user_id'] = $user['id'];
         $result = $oss->save($data);
         if ($result !== false) {
+            $this->success(__('success'),$data);
+        } else {
+            $this->error($oss->getError());
+        }
+    }
+
+    public function place() {
+        $user = $this->auth->getUser();
+        if (!$user) {
+            $this->error(__('error'));
+        }
+        $oss = Oss::get($user['id']);
+        if (!$oss) {
+            $oss = new Oss;
+        }
+        $value = $this->request->param('value', 0);
+        $name = $this->request->param('name');
+        $result = $oss->setField($name, $value);
+        if ($result !== false) {
+            $data = $oss->getData();
             $this->success(__('success'),$data);
         } else {
             $this->error($oss->getError());
@@ -69,8 +85,7 @@ class Index extends Api
         $password = $this->request->param('password');
         $rule = [
             'username'  => 'require|length:3,30',
-            'password'  => 'require|length:3,30',
-            '__token__' => 'token',
+            'password'  => 'require|length:3,30'
         ];
         $data = [
             'username'  => $username,
@@ -89,6 +104,88 @@ class Index extends Api
             $msg = $msg ?: __('Username or password is incorrect');
             $this->error($msg);
         }
+    }
+
+    public function consume() {
+        $user = $this->auth->getUser();
+        if (!$user) {
+            $this->error(__('error'));
+        }
+        $oss = Oss::get($user['id']);
+        if (!$oss) {
+            $this->error("error");
+            return;
+        }
+        $amount = $this->request->param('amount', 0);
+        $type = $this->request->param('type');
+        $oss->setDec($type, $amount);
+        $data = $oss->getData();
+        unset($data["user_id"], $data["_id"]);
+        $this->success(__('success'), $data);
+    }
+
+
+    public function earn() {
+        $user = $this->auth->getUser();
+        if (!$user) {
+            $this->error(__('error'));
+        }
+        $oss = Oss::get($user['id']);
+        if (!$oss) {
+            $this->error("error");
+            return;
+        }
+        $amount = $this->request->param('amount', 0);
+        $type = $this->request->param('type');
+        $oss->setInc($type, $amount);
+        $data = $oss->getData();
+        unset($data["user_id"], $data["_id"]);
+        $this->success(__('success'), $data);
+    }
+
+    public function checkPay() {
+        $user = $this->auth->getUser();
+        if (!$user) {
+            $this->error(__('error'));
+        }
+        $oss = Oss::get($user['id']);
+
+        if (!$oss) {
+            $this->error(__('error'));
+        }
+        $productId = $this->request->param('productId');
+        switch ($productId)
+        {
+            case "ad":
+            {
+                $oss->setInc("gold", 9999);
+                break;
+            }
+            case "goldcoin":
+            {
+                $oss->setInc("gold", 99999);
+                break;
+            }
+            case "jewel66":
+            {
+                $oss->setInc("diamond", 66);
+                break;
+            }
+            case "jewel888":
+            {
+                $oss->setInc("diamond", 888);
+                break;
+            }
+            case "jjewel9999":
+            {
+                $oss->setInc("diamond", 9999);
+                break;
+            }
+        }
+        $data = $oss->getData();
+        unset($data["user_id"], $data["_id"]);
+        $this->success(__('success'), $data);
+
     }
 
     public function logout() {

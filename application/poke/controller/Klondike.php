@@ -22,6 +22,7 @@ class Klondike extends Common
         return $result;
     }
     public function add() {
+        unset($_POST["_ajax"]);
         $cnt = model("Klondike")->where("pokebag_model_id", $_POST['pokebag_model_id'])->count();
         if ($cnt > 0) {
             $_POST['name'] = $_POST['name'] ."(".($cnt).")";
@@ -33,7 +34,7 @@ class Klondike extends Common
     }
 
     public function del() {
-        Klondike::destroy($this->request->param("ids/a"));
+        model("Klondike")->destroy($this->request->param("ids"));
         $this->success();
     }
     public function rename() {
@@ -42,7 +43,6 @@ class Klondike extends Common
         if ($klondike == null) {
             $this->error(__('Can not find the record'));
         }
-
         $name = $this->request->param("name");
         $where = [
             "pokebag_model_id"=> $klondike->pokebag_model_id,

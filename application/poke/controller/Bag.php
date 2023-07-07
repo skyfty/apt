@@ -15,6 +15,7 @@ class Bag extends Common
         if ($cnt > 0) {
             $_POST['name'] = $_POST['name'] ."(".($cnt).")";
         }
+        unset($_POST["_ajax"]);
         $_POST["site"] = $this->request->host();
 
         $poke = model("Pokebag")->create($_POST);
@@ -22,7 +23,7 @@ class Bag extends Common
     }
 
     public function del() {
-        Pokebag::destroy($this->request->param("ids/a"));
+        Pokebag::destroy($this->request->param("ids"));
         $this->success();
     }
     public function rename() {
@@ -30,7 +31,6 @@ class Bag extends Common
         $name = $this->request->param("name");
         $where = [
             "name"=> $name,
-            "site"=> $this->request->host()
         ];
         $cnt = model("Pokebag")->where($where)->where("id", "neq", $id)->count();
         if ($cnt > 0) {
