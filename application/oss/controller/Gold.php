@@ -16,10 +16,16 @@ class Gold extends Api
     protected $noNeedLogin = [];
     protected $noNeedRight = ['consume', 'checkPay', 'earn'];
 
-    public function index() {
-
+    public function inout($io, $type, $amount, $customer_model_id) {
+        $data = [
+            "type"=>$type,
+            "inout"=>$io,
+            "amount"=>$amount,
+            "customer_model_id"=>$customer_model_id,
+        ];
+        model("gold")->create($data);
+        return model("gold")->where(["type"=>$type, "customer_model_id"=>$customer_model_id])->sum("amount*inout");
     }
-
 
     public function consume() {
         $user = $this->auth->getUser();
@@ -33,7 +39,7 @@ class Gold extends Api
         }
         $amount = $this->request->param('amount', 0);
         $type = $this->request->param('type');
-        $oss->setDec($type, $amount);
+        $oss->setField($type, $this->inout(-1, $type, $amount, $user['customer_model_id']));
         $data = $oss->getData();
         unset($data["user_id"], $data["_id"]);
         $this->success(__('success'), $data);
@@ -52,7 +58,7 @@ class Gold extends Api
         }
         $amount = $this->request->param('amount', 0);
         $type = $this->request->param('type');
-        $oss->setInc($type, $amount);
+        $oss->setField($type, $this->inout(1, $type, $amount, $user['customer_model_id']));
         $data = $oss->getData();
         unset($data["user_id"], $data["_id"]);
         $this->success(__('success'), $data);
@@ -73,27 +79,27 @@ class Gold extends Api
         {
             case "ad":
             {
-                $oss->setInc("gold", 9999);
+                $oss->setField("gold", $this->inout(1, "gold", 9999, $user['customer_model_id']));
                 break;
             }
             case "goldcoin":
             {
-                $oss->setInc("gold", 99999);
+                $oss->setField("gold", $this->inout(1, "gold", 99999, $user['customer_model_id']));
                 break;
             }
             case "jewel66":
             {
-                $oss->setInc("diamond", 66);
+                $oss->setField("diamond", $this->inout(1, "diamond", 66, $user['customer_model_id']));
                 break;
             }
             case "jewel888":
             {
-                $oss->setInc("diamond", 888);
+                $oss->setField("diamond", $this->inout(1, "diamond", 888, $user['customer_model_id']));
                 break;
             }
             case "jjewel9999":
             {
-                $oss->setInc("diamond", 9999);
+                $oss->setField("diamond", $this->inout(1, "diamond", 9999, $user['customer_model_id']));
                 break;
             }
         }
