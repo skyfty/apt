@@ -6,7 +6,7 @@ use think\Model;
 
 class Gold extends Cosmetic
 {
-    protected $name = 'cause';
+    protected $name = 'gold';
     public $keywordsFields = ["name", "idcode"];
 
     protected static function init()

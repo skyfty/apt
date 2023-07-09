@@ -14,7 +14,7 @@ use think\Validate;
 class Index extends Api
 {
     protected $noNeedLogin = ['login'];
-    protected $noNeedRight = ['login', 'set', 'get', 'logout', 'pass', 'consume', 'checkPay', 'earn'];
+    protected $noNeedRight = ['login', 'set', 'get', 'logout', 'pass', 'consume', 'checkPay', 'earn', 'place'];
 
     public function index() {
 
@@ -55,7 +55,9 @@ class Index extends Api
         }
         $value = $this->request->param('value', 0);
         $name = $this->request->param('name');
-        $result = $oss->setField($name, $value);
+        $data['user_id'] = $user['id'];
+        $data[$name] = $value;
+        $result = $oss->save($data);
         if ($result !== false) {
             $data = $oss->getData();
             $this->success(__('success'),$data);
