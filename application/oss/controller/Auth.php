@@ -3,6 +3,7 @@
 namespace app\oss\controller;
 
 use app\common\controller\Api;
+use app\common\model\Oss;
 
 /**
  * 首页接口
@@ -11,10 +12,11 @@ class Auth extends Api
 {
     protected $noNeedLogin = ['index'];
 
-    /**
-     * 首页
-     *
-     */
+
+    public function award($amount, $customer_model_id) {
+
+    }
+
     public function index() {
         $channelId = $this->request->param('channel');
         $channel = model("channel")->where("english_name|name|idcode|id", $channelId)->find();
@@ -31,11 +33,33 @@ class Auth extends Api
 
         $user = model("user")->where("auth_id", $auth_id)->find();
         if ($user == null) {
-            model("customer")->allowField(true)->create([
+            $customer = model("customer")->allowField(true)->create([
                 "channel_model_id"=>$channel['id'],
                 "anonymous"=>1,
                 "auth_id"=>$auth_id,
                 "name"=>$nickname]);
+            model("gold")->create([
+                "type"=>"gold",
+                "ioc"=>1,
+                "amount"=>1000,
+                "customer_model_id"=>$customer['id'],
+            ]);
+            $oss = Oss::get($customer['user_id']);
+            if (!$oss) {
+                $oss = new Oss;
+            }
+            $data['id'] = $customer['user_id'];
+            $data['user_id'] =$customer['user_id'];
+            $data['gold'] = 1000;
+            $data['name'] = $nickname;
+            $data['level'] = 0;
+            $data['diamond'] = 0;
+            $data['playCount'] = 0;
+            $data['winCount'] = 0;
+            $data['vodkaCount'] = 0;
+            $data['usedCount'] = 0;
+
+            $result = $oss->save($data);
         }
         $result = $this->auth->authlogin($auth_id);
 
