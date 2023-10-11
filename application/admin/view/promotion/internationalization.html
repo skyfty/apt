@@ -7,6 +7,7 @@
         <div class="widget-body no-padding  table-cosmetic">
             <div id="toolbar-internationalization" class="toolbar" style="float: left">
                 {:build_toolbar('refresh,add,del',['add'=>[url('internationalization/add',['promotion_model_id'=>$row['id']]), 'btn btn-default btn-dialog', 'fa fa-plus',  __(''), __('添加翻译')]],"internationalization")}
+                <a href="javascript:;" class="btn btn-default" title="翻译" ng-click="translate();"><i class="fa fa-envira"></i></a>
             </div>
             <table id="table-internationalization"  ui-formidable="fields"
                    data-fields='fields'

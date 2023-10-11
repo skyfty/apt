@@ -125,6 +125,13 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                     return param;
                 };
 
+                $scope.translate = function() {
+                    Fast.api.ajax({
+                        url: "promotion/translate",
+                        data: {ids:$scope.row.id},
+                    });
+                }
+
                 Table.api.init({
                     extend: {
                         index_url: 'internationalization/index',
