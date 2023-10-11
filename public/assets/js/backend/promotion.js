@@ -116,6 +116,40 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                 angular.element("#tab-" +$scope.scenery.name).html($compile(data.content)($scope));
                 $scope.$broadcast("shownTable");
             },
+            internationalization: function($scope, $compile,$timeout, data){
+                $scope.searchFieldsParams = function(param) {
+                    param.custom = {
+                        "promotion_model_id":$scope.row.id,
+                    };
+
+                    return param;
+                };
+
+                Table.api.init({
+                    extend: {
+                        index_url: 'internationalization/index',
+                        add_url: 'internationalization/add',
+                        del_url: 'internationalization/del',
+                        multi_url: 'internationalization/multi',
+                        summation_url: 'internationalization/summation',
+                        table: 'internationalization',
+                    },
+                    buttons : [
+                        {
+                            name: 'view',
+                            title: function(row, j){
+                                return __(' %s', row.id);
+                            },
+                            classname: 'btn btn-xs btn-success btn-magic btn-dialog btn-view',
+                            icon: 'fa fa-folder-o',
+                            url: 'internationalization/view'
+                        }
+                    ]
+                });
+                $scope.fields = data.fields;
+                angular.element("#tab-" +$scope.scenery.name).html($compile(data.content)($scope));
+                $scope.$broadcast("shownTable");
+            },
             cause: function($scope, $compile,$timeout, data){
                 $scope.searchFieldsParams = function(param) {
                     param.custom = {
