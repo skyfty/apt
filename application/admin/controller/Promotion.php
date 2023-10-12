@@ -21,42 +21,6 @@ class Promotion extends Cosmetic
     }
 
     /**
-     * 使用百度翻译API翻译字符串
-     */
-    function translateString($text, $targetLanguage, $apiKey, $apiSecret)
-    {
-//        $salt = time();
-//        $sign = $this->generateSign($text, $salt, $apiKey, $apiSecret);
-//        $params = array(
-//            'q' => $text,
-//            'from' => 'auto',
-//            'to' => $targetLanguage,
-//            'appid' => $apiKey,
-//            'salt' => $salt,
-//            'sign' => $sign
-//        );
-//
-//        $client = new \GuzzleHttp\Client();
-//        $res = $client->request('GET',  'http://api.fanyi.baidu.com/api/trans/vip/translate', $params);
-//        if ($res != null && $res->getStatusCode() == "200") {
-//            $res->getBody();
-//        }
-//        echo $res->getStatusCode();
-//        echo $res->getHeaderLine('content-type');
-//        echo $res->getBody();
-//
-//
-//
-//        if ($response) {
-//            $jsonResponse = json_decode($response, true);
-//            $translation = isset($jsonResponse['trans_result'][0]['dst']) ? $jsonResponse['trans_result'][0]['dst'] : '百度翻译错误';
-//            return $translation;
-//        } else {
-//            throw new Exception('网络错误');
- //       }
-    }
-
-    /**
      * 生成签名
      */
     function generateSign($text, $salt, $apiKey, $apiSecret) {
