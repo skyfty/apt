@@ -41,10 +41,11 @@ class Promotion extends Cosmetic
         $apiKey = '20230816001782539';
         $apiSecret = 'o62WRa4ThGYCNntmaqT9';
 
-        $destFileDir = 'uploads/'. date('Ymd') . DS;
+        $destFileDir = 'uploads/'. date('Ymd') . DS.$promotion->idcode.DS;
         $uploadDir = ROOT_PATH ."/public/" .$destFileDir;
-        if (!file_exists($uploadDir))
-            mkdir($uploadDir);
+        if (file_exists($uploadDir))
+            rmdir($uploadDir);
+        mkdir($uploadDir, 0777, true);
 
         $internals = [];
         $targetLanguages = [
