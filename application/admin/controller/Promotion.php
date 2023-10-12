@@ -91,7 +91,7 @@ class Promotion extends Cosmetic
                     $tranlsateList[$key] = isset($resultJson['trans_result'][0]['dst']) ? $resultJson['trans_result'][0]['dst'] : $value;
                 }
             }
-            $fileName = \fast\Random::build("unique").".json";
+            $fileName = \fast\Random::build("unique").".png";
             $internals[$targetLanguage] = $destFileDir.$fileName;
             $jsi18njson = [
                 "values"=>$tranlsateList
