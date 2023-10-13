@@ -13,7 +13,7 @@
                     <div class="collapse navbar-collapse navbar-nav-justified" id="navbar-collapse">
                         <ul id="scenery-tab"  class="nav nav-tabs  nav-justified">
                             {foreach name="config.sceneryList['view']" item="vo"}
-                            <li class=" {:$auth->check('internationalization/view/'.$vo['name'])?'':'hide'}"><a href="#tab-{$vo['name']}" data-scenery-index="{$vo['name']}" data-toggle="tab">{$vo['title']}</a></li>
+                            <li class=" {:$auth->check('translate/view/'.$vo['name'])?'':'hide'}"><a href="#tab-{$vo['name']}" data-scenery-index="{$vo['name']}" data-toggle="tab">{$vo['title']}</a></li>
                             {/foreach}
                         </ul>
                     </div>
@@ -21,9 +21,9 @@
                 <div class="panel-body">
                     <div class="tab-content">
                         {foreach name="config.sceneryList['view']" item="vo"}
-                        <div class="tab-pane fade in {:$auth->check('internationalization/view/'.$vo['name'])?'':'hide'}" id="tab-{$vo['name']}"  ng-controller="scenery-{$vo['name']}" ng-init="sceneryInit('{$vo['name']}')">
+                        <div class="tab-pane fade in {:$auth->check('translate/view/'.$vo['name'])?'':'hide'}" id="tab-{$vo['name']}"  ng-controller="scenery-{$vo['name']}" ng-init="sceneryInit('{$vo['name']}')">
                             {eq name="vo.type" value="default"}
-                            <form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="internationalization/edit/ids/{$row['id']}" >
+                            <form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="translate/edit/ids/{$row['id']}" >
                                 <input type="hidden" name="scenery" value="{$vo.name}"/>
                                 <input type="hidden" name="row[id]" value="{$row.id}"/>
                                 <div class="box-header with-border">
@@ -32,14 +32,6 @@
                                     <div class="mailbox-controls">
                                         <div class="btn-group">
                                             <div ng-hide="viewstate.editing" >
-
-                                                <button  type="button" class="btn btn-danger  {$vo['name'] == 'face'?' btn-face-del':' btn-del'} btn-sm {:$auth->check('internationalization/del')?'':'hide'}"   href="internationalization/del" data-toggle="tooltip" data-container="body" title="{:__('Delete')}">
-                                                    <i class="fa fa-trash-o"></i>
-                                                </button>
-
-                                                <button type="button" class="btn btn-default btn-inline-edit btn-sm {:$auth->check('internationalization/edit')?'':'hide'}" ng-click="edit()" data-toggle="tooltip" data-container="body" title="{:__('Edit')}">
-                                                    <i class="fa fa-edit"></i>
-                                                </button>
                                                 <button type="button" class="btn btn-default btn-sm" ng-click="refreshRow()" data-toggle="tooltip" data-container="body" title="刷新">
                                                     <i class="fa  fa-refresh"></i>
                                                 </button>

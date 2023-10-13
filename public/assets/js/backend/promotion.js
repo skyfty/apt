@@ -130,7 +130,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                         url: "promotion/translate",
                         data: {ids:$scope.row.id},
                     });
-                }
+                };
 
                 Table.api.init({
                     extend: {
@@ -150,6 +150,16 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                             classname: 'btn btn-xs btn-success btn-magic btn-dialog btn-view',
                             icon: 'fa fa-folder-o',
                             url: 'internationalization/view'
+                        },
+
+                        {
+                            name: 'translates',
+                            title: function(row, j){
+                                return __(' %s', row.id);
+                            },
+                            classname: 'btn btn-xs btn-success btn-magic btn-dialog btn-view',
+                            icon: 'fa fa-folder-o',
+                            url: 'translate/list'
                         }
                     ]
                 });

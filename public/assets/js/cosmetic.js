@@ -1573,17 +1573,20 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                         initSearchToolbar:function(){
                             var that = this;
                             var buttonParam = {};
-                            if ($attrs.searchButton) {
-                                buttonParam['customs'] = $attrs.searchButton;
-                            } else {
-                                buttonParam['customs'] = "";
+                            if ($attrs.searchToolbar !== "false") {
+                                if ($attrs.searchButton) {
+                                    buttonParam['customs'] = $attrs.searchButton;
+                                } else {
+                                    buttonParam['customs'] = "";
+                                }
+                                var buttonHtml = $compile(Template("commonsearchbtn-tmpl", buttonParam))($scope);
+                                if ($attrs.searchButtonHideGroup) {
+                                    $(".dropdown-toggle", buttonHtml).hide();
+                                    $(".dropdown-menu", buttonHtml).hide();
+                                }
+                                that.$toolbar.append(buttonHtml);
                             }
-                            var buttonHtml = $compile(Template("commonsearchbtn-tmpl", buttonParam))($scope);
-                            if ($attrs.searchButtonHideGroup) {
-                                $(".dropdown-toggle", buttonHtml).hide();
-                                $(".dropdown-menu", buttonHtml).hide();
-                            }
-                            that.$toolbar.append(buttonHtml);
+
                         }
                     };
                     if ($attrs.treeShowField) {
@@ -1790,9 +1793,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                         if (f.relevance) {
                             fieldName = f.relevance+"."+fieldName;
                         }
-                        if (f.type === "model") {
-                            fieldArr.push(fieldName + "_model_keyword")
-                        } else if ($.inArray(f.type, ["text", "string"]) !== -1) {
+                        if ($.inArray(f.type, ["text", "string"]) !== -1) {
                             fieldArr.push(fieldName)
                         }
                     });

@@ -21,4 +21,9 @@ class Internationalization extends Cosmetic
     public function promotion() {
         return $this->hasOne('promotion','id','promotion_model_id')->joinType("LEFT")->setEagerlyType(0);
     }
+
+
+    public function translates() {
+        return $this->hasMany('translate', 'translate_model_id');
+    }
 }
