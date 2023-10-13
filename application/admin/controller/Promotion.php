@@ -36,10 +36,12 @@ class Promotion extends Cosmetic
         if ($ids === null)
             $this->error(__('Params error!'));
         $promotion = $this->model->get($ids);
-        $tranlsateList = [];
-        foreach($promotion->internationalization as $v) {
-            $tranlsateList[$v['name']]=$v['translation'];
-        }
+//        $tranlsateList = [];
+//        foreach($promotion->internationalization as $v) {
+//            $tranlsateList[$v['name']]=$v['translation'];
+//        }
+//        $tranlsateLanguageList = array_keys($tranlsateList);
+
         $apiKey = '20230816001782539';
         $apiSecret = 'o62WRa4ThGYCNntmaqT9';
 
@@ -52,15 +54,17 @@ class Promotion extends Cosmetic
         $field = Fields::get("2519")->content_list;
         $targetLanguages = array_keys($field);
 
+        $client = new \GuzzleHttp\Client();
+        $tranlsateList = [];
         foreach ($targetLanguages as $targetLanguage) { // 遍历目标语言数组
-            $translatedRequrest = []; // 存储已翻译的键
-            $client = new \GuzzleHttp\Client();
-            foreach ($tranlsateList[$targetLanguage] as $key => $value) {// 遍历 JSON 数据的键值对
-                if ($value == "") {
+            $tranlsateList[$targetLanguage] = [];
+            foreach($promotion->internationalization as $v) {
+                $translate = model("translate")->where("internationalization_model_id", $v['id'])->where("lang", $targetLanguage)->find();
+                if ($translate == null ) {
                     $salt = time();
-                    $sign = $this->generateSign($key, $salt, $apiKey, $apiSecret);
+                    $sign = $this->generateSign($v['name'], $salt, $apiKey, $apiSecret);
                     $params = [
-                        'q' => $key,
+                        'q' => $v['name'],
                         'from' => 'auto',
                         'to' => $targetLanguage,
                         'appid' => $apiKey,
@@ -68,24 +72,23 @@ class Promotion extends Cosmetic
                         'sign' => $sign
                     ];
                     $url = 'http://api.fanyi.baidu.com/api/trans/vip/translate?'.http_build_query($params);
-                    $translatedRequrest[$key] = $client->getAsync($url);
-                }
-            }
-            $result = \GuzzleHttp\Promise\unwrap($translatedRequrest);
-            foreach ($tranlsateList[$targetLanguage] as $key => $value) {
-                if ($result[$key]->getStatusCode() == "200") {
-                    $resultJson = json_decode( $result[$key]->getBody()->getContents(), true);
-                    $tranlsateList[$targetLanguage][$key] = isset($resultJson['trans_result'][0]['dst']) ? $resultJson['trans_result'][0]['dst'] : $value;
+                    $res = $client->request('GET', $url);
+                    if ($res->getStatusCode() == "200") {
+                        $resultJson = json_decode($res->getBody()->getContents(), true);
+                        $tranlsateList[$targetLanguage][$v['name']] = isset($resultJson['trans_result'][0]['dst']) ? $resultJson['trans_result'][0]['dst'] : $v['name'];
+                    }
+                } else {
+                    $tranlsateList[$targetLanguage][$v['name']]=$translate['name'];
                 }
             }
         }
 
         $internals = [];
-        foreach ($targetLanguages as $targetLanguage) { // 遍历目标语言数组
+        foreach ($tranlsateList as $key=>$tranlsate) { // 遍历目标语言数组
             $fileName = \fast\Random::build("unique") . ".png";
-            $internals[$targetLanguage] = $destFileDir . $fileName;
+            $internals[$key] = $destFileDir . $fileName;
             $jsi18njson = [
-                "values" => $tranlsateList[$targetLanguage]
+                "values" =>$tranlsate
             ];
             file_put_contents($uploadDir . $fileName, json_encode($jsi18njson, JSON_UNESCAPED_UNICODE));
         }
