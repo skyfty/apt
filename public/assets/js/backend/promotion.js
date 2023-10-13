@@ -158,7 +158,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                                 return __(' %s', row.id);
                             },
                             classname: 'btn btn-xs btn-success btn-magic btn-dialog btn-view',
-                            icon: 'fa fa-folder-o',
+                            icon: 'fa fa-deviantart',
                             url: 'translate/list'
                         }
                     ]
