@@ -53,12 +53,12 @@ class Promotion extends Cosmetic
         $targetLanguages = array_keys($field);
 
         $client = new \GuzzleHttp\Client();
+        $tranlsateList = [];
 
         foreach ($targetLanguages as $targetLanguage) { // 遍历目标语言数组
             $promises = [];
             $promiseNamess = [];
             $tranlsateList[$targetLanguage] = [];
-            $tranlsateList = [];
             foreach($promotion->internationalization as $v) {
                 $translate = model("translate")->where("internationalization_model_id", $v['id'])->where("lang", $targetLanguage)->find();
                 if ($translate == null ) {
@@ -93,7 +93,7 @@ class Promotion extends Cosmetic
 
         $internals = [];
         foreach ($tranlsateList as $key=>$tranlsate) { // 遍历目标语言数组
-            $fileName = \fast\Random::build("unique") . ".png";
+            $fileName = $key . ".png";
             $internals[$key] = $destFileDir . $fileName;
             $jsi18njson = [
                 "values" =>$tranlsate
