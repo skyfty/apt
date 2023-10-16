@@ -3,6 +3,7 @@
 namespace app\admin\controller;
 
 use app\common\model\Fields;
+use GuzzleHttp\Promise;
 
 /**
  * 游戏产品
@@ -32,15 +33,12 @@ class Promotion extends Cosmetic
     }
 
     public function translate() {
+        set_time_limit(0);
+
         $ids =$this->request->param("ids", null);
         if ($ids === null)
             $this->error(__('Params error!'));
         $promotion = $this->model->get($ids);
-//        $tranlsateList = [];
-//        foreach($promotion->internationalization as $v) {
-//            $tranlsateList[$v['name']]=$v['translation'];
-//        }
-//        $tranlsateLanguageList = array_keys($tranlsateList);
 
         $apiKey = '20230816001782539';
         $apiSecret = 'o62WRa4ThGYCNntmaqT9';
@@ -55,9 +53,12 @@ class Promotion extends Cosmetic
         $targetLanguages = array_keys($field);
 
         $client = new \GuzzleHttp\Client();
-        $tranlsateList = [];
+
         foreach ($targetLanguages as $targetLanguage) { // 遍历目标语言数组
+            $promises = [];
+            $promiseNamess = [];
             $tranlsateList[$targetLanguage] = [];
+            $tranlsateList = [];
             foreach($promotion->internationalization as $v) {
                 $translate = model("translate")->where("internationalization_model_id", $v['id'])->where("lang", $targetLanguage)->find();
                 if ($translate == null ) {
@@ -72,13 +73,20 @@ class Promotion extends Cosmetic
                         'sign' => $sign
                     ];
                     $url = 'http://api.fanyi.baidu.com/api/trans/vip/translate?'.http_build_query($params);
-                    $res = $client->request('GET', $url);
-                    if ($res->getStatusCode() == "200") {
-                        $resultJson = json_decode($res->getBody()->getContents(), true);
-                        $tranlsateList[$targetLanguage][$v['name']] = isset($resultJson['trans_result'][0]['dst']) ? $resultJson['trans_result'][0]['dst'] : $v['name'];
-                    }
+                    $promises[] = $client->getAsync($url);
+                    $promiseNamess[] = $v['name'];
                 } else {
                     $tranlsateList[$targetLanguage][$v['name']]=$translate['name'];
+                }
+            }
+
+            if (count($promises) != 0) {
+                $responses = \GuzzleHttp\Promise\unwrap($promises);
+                foreach ($responses as $k=>$res) {
+                    if ($res->getStatusCode() == "200") {
+                        $resultJson = json_decode($res->getBody()->getContents(), true);
+                        $tranlsateList[$targetLanguage][$promiseNamess[$k]] = isset($resultJson['trans_result'][0]['dst']) ? $resultJson['trans_result'][0]['dst'] : $promiseNamess[$k];
+                    }
                 }
             }
         }
