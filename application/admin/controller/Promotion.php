@@ -12,6 +12,8 @@ use GuzzleHttp\Promise;
  */
 class Promotion extends Cosmetic
 {
+    protected $noNeedLogin = ['translate','translate2'];
+
     public function _initialize()
     {
         parent::_initialize();
@@ -33,6 +35,18 @@ class Promotion extends Cosmetic
     }
 
     public function translate() {
+        $ids =$this->request->param("ids", null);
+        if ($ids === null)
+            $this->error(__('Params error!'));
+        $logDir = LOG_PATH . 'crontab/';
+        if (!is_dir($logDir)) {
+            mkdir($logDir, 0755);
+        }
+        $cmd = 'php ' . ROOT_PATH . 'public/index.php ' . "admin/promotion/translate2/ids/" .$ids;
+        exec($cmd);
+    }
+
+    public function translate2() {
         set_time_limit(0);
 
         $ids =$this->request->param("ids", null);
@@ -52,7 +66,6 @@ class Promotion extends Cosmetic
         $field = Fields::get("2519")->content_list;
         $targetLanguages = array_keys($field);
 
-        $client = new \GuzzleHttp\Client();
         $tranlsateList = [];
 
         foreach ($targetLanguages as $targetLanguage) { // 遍历目标语言数组
@@ -60,6 +73,7 @@ class Promotion extends Cosmetic
             $promiseNamess = [];
             $promiseIds = [];
             $tranlsateIds = [];
+            $client = new \GuzzleHttp\Client();
 
             $tranlsateList[$targetLanguage] = [];
             foreach($promotion->internationalization as $v) {
@@ -76,36 +90,56 @@ class Promotion extends Cosmetic
                         'sign' => $sign
                     ];
                     $url = 'http://api.fanyi.baidu.com/api/trans/vip/translate?'.http_build_query($params);
-                    $promises[] = $client->getAsync($url);
-                    $promiseNamess[] = $v['name'];
-                    $promiseIds[] = $v['id'];
-                    if ($translate['name'] == "") {
-                        $tranlsateIds[$v['id']] = $translate['id'];
+//                    $res = $client->get($url);
+                    $res = $client->request('GET', $url);
+
+                    if ($res->getStatusCode() == "200") {
+                        $content = $res->getBody()->getContents();
+                        \think\Log::info($res->getBody()->getContents());
+                        $resultJson = json_decode($content, true);
+                        $name = isset($resultJson['trans_result'][0]['dst']) ? $resultJson['trans_result'][0]['dst'] : "";
+
+                        $tranlsateList[$targetLanguage][$v['name']] =$name;
+                        if ($translate == null) {
+                            $translate = new \app\admin\model\Translate;
+                        }
+                        $translate->internationalization_model_id = $v['id'];
+                        $translate->lang =$targetLanguage;
+                        $translate->name =$name;
+                        $translate->save();
                     }
+//
+//
+//
+//                    $promiseNamess[] = $v['name'];
+//                    $promiseIds[] = $v['id'];
+//                    if ($translate['name'] == "") {
+//                        $tranlsateIds[$v['id']] = $translate['id'];
+//                    }
                 } else {
                     $tranlsateList[$targetLanguage][$v['name']]=$translate['name'];
                 }
             }
 
-            if (count($promises) != 0) {
-                $responses = \GuzzleHttp\Promise\unwrap($promises);
-                foreach ($responses as $k=>$res) {
-                    if ($res->getStatusCode() == "200") {
-                        $resultJson = json_decode($res->getBody()->getContents(), true);
-                        $name = isset($resultJson['trans_result'][0]['dst']) ? $resultJson['trans_result'][0]['dst'] : $promiseNamess[$k];
-                        $tranlsateList[$targetLanguage][$promiseNamess[$k]] =$name;
-                        if (isset($tranlsateIds[$promiseIds[$k]])) {
-                            $translate = \app\admin\model\Translate::get($tranlsateIds[$promiseIds[$k]]);
-                        } else {
-                            $translate = new \app\admin\model\Translate;
-                        }
-                        $translate->internationalization_model_id = $promiseIds[$k];
-                        $translate->lang =$targetLanguage;
-                        $translate->name =$name;
-                        $translate->save();
-                    }
-                }
-            }
+//            if (count($promises) != 0) {
+//                $responses = \GuzzleHttp\Promise\unwrap($promises);
+//                foreach ($responses as $k=>$res) {
+//                    if ($res->getStatusCode() == "200") {
+//                        $resultJson = json_decode($res->getBody()->getContents(), true);
+//                        $name = isset($resultJson['trans_result'][0]['dst']) ? $resultJson['trans_result'][0]['dst'] : "";
+//                        $tranlsateList[$targetLanguage][$promiseNamess[$k]] =$name;
+//                        if (isset($tranlsateIds[$promiseIds[$k]])) {
+//                            $translate = \app\admin\model\Translate::get($tranlsateIds[$promiseIds[$k]]);
+//                        } else {
+//                            $translate = new \app\admin\model\Translate;
+//                        }
+//                        $translate->internationalization_model_id = $promiseIds[$k];
+//                        $translate->lang =$targetLanguage;
+//                        $translate->name =$name;
+//                        $translate->save();
+//                    }
+//                }
+//            }
         }
 
         $internals = [];
