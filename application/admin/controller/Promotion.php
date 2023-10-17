@@ -39,9 +39,9 @@ class Promotion extends Cosmetic
         $ids =$this->request->param("ids", null);
         if ($ids === null)
             $this->error(__('Params error!'));
-        $cmd = 'php ' . ROOT_PATH . 'public/index.php ' . "admin/promotion/translate2/ids/" .$ids;
-        \think\Log::info($cmd);
-        exec($cmd);
+        $cmd = 'nohup /www/wdlinux/phps/71/bin/php ' . ROOT_PATH . 'public/index.php ' . "admin/promotion/translate2/ids/" .$ids;
+        exec($cmd, $array);
+
         $this->success("翻译成功");
     }
 
