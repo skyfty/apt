@@ -50,7 +50,15 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                             summation_url: 'translate/summation',
                             table: 'translate',
                         },
-                        buttons: []
+                        buttons: [ {
+                            name: 'view',
+                            title: function(row, j){
+                                return __(' %s', row.id);
+                            },
+                            classname: 'btn btn-xs btn-success btn-magic btn-dialog btn-view',
+                            icon: 'fa fa-folder-o',
+                            url: 'translate/view'
+                        }]
                     };
                     Table.api.init(options);
                     Form.api.bindevent($("div[ng-controller='list']"));

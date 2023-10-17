@@ -43,7 +43,7 @@ class Promotion extends Cosmetic
         $apiKey = '20230816001782539';
         $apiSecret = 'o62WRa4ThGYCNntmaqT9';
 
-        $destFileDir = 'uploads/'. date('Ymd') . DS.$promotion->idcode.DS;
+        $destFileDir = 'uploads/translates/' . DS.$promotion->id . DS;
         $uploadDir = ROOT_PATH ."/public/" .$destFileDir;
         if (file_exists($uploadDir))
             rmdirs($uploadDir);
@@ -58,10 +58,12 @@ class Promotion extends Cosmetic
         foreach ($targetLanguages as $targetLanguage) { // 遍历目标语言数组
             $promises = [];
             $promiseNamess = [];
+            $promiseIds = [];
+
             $tranlsateList[$targetLanguage] = [];
             foreach($promotion->internationalization as $v) {
                 $translate = model("translate")->where("internationalization_model_id", $v['id'])->where("lang", $targetLanguage)->find();
-                if ($translate == null ) {
+                if ($translate == null &&  $translate['name'] == "") {
                     $salt = time();
                     $sign = $this->generateSign($v['name'], $salt, $apiKey, $apiSecret);
                     $params = [
@@ -75,6 +77,7 @@ class Promotion extends Cosmetic
                     $url = 'http://api.fanyi.baidu.com/api/trans/vip/translate?'.http_build_query($params);
                     $promises[] = $client->getAsync($url);
                     $promiseNamess[] = $v['name'];
+                    $promiseIds[] = $v['id'];
                 } else {
                     $tranlsateList[$targetLanguage][$v['name']]=$translate['name'];
                 }
@@ -85,7 +88,13 @@ class Promotion extends Cosmetic
                 foreach ($responses as $k=>$res) {
                     if ($res->getStatusCode() == "200") {
                         $resultJson = json_decode($res->getBody()->getContents(), true);
-                        $tranlsateList[$targetLanguage][$promiseNamess[$k]] = isset($resultJson['trans_result'][0]['dst']) ? $resultJson['trans_result'][0]['dst'] : $promiseNamess[$k];
+                        $name = isset($resultJson['trans_result'][0]['dst']) ? $resultJson['trans_result'][0]['dst'] : $promiseNamess[$k];
+                        $tranlsateList[$targetLanguage][$promiseNamess[$k]] =$name;
+                        $translate = new \app\admin\model\Translate;
+                        $translate->internationalization_model_id = $promiseIds[$k];
+                        $translate->lang =$targetLanguage;
+                        $translate->name =$name;
+                        $translate->save();
                     }
                 }
             }
