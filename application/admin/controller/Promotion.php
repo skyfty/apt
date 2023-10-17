@@ -59,11 +59,12 @@ class Promotion extends Cosmetic
             $promises = [];
             $promiseNamess = [];
             $promiseIds = [];
+            $tranlsateIds = [];
 
             $tranlsateList[$targetLanguage] = [];
             foreach($promotion->internationalization as $v) {
                 $translate = model("translate")->where("internationalization_model_id", $v['id'])->where("lang", $targetLanguage)->find();
-                if ($translate == null &&  $translate['name'] == "") {
+                if ($translate == null ||  $translate['name'] == "") {
                     $salt = time();
                     $sign = $this->generateSign($v['name'], $salt, $apiKey, $apiSecret);
                     $params = [
@@ -78,6 +79,9 @@ class Promotion extends Cosmetic
                     $promises[] = $client->getAsync($url);
                     $promiseNamess[] = $v['name'];
                     $promiseIds[] = $v['id'];
+                    if ($translate['name'] == "") {
+                        $tranlsateIds[$v['id']] = $translate['id'];
+                    }
                 } else {
                     $tranlsateList[$targetLanguage][$v['name']]=$translate['name'];
                 }
@@ -90,7 +94,11 @@ class Promotion extends Cosmetic
                         $resultJson = json_decode($res->getBody()->getContents(), true);
                         $name = isset($resultJson['trans_result'][0]['dst']) ? $resultJson['trans_result'][0]['dst'] : $promiseNamess[$k];
                         $tranlsateList[$targetLanguage][$promiseNamess[$k]] =$name;
-                        $translate = new \app\admin\model\Translate;
+                        if (isset($tranlsateIds[$promiseIds[$k]])) {
+                            $translate = \app\admin\model\Translate::get($tranlsateIds[$promiseIds[$k]]);
+                        } else {
+                            $translate = new \app\admin\model\Translate;
+                        }
                         $translate->internationalization_model_id = $promiseIds[$k];
                         $translate->lang =$targetLanguage;
                         $translate->name =$name;
