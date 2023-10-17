@@ -35,15 +35,14 @@ class Promotion extends Cosmetic
     }
 
     public function translate() {
+        set_time_limit(0);
         $ids =$this->request->param("ids", null);
         if ($ids === null)
             $this->error(__('Params error!'));
-        $logDir = LOG_PATH . 'crontab/';
-        if (!is_dir($logDir)) {
-            mkdir($logDir, 0755);
-        }
         $cmd = 'php ' . ROOT_PATH . 'public/index.php ' . "admin/promotion/translate2/ids/" .$ids;
+        \think\Log::info($cmd);
         exec($cmd);
+        $this->success("翻译成功");
     }
 
     public function translate2() {
