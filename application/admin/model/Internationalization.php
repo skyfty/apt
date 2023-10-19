@@ -2,10 +2,6 @@
 
 namespace app\admin\model;
 
-use think\App;
-use think\Loader;
-use think\Model;
-use traits\model\SoftDelete;
 use app\admin\library\Auth;
 
 class Internationalization extends  \app\common\model\Internationalization
