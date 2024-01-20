@@ -3,6 +3,9 @@
 namespace app\bi\controller;
 
 use app\common\controller\Api;
+use think\Db;
+use think\Exception;
+use think\exception\PDOException;
 use think\Request;
 
 /**
@@ -81,5 +84,35 @@ class Index extends Api
             "user_agent"=>$this->request->header('user-agent')
         ]);
         $this->success("OK", $row);
+    }
+    public function pick() {
+        try {
+            $database = $this->request->param('database', 'CountRush');
+
+            $sql = $this->request->param('sql');
+            $connectStr = 'mysql://root:1bf46663@127.0.0.1:3306/'.$database.'#utf8';
+            if ($sql == null) {
+                $table = $this->request->param('table');
+                $field = $this->request->param('field','*');
+                $id = $this->request->param('id');
+
+                    $ccc = Db::connect($connectStr)->query('select ' . $field . ' from ' . $table . ' where id=:id', ['id' => $id]);
+
+            } else {
+                $ccc =  Db::connect($connectStr)->query($sql);
+
+            }
+            if (count($ccc) ==1) {
+                $this->result("OK", $ccc[0]);
+
+            } else {
+                $this->result("OK", $ccc);
+
+            }
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
+
+        }
+
     }
 }
