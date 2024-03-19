@@ -168,81 +168,11 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                 $scope.$broadcast("shownTable");
             },
             cause: function($scope, $compile,$timeout, data){
-                $scope.searchFieldsParams = function(param) {
-                    param.custom = {
-                        "cause.promotion_model_id":$scope.row.id,
-                    };
 
-                    var trap_model_id = $('#trap_model_id').val();
-                    if (trap_model_id) {
-                        param.custom["cause.trap_model_id"] = trap_model_id;
-                    }
-                    var channel_model_id = $('#channel_model_id').val();
-                    if (channel_model_id) {
-                        param.custom["cause.channel_model_id"] = channel_model_id;
-                    }
-                    var ip_address = $('#ip_address').val();
-                    if (ip_address) {
-                        param.custom["cause.ip_address"] = ip_address;
-                    }
-                    return param;
-                };
-
-                Table.api.init({
-                    extend: {
-                        index_url: 'cause/index',
-                        add_url: 'cause/add',
-                        del_url: 'cause/del',
-                        multi_url: 'cause/multi',
-                        summation_url: 'cause/summation',
-                        table: 'cause',
-                    },
-                    buttons : [
-                        {
-                            name: 'view',
-                            title: function(row, j){
-                                return __(' %s', row.id);
-                            },
-                            classname: 'btn btn-xs btn-success btn-magic btn-dialog btn-view',
-                            icon: 'fa fa-folder-o',
-                            url: 'cause/view'
-                        }
-                    ]
-                });
-                $scope.fields = data.fields;
-                angular.element("#tab-" +$scope.scenery.name).html($compile(data.content)($scope));
-                $scope.$broadcast("shownTable");
-
-                require(['selectpage'], function () {
-                    var options = {
-                        eAjaxSuccess: function (data) {
-                            data.list = data.list || [];
-                            data.totalRow = data.total || 0;
-                            return data;
-                        },
-                        eSelect:function(data) {
-                            $("#table-cause").bootstrapTable('refresh', {});
-                        },
-                        params:function(){
-                            var param = {
-                                'promotion_model_id':$scope.row.id
-                            };
-                            return param;
-                        },
-                        eClear:function(){
-                            $("#table-cause").bootstrapTable('refresh', {});
-                        }
-                    };
-                    $('#trap_model_id').selectPage(options);
-
-                    $.extend(options, { params:false});
-                    $('#channel_model_id').selectPage(options);
-
-                    $("#ip_address").on("blur", function(){
-                        $("#table-cause").bootstrapTable('refresh', {});
-                    });
-
-                });
+                // Form.events.daterangepicker("#panel-cause");
+                var html = $compile(data.content)($scope);
+                Form.api.bindevent(html);
+                angular.element("#tab-" +$scope.scenery.name).html(html);
 
             },
             storehouse: function($scope, $compile,$timeout, data){
