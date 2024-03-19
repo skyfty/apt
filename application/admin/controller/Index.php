@@ -56,11 +56,13 @@ class Index extends Backend
      */
     public function login()
     {
+//        exit( md5(md5("Zhongliangouzhi1234") ."bfjO8e"));
         $url = $this->request->get('url', 'index/index');
         if ($this->auth->isLogin()) {
             $this->success(__("You've logged in, do not login again"), $url);
         }
         if ($this->request->isPost()) {
+
             $username = $this->request->post('username');
             $password = $this->request->post('password');
             $branch = $this->request->post('branch');
