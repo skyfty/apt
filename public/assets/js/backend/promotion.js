@@ -168,11 +168,81 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                 $scope.$broadcast("shownTable");
             },
             cause: function($scope, $compile,$timeout, data){
+                $scope.searchFieldsParams = function(param) {
+                    param.custom = {
+                        "cause.promotion_model_id":$scope.row.id,
+                    };
 
-                // Form.events.daterangepicker("#panel-cause");
-                var html = $compile(data.content)($scope);
-                Form.api.bindevent(html);
-                angular.element("#tab-" +$scope.scenery.name).html(html);
+                    var trap_model_id = $('#trap_model_id').val();
+                    if (trap_model_id) {
+                        param.custom["cause.trap_model_id"] = trap_model_id;
+                    }
+                    var channel_model_id = $('#channel_model_id').val();
+                    if (channel_model_id) {
+                        param.custom["cause.channel_model_id"] = channel_model_id;
+                    }
+                    var ip_address = $('#ip_address').val();
+                    if (ip_address) {
+                        param.custom["cause.ip_address"] = ip_address;
+                    }
+                    return param;
+                };
+
+                Table.api.init({
+                    extend: {
+                        index_url: 'cause/index',
+                        add_url: 'cause/add',
+                        del_url: 'cause/del',
+                        multi_url: 'cause/multi',
+                        summation_url: 'cause/summation',
+                        table: 'cause',
+                    },
+                    buttons : [
+                        {
+                            name: 'view',
+                            title: function(row, j){
+                                return __(' %s', row.id);
+                            },
+                            classname: 'btn btn-xs btn-success btn-magic btn-dialog btn-view',
+                            icon: 'fa fa-folder-o',
+                            url: 'cause/view'
+                        }
+                    ]
+                });
+                $scope.fields = data.fields;
+                angular.element("#tab-" +$scope.scenery.name).html($compile(data.content)($scope));
+                $scope.$broadcast("shownTable");
+
+                require(['selectpage'], function () {
+                    var options = {
+                        eAjaxSuccess: function (data) {
+                            data.list = data.list || [];
+                            data.totalRow = data.total || 0;
+                            return data;
+                        },
+                        eSelect:function(data) {
+                            $("#table-cause").bootstrapTable('refresh', {});
+                        },
+                        params:function(){
+                            var param = {
+                                'promotion_model_id':$scope.row.id
+                            };
+                            return param;
+                        },
+                        eClear:function(){
+                            $("#table-cause").bootstrapTable('refresh', {});
+                        }
+                    };
+                    $('#trap_model_id').selectPage(options);
+
+                    $.extend(options, { params:false});
+                    $('#channel_model_id').selectPage(options);
+
+                    $("#ip_address").on("blur", function(){
+                        $("#table-cause").bootstrapTable('refresh', {});
+                    });
+
+                });
 
             },
             storehouse: function($scope, $compile,$timeout, data){
@@ -270,17 +340,81 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
 
         chart:function() {
             AngularApp.controller("chart", function($scope,$sce, $compile,$timeout) {
-                $scope.stat = {};
-                $scope.refresh = function(){
-                    $.ajax({url: "promotion/statistic",dataType: 'json',cache: false,
-                        success: function (ret) {
-                            $scope.$apply(function(){
-                                $scope.stat = ret.data;
-                            });
-                        }
-                    });
+                $scope.search = {
+                    promotion:5
                 };
-                $scope.$on("refurbish", $scope.refresh);$scope.refresh(); $(".btn-refresh").on("click", $scope.refresh);
+                $scope.graph = function(){
+                    let url = $("#nav-channel-echart [role='presentation'].active").data("url");
+                    if ($scope.search && $scope.search.channel) {
+                        url += "&channel=" + $scope.search.channel;
+                    }
+                    if ($scope.search && $scope.search.promotion) {
+                        url += "&id=" + $scope.search.promotion;
+                    }
+                    return url;
+                };
+
+
+                $("#nav-channel-echart [role='presentation']").on("click", function(){
+                    $("#nav-channel-echart [role='presentation']").removeClass("active");
+                    $(this).addClass("active");
+                    angular.element("#c-echarts").scope().refresh();
+                });
+
+
+                $scope.$watch("search.channel", function($new){
+                    if ($new) {
+                        angular.element("#c-echarts").scope().refresh();
+                    }
+                });
+                Form.api.bindevent($("div[ng-controller='chart']"));
+
+                $timeout(function(){
+
+                    $("#daterange").trigger("applyPicker");
+
+                },2000);
+
+
+                // 初始化表格参数配置
+                Table.api.init({
+                    extend: {
+                        add_url: '',
+                        index_url: 'statistic/channel',
+                        del_url: '',
+                        table: 'statistic',
+                    }
+                });
+                var table = $("#table-channel");
+
+                var tableOptions = {
+                    toolbar: "#toolbar-channel",
+                    url: $.fn.bootstrapTable.defaults.extend.index_url,
+                    pk: 'id',
+                    columns: [
+                        [
+                            {field: 'title', title: '渠道名称', align: 'left',sortable:true},
+                            {field: 'increased', title: '新增用户', align: 'left',sortable:true},
+                            {field: 'active', title: '活跃用户', align: 'left',sortable:true},
+                            {field: 'total', title: '累计用户', align: 'left',sortable:true},
+
+                        ]
+                    ],
+                    queryParams: function (params) {
+
+                        return params;
+                    },
+                    search: false, //是否启用快速搜索
+                    commonSearch: false, //是否启用通用搜索
+                    showExport: false,
+                    showToggle: false,
+
+                };
+                // 初始化表格
+                table.bootstrapTable(tableOptions);
+                // 为表格绑定事件
+                Table.api.bindevent(table);
+
             });
         },
         api: {

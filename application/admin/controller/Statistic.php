@@ -103,6 +103,22 @@ class Statistic extends Cosmetic
     }
 
 
+    public function behavior() {
+        $this->request->filter(['strip_tags']);
+        if ($this->request->isAjax()) {
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            $list = [];
+            $channels = model("channel")->order($sort, $order)->limit($offset, $limit)->select();
+            foreach ($channels as $k=>$v) {
+                array_push($list, ['title'=>$v['name']]);
+            }
+            $total = count($channels);
+            return json(array("total" => $total, "rows" => collection($list)->toArray()));
+
+        }
+        return $this->view->fetch("behavior");
+    }
+
     public function graph() {
         $data=[];
 

@@ -1,12 +1,90 @@
+<div ng-controller="chart"  ng-init="sceneryInit()">
 
-<div class="panel panel-default panel-intro" ng-controller="chart">
-    <div class="panel-heading">
-        {:build_heading(null,FALSE)}
+    <div class="row">
+        <div class="form-group col-xs-12">
+            <div class="input-group"  style="width:100%;">
+                <span class="input-group-addon" style="width: 20px;">
+                    <a href="javascript:;" class="btn-refresh">
+                        <i class="fa fa-gamepad"></i>
+                    </a>
+                </span>
+                <input id="search-promotion" selectpage class="form-control selectpage" model="search.promotion" value="5" placeholder="选择游戏" data-source="promotion/index"  data-primary-key="id" type="text">
+            </div>
+        </div>
     </div>
-    <div class="panel-body">
-        <div class="tab-pane fade active in" id="one">
+    <div class="panel panel-default panel-intro">
+        <div class="panel-heading">
+            <div class="panel-lead"><em>玩家分析</em></div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div>
+                        <ul class="nav nav-pills" id="nav-channel-echart">
+                            <li role="presentation" class="active" data-url="promotion/graph?type=increased"><a href="#">玩家新增</a></li>
+                            <li role="presentation"  data-url="promotion/graph?type=active"><a href="#">活跃用户</a></li>
+                            <li role="presentation" data-url="promotion/graph?type=keep"><a href="#">新增用户次日留存率</a></li>
+                        </ul>
+                    </div>
+                    <ui-echarts id="c-echarts" data-url="graph();"  data-type="line" data-template="echart-promotion-tmpl" />
+                </div>
+            </div>
+        </div>
+    </div>
 
+
+    <div class="panel panel-default panel-intro">
+        <div class="panel-heading">
+            <div class="panel-lead"><em>渠道明细数据</em></div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div id="toolbar-channel" class="toolbar">
+                        <div class="row">
+                            <div class="col-md-2">
+                                {:build_toolbar(['refresh'],[])}
+                            </div>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control input-inline datetimerange" placeholder="指定日期"/>
+                            </div>
+                        </div>
+                    </div>
+                    <table id="table-channel"
+                           data-url="statistic/channel"
+                           data-toolbar="toolbar-channel"
+                           data-buttons="tableExtendButtons"
+                           class="table table-striped table-bordered table-hover  text-nowrap" width="100%">
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+
+<script id="echart-promotion-tmpl" type="text/html">
+    <div>
+        <div style="margin: 10px 0;">
+            <form action="" role="form" novalidate class="form-inline">
+                <div class="row">
+                    <div class="form-group col-xs-3 scope-datetimerange">
+                        <div class="input-group"  style="width:100%;">
+                            <span class="input-group-addon" style="width: 20px;">
+                                <a href="javascript:;" class="btn-refresh">
+                                    <i class="fa fa-calendar"></i>
+                                </a>
+                            </span>
+                            <input type="text" class="form-control input-inline datetimerange" ng-model="daterange"  id="daterange" placeholder="指定日期"/>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-9 ">
+                        <input id="search-channel" selectpage style="width: 100%" class="form-control selectpage" model="search.channel"  placeholder="请选择渠道" data-source="channel/index"  data-primary-key="id" data-multiple="false" type="text" value="">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="echarts" style="height:400px;width:100%;"></div>
+    </div>
+</script>
 {include file="common/tmpl" /}

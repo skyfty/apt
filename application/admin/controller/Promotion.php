@@ -156,4 +156,68 @@ class Promotion extends Cosmetic
 
         $this->success("翻译成功");
     }
+
+
+    public function graph() {
+        $data=[];
+        $id = $this->request->param("id");
+        if (!$id) {
+            $this->error("error");
+        }
+        $promotion = model("promotion")->get($id);
+        if (!$promotion || $promotion['user_model_name'] === "") {
+            $this->error("error");
+        }
+
+        $type = $this->request->param("type", "increased");
+        $scope = $this->request->get("scope", '');
+        if (!$scope) {
+            $this->error("error");
+        }
+        $scope = explode(" - ", $scope);
+        $scope[0] = strtotime($scope[0]);$scope[1] = strtotime($scope[1]);
+
+        $xAxis = [
+            "type"=>"category",
+            "boundaryGap"=>false,
+        ];
+        for($stepscope = $scope[0];$stepscope<=$scope[1];) {
+            $stepend = strtotime('+1 day',$stepscope);
+            $xAxis['data'][] = date('m-d',$stepscope);
+            $stepscope = $stepend;
+        }
+        $data['xAxis'][] = $xAxis;
+
+        $ludomodelUsers =  model($promotion['user_model_name']);
+        $legend = [];
+        $cheque = [['name'=>'新增']];
+        foreach($cheque as $ck=>$cv) {
+            $legend[] = $cv['name'];
+            $series=[
+                "type"=>'line',
+                "name"=>$cv['name'],
+                "data"=>[],
+            ];
+            for($stepscope = $scope[0]; $stepscope<=$scope[1];) {
+                $stepend = strtotime('+1 day',$stepscope);
+                switch ($type) {
+                    case "increased": {
+                        $ludomodelUsers->where("createtime", "BETWEEN", [$stepscope, $stepend]);
+                        $series['data'][] = $ludomodelUsers->count();
+                        break;
+                    }
+                    case "active": {
+                        $ludomodelUsers->where("logintime", "BETWEEN", [$stepscope, $stepend]);
+                        $series['data'][] = $ludomodelUsers->count();
+                        break;
+                    }
+                }
+                $stepscope = $stepend;
+            }
+            $data['series'][] = $series;
+        }
+        $data['legend']['data'] = $legend;
+
+        $this->result($data,1);
+    }
 }

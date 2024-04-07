@@ -1868,10 +1868,10 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                             }
                         ],
                         grid: [{
-                            left: 'left',
-                            top: 'top',
-                            right: '10',
-                            bottom: 30
+                            left: '20',
+                            top: '30',
+                            right: '20',
+                            bottom: 20
                         }]
                     };
                     if ($attrs.type === "line") {
@@ -1891,9 +1891,9 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
                     });
 
                     Form.api.bindevent($("form[role=form]", $element));
-
                     var datetimerange = $(".datetimerange", $element);
-                    datetimerange.on("blur", function () {
+
+                    datetimerange.on("applyPicker", function () {
                         let url = $parse($attrs.url)($scope);
                         if (typeof url == "function") {
                             url = url();
@@ -1914,19 +1914,25 @@ define(['jquery', 'backend', 'table', 'form','template','angular','fast', 'toast
 
                     });
                     $(".btn-refresh", $element).on("click", function () {
-                        datetimerange.trigger("blur");
+                        datetimerange.trigger("applyPicker");
                         $scope.$broadcast("refurbish");
                     });
                     $timeout(function(){
                         var obj = $(".datetimerange", $element).data("daterangepicker");
-                        var dates = obj.ranges["本月"];
-                        obj.startDate = dates[0];
-                        obj.endDate = dates[1];
-                        obj.clickApply();
+                        var dates = obj.ranges["最近7天"];
+                        // obj.startDate = dates[0];
+                        // obj.endDate = dates[1];
+
+                        $(".datetimerange", $element).daterangepicker({
+                            endDate: dates[1],
+                            startDate: dates[0]
+                        });
+
+                        // $(".datetimerange", $element).clickApply();
                     },1000);
 
                     $scope.refresh = function(){
-                        datetimerange.trigger("blur");
+                        datetimerange.trigger("applyPicker");
                     };
                 });
             }

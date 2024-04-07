@@ -263,7 +263,7 @@ define(['jquery', 'bootstrap', 'upload', 'validator', 'moment'], function ($, un
                         };
                         var origincallback = function (start, end) {
                             $(this.element).val(start.format(this.locale.format) + " - " + end.format(this.locale.format));
-                            $(this.element).trigger('blur');
+                            $(this.element).trigger('applyPicker');
                         };
                         $(".datetimerange", form).each(function () {
                             var callback = typeof $(this).data('callback') == 'function' ? $(this).data('callback') : origincallback;
