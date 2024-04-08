@@ -3,7 +3,9 @@
 namespace app\admin\controller;
 
 use app\common\model\Fields;
+use app\common\model\Statistics;
 use GuzzleHttp\Promise;
+use think\Db;
 
 /**
  * 游戏产品
@@ -191,6 +193,29 @@ class Promotion extends Cosmetic
         $ludomodelUsers =  model($promotion['user_model_name']);
         $legend = [];
         $cheque = [['name'=>'新增']];
+        switch ($type) {
+            case "increased": {
+                $cheque = [['name'=>'玩家新增']];
+
+                break;
+            }
+            case "active": {
+                $cheque = [['name'=>'活跃玩家']];
+
+                break;
+            }
+            case "keep": {
+                $cheque = [['name'=>'新增玩家次日留存率']];
+
+                break;
+            }
+            case "duration": {
+                $cheque = [['name'=>'平均单次使用时长']];
+
+                break;
+            }
+        }
+
         foreach($cheque as $ck=>$cv) {
             $legend[] = $cv['name'];
             $series=[
@@ -211,6 +236,46 @@ class Promotion extends Cosmetic
                         $series['data'][] = $ludomodelUsers->count();
                         break;
                     }
+                    case "startover": {
+                        $ludomodelUsers->where("logintime", "BETWEEN", [$stepscope, $stepend]);
+                        $series['data'][] = $ludomodelUsers->count();
+                        break;
+                    }
+                    case "keep": {
+                        $result = $ludomodelUsers->query("                              
+                            SELECT 
+                              DATE(FROM_UNIXTIME(createtime)) AS registration_date,
+                              COUNT(
+                                DISTINCT IF(
+                                  DATE(FROM_UNIXTIME(logintime)) = DATE_ADD(
+                                    DATE(FROM_UNIXTIME(createtime)),
+                                    INTERVAL 1 DAY
+                                  ),
+                                  id,
+                                  NULL
+                                )
+                              ) / COUNT(DISTINCT id) AS next_day_retention_rate 
+                            FROM
+                              users 
+                            WHERE DATE(FROM_UNIXTIME(createtime)) BETWEEN :t1 AND :t2
+                            GROUP BY registration_date
+                            ", ['t1'=>date('Y-m-d', $stepscope),'t2'=>date('Y-m-d', $stepend)]);
+                        $series['data'][] = (count($result) ==1 && $result[0]['next_day_retention_rate'] != null?$result[0]['next_day_retention_rate']:0);
+                        break;
+                    }
+                    case "duration": {
+                        $result = $ludomodelUsers->query("                              
+                           SELECT 
+                                AVG(logintime - prevtime) AS avg_usage_duration
+                            FROM 
+                                users
+                            WHERE 
+                                createtime BETWEEN  :t1 AND :t2 AND prevtime!=0
+                            AND prevtime IS NOT NULL AND logintime IS NOT NULL;
+                            ", ['t1'=>$stepscope,'t2'=>$stepend]);
+                        $series['data'][] = (count($result) ==1 && $result[0]['avg_usage_duration'] != null?$result[0]['avg_usage_duration']:0);
+                        break;
+                    }
                 }
                 $stepscope = $stepend;
             }
@@ -219,5 +284,67 @@ class Promotion extends Cosmetic
         $data['legend']['data'] = $legend;
 
         $this->result($data,1);
+    }
+
+
+    public function statistic() {
+        $id = $this->request->param("id");
+        if (!$id) {
+            $this->error("error");
+        }
+        $promotion = model("promotion")->get($id);
+        if (!$promotion || $promotion['user_model_name'] === "") {
+            $this->error("error");
+        }
+        $ludomodelUsers =  model($promotion['user_model_name']);
+        $result = $ludomodelUsers->query("                              
+                          SELECT FLOOR(AVG(new_users)) AS avg_new_users_last_7_days
+                            FROM (
+                                SELECT COUNT(id) AS new_users
+                                FROM users
+                                WHERE DATEDIFF(FROM_UNIXTIME(createtime), CURDATE()) <= 7
+                                GROUP BY DATE(FROM_UNIXTIME(createtime))
+                            ) AS user_counts;
+                            ");
+        $stat['avg_new_users_last_7_days'] = (count($result) ==1 && $result[0]['avg_new_users_last_7_days'] != null?$result[0]['avg_new_users_last_7_days']:0);
+
+        $result = $ludomodelUsers->query("                              
+                          SELECT FLOOR(AVG(new_users)) AS avg_active_users_last_7_days
+                            FROM (
+                                SELECT COUNT(id) AS new_users
+                                FROM users
+                                WHERE DATEDIFF(FROM_UNIXTIME(logintime), CURDATE()) <= 7
+                                GROUP BY DATE(FROM_UNIXTIME(logintime))
+                            ) AS user_counts;
+                            ");
+        $stat['avg_active_users_last_7_days'] = (count($result) ==1 && $result[0]['avg_active_users_last_7_days'] != null?$result[0]['avg_active_users_last_7_days']:0);
+
+        $result = $ludomodelUsers->query(" SELECT COUNT(id) AS users_cnt FROM users");
+        $stat['users_cnt'] = (count($result) ==1 && $result[0]['users_cnt'] != null?$result[0]['users_cnt']:0);
+
+        $result = $ludomodelUsers->query("                              
+                          SELECT FLOOR(AVG(total_usage_time)) AS avg_usage_time_last_7_days
+                            FROM (
+                                SELECT SUM(logintime - prevtime) AS total_usage_time
+                                FROM users
+                                WHERE DATEDIFF(FROM_UNIXTIME(logintime), CURDATE()) <= 7 AND prevtime!=0
+                                GROUP BY id
+                            ) AS user_usage_time;
+                            ");
+        $stat['avg_usage_time_last_7_days'] = (count($result) ==1 && $result[0]['avg_usage_time_last_7_days'] != null?$result[0]['avg_usage_time_last_7_days']:0);
+
+
+        $this->result($stat, 1);
+    }
+
+
+    /**
+     * 添加
+     */
+    public function chart() {
+
+
+
+        return $this->view->fetch();
     }
 }

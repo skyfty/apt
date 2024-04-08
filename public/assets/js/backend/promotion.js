@@ -339,7 +339,7 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
         },
 
         chart:function() {
-            AngularApp.controller("chart", function($scope,$sce, $compile,$timeout) {
+            AngularApp.controller("chart", function($scope,$sce, $compile,$timeout, $parse) {
                 $scope.search = {
                     promotion:5
                 };
@@ -353,6 +353,16 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                     }
                     return url;
                 };
+
+                Fast.api.ajax({
+                    url:"promotion/statistic",
+                    data: {id:5}
+                }, function (data, ret) {
+                    $scope.$apply(function(){
+                        $parse("stat").assign($scope, data);
+                    });
+                    return false;
+                });
 
 
                 $("#nav-channel-echart [role='presentation']").on("click", function(){
@@ -374,6 +384,15 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                     $("#daterange").trigger("applyPicker");
 
                 },2000);
+
+
+                $("#nav-channel [role='presentation']").on("click", function(){
+                    $("#nav-channel [role='presentation']").removeClass("active");
+                    $(this).addClass("active");
+                    $(".tab-content .tab-pane").removeClass("active");
+                    $("#" + $(this).data("tid")).addClass("active");
+
+                });
 
 
                 // 初始化表格参数配置
@@ -414,6 +433,44 @@ define(['jquery', 'backend', 'table', 'form','template','angular','cosmetic'], f
                 table.bootstrapTable(tableOptions);
                 // 为表格绑定事件
                 Table.api.bindevent(table);
+
+
+                // 初始化表格参数配置
+                Table.api.init({
+                    extend: {
+                        add_url: '',
+                        index_url: 'statistic/cause',
+                        del_url: '',
+                        table: 'statistic',
+                    }
+                });
+                var tablecause = $("#table-cause");
+
+                var tableOptions = {
+                    toolbar: "#toolbar-cause",
+                    url: $.fn.bootstrapTable.defaults.extend.index_url,
+                    pk: 'id',
+                    columns: [
+                        [
+                            {field: 'name', title: '行为', align: 'left',sortable:true},
+                            {field: 'describe', title: '说明', align: 'left',sortable:true},
+                            {field: 'amount', title: '数量', align: 'left',sortable:true},
+                        ]
+                    ],
+                    queryParams: function (params) {
+
+                        return params;
+                    },
+                    search: false, //是否启用快速搜索
+                    commonSearch: false, //是否启用通用搜索
+                    showExport: false,
+                    showToggle: false,
+
+                };
+                // 初始化表格
+                tablecause.bootstrapTable(tableOptions);
+                // 为表格绑定事件
+                Table.api.bindevent(tablecause);
 
             });
         },
